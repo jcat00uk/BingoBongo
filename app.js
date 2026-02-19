@@ -34,6 +34,7 @@ const toggleSoundBtn = document.getElementById('toggleSoundBtn');
 const toggleTTSBtn = document.getElementById('toggleTTSBtn');
 const toggleNightModeBtn = document.getElementById('toggleNightModeBtn');
 const calledNumbersContainer = document.getElementById('calledNumbersContainer');
+const winStateText = document.getElementById('winStateText'); // NEW
 const bingoGrid = document.getElementById('bingoGrid');
 const checkCardContainer = document.getElementById('checkCardContainer');
 const cardSelect = document.getElementById('cardSelect');
@@ -64,6 +65,7 @@ undoNumberBtn.disabled = true;
 
 autoCheckToggle.onchange = () => {
   localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked);
+  updateWinStateText();
 };
 
 function playSound() {
@@ -79,6 +81,28 @@ function speakNumber(num) {
     window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString()));
   }, 50);
 }
+
+function updateWinStateText() {
+    // Hide text only if auto-check is OFF
+    if (!autoCheckToggle.checked) {
+        winStateText.textContent = '';
+        return;
+    }
+
+    if (firstFullHouseCalled) {
+        const cardID = [...lastFullHouseCards][0];
+        winStateText.textContent = `FULL HOUSE! (${cardID})`;
+        winStateText.style.color = 'limegreen';
+    } else if (firstLineCalled) {
+        const cardID = [...lastLineCards][0];
+        winStateText.textContent = `LINE! (${cardID})`;
+        winStateText.style.color = 'orange';
+    } else {
+        winStateText.textContent = 'No Win';
+        winStateText.style.color = 'yellow';
+    }
+}
+
 
 // ===============================
 // BINGO GRID
@@ -213,6 +237,7 @@ function nextNumber() {
   updateCalledNumbersDisplay();
   updateBigLastNumber();
   updateUndoButton();
+  updateWinStateText();
 
   if (autoCheckToggle.checked) checkAllSelectedCards();
 
@@ -274,6 +299,7 @@ function undoNumber() {
   updateCalledNumbersDisplay();
   updateBigLastNumber();
   updateUndoButton();
+  updateWinStateText();
   saveGameState();
 }
 
@@ -310,7 +336,12 @@ function endGame() {
   populateCardSelect();
   checkCardContainer.innerHTML = '';
 
+   // ✅ Update remaining numbers and win text
+    document.getElementById('remainingCount').textContent = 'Remaining Numbers: 0';
+    winStateText.textContent = 'No Win';
+
   updateButtonGlows();
+  updateWinStateText();
   saveGameState();
 }
 
@@ -357,6 +388,28 @@ function showCard(card, clearExisting = true) {
   div.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   return resultSpan;
+}
+
+function updateWinStateText() {
+    // Hide text if auto-check is off
+    if (!autoCheckToggle.checked) {
+        winStateText.textContent = '';
+        return;
+    }
+
+    // Show LINE or FULL HOUSE if auto-check is on
+    if (firstFullHouseCalled) {
+        const cardID = [...lastFullHouseCards][0]; // first full house card
+        winStateText.textContent = `FULL HOUSE! (${cardID})`;
+        winStateText.style.color = 'limegreen';
+    } else if (firstLineCalled) {
+        const cardID = [...lastLineCards][0]; // first line card
+        winStateText.textContent = `LINE! (${cardID})`;
+        winStateText.style.color = 'orange';
+    } else {
+        winStateText.textContent = 'No Win';
+        winStateText.style.color = 'yellow';
+    }
 }
 
 function showCardResult(resultText, element) {
@@ -425,19 +478,29 @@ function checkAllSelectedCards() {
     if (!card) return;
 
     // First LINE
-    if (!firstLineCalled && checkLine(card)) {
-      firstLineCalled = true;
-      lastLineCards.add(code);
-      const resultSpan = showCard(card, false);
-      showCardResult(`Bingobongo, LINE, ${code}`, resultSpan);
-    } 
-    // First FULL HOUSE
-    else if (!firstFullHouseCalled && checkFullHouse(card)) {
-      firstFullHouseCalled = true;
-      lastFullHouseCards.add(code);
-      const resultSpan = showCard(card, false);
-      showCardResult(`Bingobongo, FULL HOUSE, ${code}`, resultSpan);
+if (!firstLineCalled && checkLine(card)) {
+    if (!firstFullHouseCalled) { // only show LINE if FULL HOUSE not yet
+        firstLineCalled = true;
+        lastLineCards.add(code);
+        const resultSpan = showCard(card, false);
+        showCardResult(`Bingobongo, LINE, ${code}`, resultSpan);
+        updateWinStateText();
     }
+} 
+else if (!firstFullHouseCalled && checkFullHouse(card)) {
+    firstFullHouseCalled = true;
+    lastFullHouseCards.add(code);
+    // remove any LINE cards from display
+    lastLineCards.forEach(lineCode => {
+        const lineCardDiv = checkCardContainer.querySelector(`.card[data-code="${lineCode}"]`);
+        if (lineCardDiv) lineCardDiv.remove();
+    });
+    lastLineCards.clear();
+
+    const resultSpan = showCard(card, false);
+    showCardResult(`Bingobongo, FULL HOUSE, ${code}`, resultSpan);
+    updateWinStateText();
+}
   });
 }
 
@@ -705,7 +768,11 @@ function saveGameState() {
     nightMode: document.body.classList.contains('night-mode'),
     selectedCards,
 	selectCardsBtnDisabled: selectCardsBtn?.disabled ?? false,
-    cardSelectDisabled: cardSelect?.disabled ?? false
+    cardSelectDisabled: cardSelect?.disabled ?? false,
+    firstLineCalled,
+    firstFullHouseCalled,
+    lastLineCards: [...lastLineCards],
+    lastFullHouseCards: [...lastFullHouseCards]
 	
   }));
 }
@@ -734,6 +801,7 @@ function loadGameState() {
   modalSelections = new Set(selectedCards);
   populateCardSelect();
   updateAutoCheckToggle();
+   updateWinStateText(); // ✅ restores the correct color/text
   updateButtonGlows(); // ensures glow state is correct on load
    // ✅ restore disabled state
   if (selectCardsBtn) selectCardsBtn.disabled = !!state.selectCardsBtnDisabled;

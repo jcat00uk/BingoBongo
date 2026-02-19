@@ -862,3 +862,20 @@ body.night-mode .modal-header {
   min-height: 46px; /* match height with populated state */
 }
 
+.remaining-wrapper {
+    display: flex;
+    justify-content: space-between; /* left/right alignment */
+    width: fit-content;             /* match bingo grid width */
+    margin: 0 auto;                 /* center under bingo grid */
+    padding: 4px 0;
+}
+
+.left-text {
+    text-align: left;
+    flex: 1;
+}
+
+.right-text {
+    text-align: right;
+    flex: 1;
+}
