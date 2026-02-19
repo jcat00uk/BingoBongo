@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BingoBongo</title>
+  <link rel="stylesheet" href="startmenu.css">
+</head>
+<body class="night-mode">
+
+<!-- Title -->
+<h1>BingoBongo</h1>
+
+<!-- Menu buttons -->
+<div class="menu-buttons">
+  <button onclick="location.href='Bingocaller.html'">Bingo Caller</button>
+  <button onclick="location.href='playgame.html'">Player Cards</button>
+  <button onclick="location.href='printCards.html'">Print Cards</button>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.log('Service Worker registration failed', err));
+  });
+}
+</script>
+</body>
+</html>

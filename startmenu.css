@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  background-color: #121212;
+  color: #eee;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1 {
+  font-size: 3rem;
+  color: red;
+  margin-bottom: 40px;
+  animation: glow 1.5s infinite; /* glow always on in night mode */
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 4px #ff4d4d; }
+  50% { text-shadow: 0 0 12px #ff9999; }
+}
+
+/* Menu buttons vertical layout */
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.menu-buttons button {
+  padding: 12px 24px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 180px;
+  background-color: #444;
+  color: #eee;
+  border: 1px solid #555;
+  transition: background 0.3s, color 0.3s;
+}
+
+.menu-buttons button:hover {
+  background-color: #555;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

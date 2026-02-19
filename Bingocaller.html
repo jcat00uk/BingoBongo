@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BingoBongo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h2>BingoBongo</h2>
+
+<!-- MASTER CONTAINER -->
+<div id="gameContainer">
+
+  <!-- TOP SECTION -->
+  <div class="top-section">
+    <!-- Buttons row -->
+    <div class="buttons-row">
+      <button id="startGameBtn" class="main-btn">Start</button>
+      <button id="selectCardsBtn" class="main-btn two-line-btn">
+      <span>Select</span>
+      <span>Cards</span>
+      </button>
+      <button id="endGameBtn" class="main-btn" disabled>End</button>
+      <button id="toggleSoundBtn" class="icon-btn">🔊</button>
+      <button id="toggleTTSBtn" class="icon-btn">🗣️</button>
+      <button id="toggleNightModeBtn" class="icon-btn">🌞</button>
+    </div>
+
+    <!-- Big Last Called Number -->
+    <div class="big-last-number-wrapper">
+      <div id="bigLastNumber">–</div>
+    </div>
+  </div>
+
+  <!-- CALLED NUMBERS STRIP -->
+  <div id="calledNumbersContainerWrapper">
+    <div id="calledNumbersContainer"></div>
+  </div>
+
+  <!-- BINGO GRID -->
+  <div id="bingoGrid"></div>
+
+  <!-- REMAINING NUMBERS -->
+  <div id="remainingNumbers" class="centered-red">Remaining: <span id="remainingCount">0</span></div>
+
+  <!-- GRID BOTTOM BUTTONS -->
+  <div class="grid-bottom-buttons">
+    <button id="undoNumberBtn" disabled title="Undo last number">↩</button>
+    <div class="check-card-inline">
+  <select id="cardSelect" disabled>
+    <option value="">Select card…</option>
+  </select>
+   </div>
+	
+	
+    <div class="auto-check-wrapper">
+      <label class="switch">
+        <input type="checkbox" id="autoCheckToggle">
+        <span class="slider"></span>
+      </label>
+      <span class="auto-check-label">AutoCheck</span>
+    </div>
+    <button id="nextNumberBtn" disabled>Next</button>
+  </div>
+
+  <!-- Center Animation -->
+  <div id="winAnimation" class="win-animation"></div>
+  <div id="checkCardContainer"></div>
+
+</div>
+
+<!-- SELECT CARDS MODAL -->
+<div id="selectCardsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Select Cards</h3>
+      <div class="modal-top-buttons">
+        <button id="selectAllCardsBtn" class="small-btn">Select All</button>
+        <button id="clearAllCardsBtn" class="small-btn">Clear All</button>
+        <button id="confirmCardsBtn" class="small-btn">Confirm</button>
+        <button id="closeCardsModalBtn" class="small-btn">Cancel</button>
+      </div>
+      <input type="text" id="cardSearchBox" placeholder="Search cards…"/>
+    </div>
+    <div id="modalCardList" class="modal-card-list"></div>
+  </div>
+</div>
+
+<!-- Load JS -->
+<script src="cards.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

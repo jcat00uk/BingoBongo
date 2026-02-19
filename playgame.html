@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Bingo Cards</title>
+  <link rel="stylesheet" href="playercard.css">
+</head>
+<body>
+
+<!-- Top buttons side by side -->
+<div class="top-buttons">
+  <button id="newGameBtn">New Game</button>
+  <button id="endGameBtn" disabled>End Game</button>
+</div>
+
+<!-- Card selection area -->
+<div id="cardSelectionWrapper" class="card-selection" style="display:none;">
+  <div>Pick up to 3 cards:</div>
+  <input type="text" id="searchInput" placeholder="Search card code">
+
+<!-- Make card list taller for scrolling -->
+<div id="cardList" style="max-height:400px;"></div>
+
+  <!-- Quick pick buttons below -->
+  <div class="random-pick-container">
+    <div>Quick Pick Random Cards:</div>
+    <div class="quick-buttons">
+      <button class="quick-pick-btn" data-count="1">1</button>
+      <button class="quick-pick-btn" data-count="2">2</button>
+      <button class="quick-pick-btn" data-count="3">3</button>
+    </div>
+  </div>
+
+  <!-- Advisory message -->
+  <div id="randomWarning">⚠️ Please check with other players to ensure your cards are unique.</div>
+
+  <button id="confirmSelectionBtn">Confirm Selection</button>
+</div>
+
+<!-- Bingo cards display -->
+<div id="cardsWrapper"></div>
+
+<!-- BingoBongo animation text -->
+<div id="bingoText">BingoBongo!</div>
+
+<script src="cards.js"></script>
+<script src="playercard.js"></script>
+</body>
+</html>

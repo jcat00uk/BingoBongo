@@ -1,0 +1,872 @@
+/* ===========================
+   GENERAL
+=========================== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ===========================
+   LAST CALLED NUMBER
+=========================== */
+#bigLastNumber {
+  width: 60px;
+  height: 60px;
+  font-size: 36px;
+  font-weight: bold;
+  color: red;
+  background-color: yellow;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(255, 200, 0, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#bigLastNumber.new-call {
+  animation: popNumber 0.5s ease;
+}
+
+@keyframes popNumber {
+  0%   { transform: scale(1);   box-shadow: 0 0 8px rgba(255, 200, 0, 0.6); }
+  50%  { transform: scale(1.4); box-shadow: 0 0 16px rgba(255, 200, 0, 0.9); }
+  100% { transform: scale(1);   box-shadow: 0 0 8px rgba(255, 200, 0, 0.6); }
+}
+
+/* ===========================
+   REMAINING NUMBERS
+=========================== */
+#remainingNumbers {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: red;
+  margin: 8px 0;
+}
+
+/* ===========================
+   CALLED NUMBERS STRIP
+=========================== */
+#calledNumbersContainerWrapper {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto 6px auto;
+  overflow-x: auto;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 0;
+  background-color: #eee;
+}
+
+#calledNumbersContainer {
+  display: flex;
+  gap: 6px;
+  min-width: 100%;
+}
+
+#calledNumbersContainer span {
+  flex: 0 0 auto;
+  min-width: 36px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
+  background: #ddd;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#calledNumbersContainer span#lastNumber {
+  font-weight: bold;
+  color: red;
+  background: #ffe6e6;
+  border: 1px solid red;
+}
+
+/* ===========================
+   BINGO GRID
+=========================== */
+#bingoGrid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  margin: 0 auto;
+  max-width: 540px;
+}
+
+.grid-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #eee;
+  border-radius: 50%;
+  transition: background 0.3s, transform 0.3s;
+}
+
+@media (max-width: 480px) {
+  #bingoGrid { gap: 4px; max-width: 320px; }
+  .grid-cell { font-size: 14px; }
+}
+
+.grid-cell.called { background-color: #ff6666; color: #fff; }
+.grid-cell.lastCalled {
+  background-color: #3399ff !important;
+  color: #fff;
+  animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+/* ===========================
+   GRID BOTTOM BUTTONS
+=========================== */
+
+.grid-bottom-buttons button {
+  padding: 12px 20px;
+  font-size: 16px;
+  flex-shrink: 0;
+  border-radius: 12px; /* more rounded */
+}
+
+
+/* Make bottom row buttons layout flexible */
+.grid-bottom-buttons {
+  display: flex;
+  justify-content: flex-start; /* keep buttons aligned */
+  align-items: center;
+  max-width: 540px; /* match grid width */
+  margin: 10px auto;
+  gap: 10px;
+}
+
+/* Make the Next button stretch to fill remaining space */
+#nextNumberBtn {
+  flex-grow: 1;           /* fills leftover space */
+  text-align: center;     /* center the text inside the button */
+  min-width: 80px;        /* optional: prevent it from becoming too small */
+}
+
+
+.check-card-inline { display: flex; gap: 6px; }
+
+
+/* DIM WHEN DISABLED */
+button:disabled {
+  background-color: #888 !important;
+  color: #555 !important;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* GLOWING PULSE ANIMATION */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 5px #ff0000; transform: scale(1); }
+  50% { box-shadow: 0 0 15px #ff4444; transform: scale(1.05); }
+  100% { box-shadow: 0 0 5px #ff0000; transform: scale(1); }
+}
+
+.main-btn.enabled-glow {
+  animation: glowPulse 1s infinite ease-in-out;
+}
+
+
+/* Start/Next button styling */
+#startGameBtn,
+#nextNumberBtn {
+  color: #fff;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+/* RED + GLOW ONLY WHEN ENABLED */
+#startGameBtn.enabled-glow,
+#nextNumberBtn.enabled-glow {
+  background-color: red;
+  animation: glowPulse 1s infinite ease-in-out;
+}
+
+button:disabled#startGameBtn,
+button:disabled#nextNumberBtn {
+  background-color: #888; /* fallback for disabled */
+}
+
+/* ===========================
+   CHECK CARD DISPLAY
+=========================== */
+.card {
+  border: 2px dashed #000;
+  padding: 6px;
+  margin: 10px auto;
+  max-width: 320px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.card-header h4 { margin: 0; }
+.card-header .card-result { font-weight: bold; font-size: 16px; }
+
+.card table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.card td { border: 1px solid #000; height: 28px; text-align: center; font-size: 16px; }
+.card td.called { color: red; font-weight: bold; }
+.card td.lastCalled { color: blue; font-weight: bold; }
+
+/* ===========================
+   NIGHT MODE
+=========================== */
+body.night-mode {
+  background-color: #121212;
+  color: #eee;
+}
+body.night-mode h2 { color: #eee; }
+body.night-mode .main-btn,
+body.night-mode .icon-btn,
+body.night-mode #nextNumberBtn,
+body.night-mode #undoNumberBtn,
+body.night-mode #checkSelectedCardBtn {
+  background-color: #444;
+  color: #eee;
+  border: 1px solid #555;
+}
+body.night-mode #calledNumbersContainerWrapper { background-color: #333; border-color: #555; }
+body.night-mode #calledNumbersContainer span { background-color: #444; color: #eee; border: 1px solid #555; }
+body.night-mode .grid-cell { background-color: #222; border-color: #555; color: #eee; }
+body.night-mode .grid-cell.called { background-color: #ff6666; color: #fff; }
+body.night-mode .card td.called { color: #ff6666; }
+body.night-mode .card td.lastCalled { color: #66ccff; }
+body.night-mode select { background-color: #333; color: #eee; border: 1px solid #555; }
+
+/* Top section layout */
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 540px;
+  margin: 0 auto 12px auto;
+}
+
+.buttons-row { display: flex; gap: 6px; align-items: center; }
+.main-btn { padding: 10px 16px; font-size: 14px; border-radius: 8px; background-color: #555; color: #fff; border: none; }
+.icon-btn { padding: 8px 10px; font-size: 16px; border-radius: 8px; background-color: #555; color: #fff; border: none; min-width: 40px; text-align: center; user-select: none; }
+
+/* Big last called number wrapper */
+.big-last-number-wrapper { display: flex; justify-content: flex-end; flex-grow: 1; }
+
+
+/* ===========================
+   SELECT CARDS MODAL
+=========================== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+body.night-mode .modal {
+  background: rgba(20,20,20,0.8);
+}
+
+.modal-content {
+  max-width: 360px;   /* shrink width */
+  width: auto;        /* only as wide as needed */
+  min-width: 220px;   /* optional: prevent too narrow on mobile */
+  background-color: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+body.night-mode .modal-content {
+  background-color: #222;
+  color: #eee;
+}
+
+.modal-top-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.small-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.small-btn:disabled {
+  background-color: #888;
+  color: #555;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+#cardSearchBox {
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  box-sizing: border-box;
+}
+
+body.night-mode #cardSearchBox {
+  background-color: #333;
+  color: #eee;
+  border: 1px solid #555;
+}
+
+.modal-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 12px;
+  max-height: 70vh;        /* keep it scrollable on mobile */
+  overflow-y: auto;
+  width: auto;             /* shrink to fit content */
+  max-width: 90%;          /* prevent it from going off-screen */
+}
+
+.modal-card-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #eee;
+  width: fit-content;      /* shrink to content width */
+  max-width: 100%;         /* but never overflow container */
+}
+
+body.night-mode .modal-card-item {
+  background-color: #333;
+}
+
+.modal-card-item.pinned {
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+}
+
+.modal-card-item.pinned {
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+}
+
+#modalCardList {
+  max-height: 60vh;   /* scroll if too tall */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  width: auto;        /* shrink to content */
+  min-width: 200px;   /* optional: prevent tiny */
+  box-sizing: border-box;
+}
+
+/* AutoCheck Slider */
+
+.auto-check-wrapper {
+  display: flex;
+  flex-direction: column;      /* STACK slider + text */
+  align-items: center;
+  justify-content: center;
+  width: 70px;                 /* similar footprint to buttons */
+  margin: 0 6px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.auto-check-label {
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: center;
+  opacity: 0.9;
+  user-select: none;
+}
+
+/* Disabled look */
+.switch input:disabled + .slider {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+
+/* Win Animation Center */
+.win-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 40px;
+  font-weight: bold;
+  color: gold;
+  text-shadow: 2px 2px 8px #000;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2000;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.win-animation.show {
+  transform: translate(-50%, -50%) scale(1.2);
+  opacity: 1;
+  animation: bounceFade 2s forwards;
+}
+
+@keyframes bounceFade {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(1.1); }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* AutoCheck container next to check button */
+.autocheck-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.autocheck-container input[type="checkbox"] {
+  width: 36px;
+  height: 24px;
+  accent-color: red; /* slider color */
+  cursor: pointer;
+}
+
+/* Disable slider visually */
+.autocheck-container input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Win animation text */
+.win-animation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: yellow;
+  text-shadow: 0 0 12px #ff0000, 0 0 24px #ff0000;
+  display: none;
+  z-index: 2000;
+  text-align: center;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background-color: rgba(0,0,0,0.7);
+  pointer-events: none;
+  animation: popWin 0.5s ease;
+}
+
+@keyframes popWin {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Button press feedback */
+.main-btn:active,
+.icon-btn:active {
+  transform: scale(0.95);   /* Slightly shrink */
+  transition: transform 0.1s; /* Quick transition */
+}
+
+button {
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* ===========================
+   SELECT CARDS MODAL - STICKY HEADER
+=========================== */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* center items horizontally */
+  width: auto;              /* shrink to fit children */
+  max-width: 90%;           /* never go off-screen */
+  padding: 12px;
+}
+
+.modal-header {
+  background-color: #fff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #ccc;
+}
+
+body.night-mode .modal-header {
+  background-color: #222;
+  border-color: #555;
+}
+
+.modal-card-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 12px;
+}
+
+
+//win state bar
+
+
+/* ===========================
+   WRAPPER TO ALIGN EVERYTHING
+=========================== */
+#gameContainer {
+  max-width: 540px;      /* match your bingoGrid max-width */
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 6px;        /* small horizontal padding for mobile */
+}
+
+/* Make top-section, bingoGrid, called numbers strip, and buttons follow container width */
+.top-section,
+#bingoGrid,
+#calledNumbersContainerWrapper,
+.grid-bottom-buttons,
+.check-card-inline,
+.big-last-number-wrapper {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   SELECT CARDS MODAL MOBILE FIX
+=========================== */
+.modal-content {
+  width: 100%;
+  max-width: 400px;   /* desktop max width */
+  max-height: 90vh;   /* fit inside mobile viewport */
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 12px;      /* restore padding for content */
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  #bingoGrid {
+    max-width: 100%;
+    gap: 4px;
+  }
+
+  .grid-cell { font-size: 14px; }
+
+  .modal-content {
+    max-width: 95%;   /* mobile full width with padding */
+    padding: 8px;
+  }
+}
+
+/* ===========================
+   ALIGN ELEMENTS TO BINGO GRID WIDTH
+=========================== */
+
+/* Keep bingoGrid original width */
+#bingoGrid {
+  max-width: 540px; /* same as original */
+  margin: 0 auto;
+}
+
+/* Make top section, called numbers strip, and bottom buttons follow grid width */
+.top-section,
+#calledNumbersContainerWrapper,
+.grid-bottom-buttons,
+.check-card-inline,
+.big-last-number-wrapper {
+  max-width: 540px;   /* match bingoGrid */
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   SELECT CARDS MODAL MOBILE FIX
+=========================== */
+.modal-content {
+  width: 100%;
+  max-width: 400px;   /* desktop max width */
+  max-height: 90vh;   /* fit inside mobile viewport */
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 12px;      /* restore padding */
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  #bingoGrid {
+    max-width: 320px; /* original mobile max-width */
+    gap: 4px;
+  }
+
+  .grid-cell {
+    font-size: 14px;
+  }
+
+  .modal-content {
+    max-width: 95%;   /* mobile full width with padding */
+    padding: 8px;
+  }
+
+  #calledNumbersContainerWrapper,
+  .top-section,
+  .grid-bottom-buttons {
+    max-width: 320px;
+  }
+}
+
+/* ===========================
+   TOP BUTTONS UNIFORM HEIGHT
+=========================== */
+.buttons-row button {
+  height: 40px;       /* set a fixed height */
+  padding: 0 12px;    /* adjust horizontal padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional: ensure icon buttons look centered */
+.icon-btn {
+  padding: 0 10px;    /* keep horizontal padding */
+  min-width: 40px;
+  font-size: 16px;
+}
+
+
+/* ===========================
+   KEEP BUTTONS IN ONE ROW
+=========================== */
+
+
+/* ===========================
+   TOP ROW WITH BIG LAST NUMBER
+=========================== */
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 540px; /* match bingoGrid */
+  margin: 0 auto 12px auto;
+  gap: 6px;
+}
+
+.buttons-row {
+  display: flex;
+  flex: 1 1 auto;        /* allow shrinking */
+  gap: 6px;
+  flex-wrap: nowrap;      /* prevent wrapping */
+  align-items: center;
+}
+
+.buttons-row button {
+  flex: 1 1 auto;         /* shrink evenly if needed */
+  min-width: 30px;        /* prevent too small */
+  height: 40px;           /* uniform height */
+  box-sizing: border-box;
+   padding: 6px 10px;     /* reduced padding */
+  font-size: 14px;       /* slightly smaller text */
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+/* Big last number as part of the top row */
+.big-last-number-wrapper {
+  flex-shrink: 0;         /* don't shrink too much */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+}
+
+
+/* BIG LAST NUMBER stays right-aligned */
+.big-last-number-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-left: 6px;
+  flex-shrink: 0;       /* prevent shrinking too much */
+}
+
+/* CALLED NUMBERS STRIP */
+#calledNumbersContainerWrapper {
+  max-width: 540px;
+  margin: 0 auto 6px auto;
+  overflow-x: auto;
+}
+
+/* ===========================
+   BOTTOM ROW BUTTONS
+=========================== */
+.grid-bottom-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 540px; /* same as bingoGrid */
+  margin: 10px auto;
+}
+
+.grid-bottom-buttons button {
+  height: 40px;       /* uniform height */
+  min-width: 30px;
+  flex: 0 0 auto;     /* default size */
+  box-sizing: border-box;
+   padding: 6px 10px;     /* reduced padding */
+  font-size: 14px;       /* slightly smaller text */
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+
+
+/* Make the Next button stretch to fill remaining space */
+#nextNumberBtn {
+  flex: 1 1 auto;      /* expand to take leftover space */
+  text-align: center;
+  min-width: 80px;     /* prevents it being too small */
+}
+
+/* Keep Check button and others normal size */
+#checkSelectedCardBtn {
+  flex: 0 0 auto;      /* stays small */
+}
+
+/* SELECT CARDS MODAL */
+#selectCardsModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 12px;      /* ensures some space on small screens */
+  box-sizing: border-box;
+}
+
+/* ===========================
+   TWO-LINE SELECT CARDS BUTTON
+=========================== */
+.two-line-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.05;
+  padding: 4px 6px;          /* tighter padding */
+}
+
+.two-line-btn span {
+  font-size: 12px;           /* smaller text */
+  white-space: nowrap;
+}
+
+/* ===========================
+   Disable Card state
+=========================== */
+.check-card-inline {
+  display: flex;
+  align-items: center;     /* vertical alignment */
+  gap: 6px;
+}
+
+#cardSelect {
+  width: auto;             /* shrink to fit content */
+  min-width: 60px;         /* optional: prevent it being tiny */
+  padding: 4px 8px;        /* less padding to reduce width */
+  font-size: 14px;         /* match button sizes */
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+

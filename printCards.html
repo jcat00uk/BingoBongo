@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo Cards PDF Generator</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 10px; }
+h2 { text-align: center; margin-bottom: 12px; }
+
+#controls { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+#controls label { font-size: 14px; }
+#controls input, #controls select { margin-left: 4px; padding: 2px 4px; font-size: 14px; }
+button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
+
+#pagePreview { margin-top: 12px; display: flex; justify-content: center; }
+
+.pageGrid {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #666;
+  padding: 5px;
+  background: #fefefe;
+  width: 600px;  /* scaled larger for preview */
+  height: 420px;
+  box-sizing: border-box;
+}
+
+.cardPreview {
+  display: grid;
+  grid-template-rows: 20% 80%;
+  justify-items: center;
+  align-items: center;
+  border: 1px solid #000;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.cardPreview table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* equal column widths */
+}
+
+.cardPreview td {
+  border: 1px solid #000;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+
+
+</style>
+<style>
+/* --- CENTERED CONTROLS --- */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#controls label {
+  font-size: 20px;
+  text-align: center;
+}
+
+#controls input,
+#controls select {
+  margin-left: 6px;
+  padding: 10px 12px;
+  font-size: 18px;
+  border-radius: 6px;
+}
+
+button {
+  padding: 14px 20px;
+  font-size: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* --- MOBILE SPECIFIC --- */
+@media (max-width: 768px) {
+  #controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #controls label {
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+  }
+
+  #controls input,
+  #controls select,
+  button {
+    width: 95%;
+    max-width: 360px;
+    font-size: 40x;
+    padding: 14px 16px;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<h2>Bingo Cards PDF Generator</h2>
+
+<div id="controls">
+  <label>Card Layout:
+    <select id="cardLayout">
+      <option value="">Select...</option>
+      <option value="1x2">1×2 (large cards)</option>
+      <option value="2x3">2×3</option>
+      <option value="3x4">3×4</option>
+      <option value="4x5">4×5</option>
+    </select>
+  </label>
+
+  <label>Order:
+    <select id="orderSelect">
+      <option value="">Select...</option>
+      <option value="sequential">Sequential</option>
+      <option value="random">Random</option>
+    </select>
+  </label>
+
+  <label id="pagesLabel" style="display:none;">Number of Pages:
+    <input type="number" id="numPages" min="1" style="width:60px;">
+  </label>
+
+  <label id="rangeLabel" style="display:none;">
+    Page Range: <input type="number" id="pageStart" placeholder="Start" min="1" style="width:50px;"> - 
+    <input type="number" id="pageEnd" placeholder="End" min="1" style="width:50px;">
+  </label>
+
+  <button id="previewBtn" disabled>Preview</button>
+  <button id="downloadPDF" disabled>Download PDF</button>
+</div>
+
+<div id="pagePreview"></div>
+
+<script src="cards.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+let finalCardOrder = [];
+let totalPages = 1;
+let cardCols = 3, cardRows = 4;
+
+const layoutSelect = document.getElementById('cardLayout');
+const orderSelect = document.getElementById('orderSelect');
+const pagesLabel = document.getElementById('pagesLabel');
+const rangeLabel = document.getElementById('rangeLabel');
+const previewBtn = document.getElementById('previewBtn');
+const downloadBtn = document.getElementById('downloadPDF');
+const numPagesInput = document.getElementById('numPages');
+const pageStartInput = document.getElementById('pageStart');
+const pageEndInput = document.getElementById('pageEnd');
+
+// --- INITIAL LOAD ---
+window.addEventListener('DOMContentLoaded', () => {
+  layoutSelect.value = '3x4';
+  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
+  orderSelect.value = '';
+});
+
+// --- LAYOUT CHANGE ---
+layoutSelect.addEventListener('change', () => {
+  if(!layoutSelect.value){
+    orderSelect.value = '';
+    orderSelect.disabled = false;
+    previewBtn.disabled = true;
+    downloadBtn.disabled = true;
+    pagesLabel.style.display = 'none';
+    rangeLabel.style.display = 'none';
+    document.getElementById('pagePreview').innerHTML = '';
+    return;
+  }
+  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
+  orderSelect.value = '';
+  previewBtn.disabled = true;
+  downloadBtn.disabled = true;
+  pagesLabel.style.display = 'none';
+  rangeLabel.style.display = 'none';
+  document.getElementById('pagePreview').innerHTML = '';
+  orderSelect.disabled = false;
+});
+
+// --- ORDER CHANGE ---
+orderSelect.addEventListener('change', () => {
+  const cardsObj = window.cards;
+  const cardsPerPage = cardCols*cardRows;
+  totalPages = Math.ceil(Object.keys(cardsObj).length/cardsPerPage);
+
+  if(orderSelect.value==='sequential'){
+    rangeLabel.style.display='inline-block';
+    pagesLabel.style.display='none';
+    pageStartInput.value=1;
+    pageEndInput.value=totalPages;
+    pageStartInput.max=totalPages;
+    pageEndInput.max=totalPages;
+  } else if(orderSelect.value==='random'){
+    pagesLabel.style.display='inline-block';
+    rangeLabel.style.display='none';
+    numPagesInput.value=1;
+    numPagesInput.max=totalPages;
+  }
+
+  previewBtn.disabled=false;
+  downloadBtn.disabled=false;
+});
+
+// --- VALIDATE PAGE INPUTS ---
+pageStartInput.addEventListener('input', () => {
+  let val=parseInt(pageStartInput.value)||1;
+  val=Math.max(1, Math.min(val,totalPages));
+  pageStartInput.value=val;
+  if(parseInt(pageEndInput.value)<val) pageEndInput.value=val;
+});
+pageEndInput.addEventListener('input', () => {
+  let val=parseInt(pageEndInput.value)||totalPages;
+  val=Math.max(1, Math.min(val,totalPages));
+  pageEndInput.value=val;
+  if(parseInt(pageStartInput.value)>val) pageStartInput.value=val;
+});
+
+// --- PREVIEW FUNCTION ---
+function renderPreview() {
+  const container = document.getElementById('pagePreview');
+  container.innerHTML='';
+  const cardsObj = window.cards;
+  const cardArray = Object.values(cardsObj);
+
+  let displayArray = [...cardArray];
+  if(orderSelect.value==='random') displayArray = displayArray.sort(()=>Math.random()-0.5);
+  finalCardOrder = displayArray;
+
+  const cardsPerPage = cardCols*cardRows;
+
+  let startPage=1, endPage=Math.ceil(cardArray.length/cardsPerPage);
+  if(orderSelect.value==='sequential'){
+    startPage=parseInt(pageStartInput.value)||1;
+    endPage=parseInt(pageEndInput.value)||endPage;
+  } else {
+    endPage=parseInt(numPagesInput.value)||1;
+  }
+
+  let cardsPrinted = (startPage-1)*cardsPerPage;
+
+  const pageDiv = document.createElement('div');
+  pageDiv.className='pageGrid';
+  pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
+  pageDiv.style.gridTemplateRows = `repeat(${cardRows}, 1fr)`;
+
+  for(let i=0;i<cardsPerPage;i++){
+    const card = displayArray[cardsPrinted];
+    if(!card) break;
+
+    const div = document.createElement('div');
+    div.className='cardPreview';
+    div.style.gridTemplateRows='20% 80%';
+
+    const codeDiv = document.createElement('div');
+    codeDiv.textContent = card.code;
+    codeDiv.style.textAlign='center';
+    codeDiv.style.fontWeight='bold';
+if(layoutSelect.value==='3x4'){
+  codeDiv.style.fontSize='14px';  // was 10px → +4
+} else if(layoutSelect.value==='4x5'){
+  codeDiv.style.fontSize='12px';  // was 10px → +2
+} else if(layoutSelect.value==='1x2'){
+  codeDiv.style.fontSize='14px';
+} else if(layoutSelect.value==='2x3'){
+  codeDiv.style.fontSize='11px';
+}
+    div.appendChild(codeDiv);
+
+    const table = document.createElement('table');
+    const rows = card.numbers.length;
+    const colsInCard = card.numbers[0].length;
+
+    for(const row of card.numbers){
+      const tr = document.createElement('tr');
+      for(const n of row){
+        const td = document.createElement('td');
+        td.textContent = n===null?'':n;
+        td.style.fontWeight='bold';
+        td.style.textAlign='center';
+        td.style.verticalAlign='middle';
+// Cell numbers
+if(layoutSelect.value==='3x4'){
+  td.style.fontSize='12px';  // was 8px → +4
+} else if(layoutSelect.value==='4x5'){
+  td.style.fontSize='10px';  // was 8px → +2
+} else if(layoutSelect.value==='1x2'){
+  td.style.fontSize='20px';
+} else if(layoutSelect.value==='2x3'){
+  td.style.fontSize='12px';
+}
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+
+    div.appendChild(table);
+    pageDiv.appendChild(div);
+    cardsPrinted++;
+  }
+
+  container.appendChild(pageDiv);
+}
+
+// --- PDF DOWNLOAD ---
+downloadBtn.addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('landscape','mm','a4');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const padding = 5;
+  const cardsPerPage = cardCols*cardRows;
+  const cardWidth = (pageWidth - (cardCols+1)*padding)/cardCols;
+  const cardHeight = (pageHeight - (cardRows+1)*padding)/cardRows;
+
+  let startPage=1, endPage=Math.ceil(finalCardOrder.length/cardsPerPage);
+  if(orderSelect.value==='sequential'){
+    startPage=parseInt(pageStartInput.value)||1;
+    endPage=parseInt(pageEndInput.value)||endPage;
+  } else {
+    endPage=parseInt(numPagesInput.value)||1;
+  }
+
+  let cardsPrinted = (startPage-1)*cardsPerPage;
+
+  for(let p=startPage; p<=endPage; p++){
+    let x=padding, y=padding;
+    for(let i=0;i<cardsPerPage;i++){
+      const card = finalCardOrder[cardsPrinted];
+      if(!card) break;
+
+      pdf.setDrawColor(0);
+      pdf.rect(x,y,cardWidth,cardHeight);
+      pdf.setFont(undefined,'bold');
+      // Card title
+		if(layoutSelect.value==='3x4') pdf.setFontSize(14);
+		else if(layoutSelect.value==='4x5') pdf.setFontSize(12);
+		else if(layoutSelect.value==='1x2') pdf.setFontSize(14);
+		else if(layoutSelect.value==='2x3') pdf.setFontSize(11);
+
+      pdf.text(card.code, x+cardWidth/2, y+6, {align:'center'});
+
+      const rows = card.numbers.length;
+      const colsInCard = card.numbers[0].length;
+      const tableTop = y + 10;
+      const tableHeight = cardHeight - 12;
+      const cellWidth = cardWidth/colsInCard;
+      const cellHeight = tableHeight/rows;
+
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<colsInCard;c++){
+          const num = card.numbers[r][c];
+          const cellX = x + c*cellWidth;
+          const cellY = tableTop + r*cellHeight;
+          pdf.rect(cellX, cellY, cellWidth, cellHeight);
+          if(num!==null){
+		// Cell numbers
+		let fontSize = 12;
+		if(layoutSelect.value==='3x4') fontSize = 12;   // +4
+		else if(layoutSelect.value==='4x5') fontSize = 10; // +2
+		else if(layoutSelect.value==='1x2') fontSize = 20;
+		else if(layoutSelect.value==='2x3') fontSize = 12;
+		pdf.setFontSize(fontSize);
+            pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {align:'center', baseline:'middle'});
+          }
+        }
+      }
+
+      x += cardWidth + padding;
+      if((i+1)%cardCols===0){ x=padding; y+=cardHeight+padding; }
+      cardsPrinted++;
+    }
+    if(p<endPage) pdf.addPage();
+  }
+
+  pdf.save('bingo_cards.pdf');
+});
+
+previewBtn.addEventListener('click', renderPreview);
+</script>
+</body>
+</html>
