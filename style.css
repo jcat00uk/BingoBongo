@@ -66,12 +66,9 @@ h2 {
 }
 
 #calledNumbersContainer {
-  min-height: 60px;      /* adjust 60px until it visually matches your populated height */
-  overflow-x: auto;      /* allow horizontal scroll if many numbers */
-  white-space: nowrap;    /* keep numbers in one line */
-  border: 1px solid #ccc; /* optional: visual guide for height */
-  padding: 4px;           /* spacing inside */
-  box-sizing: border-box; /* ensures padding doesn't add extra height */
+  display: flex;
+  gap: 6px;
+  min-width: 100%;
 }
 
 #calledNumbersContainer span {
