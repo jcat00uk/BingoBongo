@@ -287,6 +287,8 @@ function endGame() {
   if (!confirm('End the game?')) return;
   calledNumbers = [];
   numbers = [];
+   updateCalledNumbersDisplay();   // ✅ CLEAR THE STRIP
+  updateBigLastNumber();          // (optional but recommended)
   clearBingoGrid();
   gameActive = false;
   
