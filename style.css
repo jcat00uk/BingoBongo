@@ -144,18 +144,12 @@ h2 {
 /* Make bottom row buttons layout flexible */
 .grid-bottom-buttons {
   display: flex;
-  justify-content: flex-start; /* keep buttons aligned */
   align-items: center;
-  max-width: 540px; /* match grid width */
-  margin: 10px auto;
-  gap: 10px;
+  gap: 6px;
 }
 
-/* Make the Next button stretch to fill remaining space */
 #nextNumberBtn {
-  flex-grow: 1;           /* fills leftover space */
-  text-align: center;     /* center the text inside the button */
-  min-width: 80px;        /* optional: prevent it from becoming too small */
+  flex: 1;
 }
 
 
@@ -856,17 +850,15 @@ body.night-mode .modal-header {
 =========================== */
 .check-card-inline {
   display: flex;
-  align-items: center;     /* vertical alignment */
-  gap: 6px;
+  gap: 4px;          /* reduce gap */
+  align-items: center;
 }
 
 #cardSelect {
-  width: auto;             /* shrink to fit content */
-  min-width: 60px;         /* optional: prevent it being tiny */
-  padding: 4px 8px;        /* less padding to reduce width */
-  font-size: 14px;         /* match button sizes */
-  display: inline-block;
-  box-sizing: border-box;
+  margin-right: 4px; /* tighten around select */
 }
 
+#calledNumbersContainerWrapper {
+  min-height: 46px; /* match height with populated state */
+}
 
