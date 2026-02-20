@@ -704,9 +704,12 @@ function saveGameState() {
     ttsEnabled,
     nightMode: document.body.classList.contains('night-mode'),
     selectedCards,
-	selectCardsBtnDisabled: selectCardsBtn?.disabled ?? false,
+    firstLineCalled,
+    firstFullHouseCalled,
+    lastLineCards: Array.from(lastLineCards),
+    lastFullHouseCards: Array.from(lastFullHouseCards),
+    selectCardsBtnDisabled: selectCardsBtn?.disabled ?? false,
     cardSelectDisabled: cardSelect?.disabled ?? false
-	
   }));
 }
 
@@ -721,6 +724,11 @@ function loadGameState() {
   ttsEnabled = state.ttsEnabled !== undefined ? state.ttsEnabled : true;
   selectedCards = state.selectedCards || [];
 
+  firstLineCalled = state.firstLineCalled || false;
+  firstFullHouseCalled = state.firstFullHouseCalled || false;
+  lastLineCards = new Set(state.lastLineCards || []);
+  lastFullHouseCards = new Set(state.lastFullHouseCards || []);
+
   if (state.nightMode) document.body.classList.add('night-mode');
 
   if (toggleSoundBtn) toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇';
@@ -734,22 +742,12 @@ function loadGameState() {
   modalSelections = new Set(selectedCards);
   populateCardSelect();
   updateAutoCheckToggle();
-  updateButtonGlows(); // ensures glow state is correct on load
-   // ✅ restore disabled state
-  if (selectCardsBtn) selectCardsBtn.disabled = !!state.selectCardsBtnDisabled;
-  if (cardSelect) cardSelect.disabled = !!state.cardSelectDisabled;
-  
-  window.addEventListener('load', () => {
-  initBingoGrid();
-  loadGameState();
-  updateUndoButton();  // <- ensures undo is disabled if needed
-  if (window.cards) populateCardSelect();
-});
 
-  startGameBtn.disabled = gameActive;
+  startGameBtn.disabled = !gameActive;
   nextNumberBtn.disabled = !gameActive;
   endGameBtn.disabled = !gameActive;
-    
+  selectCardsBtn.disabled = state.selectCardsBtnDisabled ?? !gameActive;
+  cardSelect.disabled = state.cardSelectDisabled ?? !gameActive;
 
   updateRemaining();
   updateCalledNumbersDisplay();
