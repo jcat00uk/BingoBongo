@@ -87,7 +87,37 @@ function speakNumber(num) {
 }
 
 
+window.addEventListener('DOMContentLoaded', () => {
+    const nightModeBtn = document.getElementById('nightModeBtn');
+    const body = document.body;
 
+    // Check for a saved night mode preference
+    const nightPref = localStorage.getItem('nightMode');
+
+    if (nightPref === null) {
+        // First time visiting, set night mode to ON by default
+        body.classList.add('night-mode');
+        localStorage.setItem('nightMode', 'on'); // Save preference as 'on' for future visits
+    } else if (nightPref === 'on') {
+        // If preference is saved as 'on', apply night mode
+        body.classList.add('night-mode');
+    } else {
+        // If preference is saved as 'off', ensure night mode is OFF
+        body.classList.remove('night-mode');
+    }
+
+    // Add event listener for toggling night mode
+    nightModeBtn.addEventListener('click', () => {
+        // Toggle the night mode
+        body.classList.toggle('night-mode');
+        
+        // Save the current state of night mode (on/off)
+        localStorage.setItem(
+            'nightMode',
+            body.classList.contains('night-mode') ? 'on' : 'off'
+        );
+    });
+});
 
 // ===============================
 // BINGO GRID
@@ -322,8 +352,6 @@ function endGame() {
   updateButtonGlows();
   saveGameState();
 }
-
-
 
 // ===============================
 // CARD CHECK
@@ -702,7 +730,6 @@ function renderModalCardList() {
   });
 }
 
-
 // ===============================
 // STATE
 // ===============================
@@ -728,16 +755,6 @@ function saveGameState() {
 function loadGameState() {
   const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
 
-  // Check if it's the first visit (no state in localStorage)
-  const isFirstVisit = !localStorage.getItem('firstVisit');
-  
-  // Set night mode as default on first visit
-  if (isFirstVisit) {
-    document.body.classList.add('night-mode');
-    localStorage.setItem('firstVisit', 'false');  // Mark that first visit has occurred
-  }
-
-  // Load saved game state
   numbers = state.numbers || [];
   calledNumbers = state.calledNumbers || [];
   gameActive = !!state.gameActive;
@@ -751,17 +768,12 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
 
-  // Load night mode if previously enabled
-  if (state.nightMode || isFirstVisit) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Update the toggle button to reflect night mode status
-  if (toggleNightModeBtn)
-    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
+  if (state.nightMode) document.body.classList.add('night-mode');
 
   if (toggleSoundBtn) toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇';
   if (toggleTTSBtn) toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫';
+  if (toggleNightModeBtn)
+    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
 
   clearBingoGrid();
   calledNumbers.forEach(markCalledNumber);
@@ -780,6 +792,7 @@ function loadGameState() {
   updateCalledNumbersDisplay();
   updateBigLastNumber();
   updateUndoButton();
+  updateButtonGlows();
 }
 
 // ===============================
@@ -835,8 +848,6 @@ if (cardSelect) {
     showCardResult(resultText, resultSpan);
   };
 }
-
-
 
 // ===============================
 // INITIALIZATION

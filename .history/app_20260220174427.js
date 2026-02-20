@@ -86,9 +86,6 @@ function speakNumber(num) {
   }, 50);
 }
 
-
-
-
 // ===============================
 // BINGO GRID
 // ===============================
@@ -322,8 +319,6 @@ function endGame() {
   updateButtonGlows();
   saveGameState();
 }
-
-
 
 // ===============================
 // CARD CHECK
@@ -702,7 +697,6 @@ function renderModalCardList() {
   });
 }
 
-
 // ===============================
 // STATE
 // ===============================
@@ -728,16 +722,6 @@ function saveGameState() {
 function loadGameState() {
   const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
 
-  // Check if it's the first visit (no state in localStorage)
-  const isFirstVisit = !localStorage.getItem('firstVisit');
-  
-  // Set night mode as default on first visit
-  if (isFirstVisit) {
-    document.body.classList.add('night-mode');
-    localStorage.setItem('firstVisit', 'false');  // Mark that first visit has occurred
-  }
-
-  // Load saved game state
   numbers = state.numbers || [];
   calledNumbers = state.calledNumbers || [];
   gameActive = !!state.gameActive;
@@ -751,17 +735,12 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
 
-  // Load night mode if previously enabled
-  if (state.nightMode || isFirstVisit) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Update the toggle button to reflect night mode status
-  if (toggleNightModeBtn)
-    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
+  if (state.nightMode) document.body.classList.add('night-mode');
 
   if (toggleSoundBtn) toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇';
   if (toggleTTSBtn) toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫';
+  if (toggleNightModeBtn)
+    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
 
   clearBingoGrid();
   calledNumbers.forEach(markCalledNumber);
@@ -780,6 +759,7 @@ function loadGameState() {
   updateCalledNumbersDisplay();
   updateBigLastNumber();
   updateUndoButton();
+  updateButtonGlows();
 }
 
 // ===============================
@@ -835,8 +815,6 @@ if (cardSelect) {
     showCardResult(resultText, resultSpan);
   };
 }
-
-
 
 // ===============================
 // INITIALIZATION

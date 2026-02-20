@@ -70,7 +70,37 @@ autoCheckToggle.onchange = () => {
   localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked);
 };
 
+window.addEventListener('DOMContentLoaded', () => {
+    const nightModeBtn = document.getElementById('nightModeBtn');
+    const body = document.body;
 
+    // Check if there's a saved night mode preference
+    const nightPref = localStorage.getItem('nightMode');
+
+    // If no saved preference (first time), enable night mode by default
+    if (nightPref === null) {
+        body.classList.add('night-mode');
+        localStorage.setItem('nightMode', 'on'); // Save as 'on' for future loads
+    } else if (nightPref === 'on') {
+        // If preference is 'on', make sure night mode is enabled
+        body.classList.add('night-mode');
+    } else if (nightPref === 'off') {
+        // If preference is 'off', make sure night mode is disabled
+        body.classList.remove('night-mode');
+    }
+
+    // Handle toggle button to switch night mode on/off
+    nightModeBtn.addEventListener('click', () => {
+        // Toggle the night mode class on the body
+        body.classList.toggle('night-mode');
+        
+        // Save the current preference ('on' or 'off')
+        localStorage.setItem(
+            'nightMode',
+            body.classList.contains('night-mode') ? 'on' : 'off'
+        );
+    });
+});
 
 function playSound() {
   if (!soundEnabled) return;
@@ -85,9 +115,6 @@ function speakNumber(num) {
     window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString()));
   }, 50);
 }
-
-
-
 
 // ===============================
 // BINGO GRID
@@ -322,8 +349,6 @@ function endGame() {
   updateButtonGlows();
   saveGameState();
 }
-
-
 
 // ===============================
 // CARD CHECK
@@ -702,7 +727,6 @@ function renderModalCardList() {
   });
 }
 
-
 // ===============================
 // STATE
 // ===============================
@@ -728,16 +752,6 @@ function saveGameState() {
 function loadGameState() {
   const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
 
-  // Check if it's the first visit (no state in localStorage)
-  const isFirstVisit = !localStorage.getItem('firstVisit');
-  
-  // Set night mode as default on first visit
-  if (isFirstVisit) {
-    document.body.classList.add('night-mode');
-    localStorage.setItem('firstVisit', 'false');  // Mark that first visit has occurred
-  }
-
-  // Load saved game state
   numbers = state.numbers || [];
   calledNumbers = state.calledNumbers || [];
   gameActive = !!state.gameActive;
@@ -751,17 +765,12 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
 
-  // Load night mode if previously enabled
-  if (state.nightMode || isFirstVisit) {
-    document.body.classList.add('night-mode');
-  }
-
-  // Update the toggle button to reflect night mode status
-  if (toggleNightModeBtn)
-    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
+  if (state.nightMode) document.body.classList.add('night-mode');
 
   if (toggleSoundBtn) toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇';
   if (toggleTTSBtn) toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫';
+  if (toggleNightModeBtn)
+    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
 
   clearBingoGrid();
   calledNumbers.forEach(markCalledNumber);
@@ -780,6 +789,7 @@ function loadGameState() {
   updateCalledNumbersDisplay();
   updateBigLastNumber();
   updateUndoButton();
+  updateButtonGlows();
 }
 
 // ===============================
@@ -835,8 +845,6 @@ if (cardSelect) {
     showCardResult(resultText, resultSpan);
   };
 }
-
-
 
 // ===============================
 // INITIALIZATION
