@@ -319,9 +319,6 @@ function endGame() {
   cardSelect.disabled = true;
   cardSelect.value = '';
 
-  numbers = [];
-updateRemaining(); // Update remaining count to 0
-
   modalSelections.clear();
   selectedCards = [];
   populateCardSelect();
