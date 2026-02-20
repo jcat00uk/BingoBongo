@@ -49,10 +49,14 @@ const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
 const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 
+
+
 const winAnimation = document.getElementById('winAnimation');
 
 
 const cells = {}; // 1–90 mapping
+
+
 
 // ===============================
 // SOUND
@@ -746,7 +750,7 @@ function loadGameState() {
   startGameBtn.disabled = gameActive;
   nextNumberBtn.disabled = !gameActive;
   endGameBtn.disabled = !gameActive;
-  selectCardsBtn.disabled = state.selectCardsBtnDisabled ?? !gameActive;
+  selectCardsBtn.disabled = gameActive;
   cardSelect.disabled = state.cardSelectDisabled ?? !gameActive;
 
   updateRemaining();
