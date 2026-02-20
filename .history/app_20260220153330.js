@@ -743,7 +743,7 @@ function loadGameState() {
   populateCardSelect();
   updateAutoCheckToggle();
 
-  startGameBtn.disabled = gameActive;
+  startGameBtn.disabled = !gameActive;
   nextNumberBtn.disabled = !gameActive;
   endGameBtn.disabled = !gameActive;
   selectCardsBtn.disabled = state.selectCardsBtnDisabled ?? !gameActive;
