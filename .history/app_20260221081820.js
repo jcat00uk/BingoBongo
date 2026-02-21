@@ -1,27 +1,23 @@
-
-
 // ===============================
 // BINGO APP SCRIPT
 // ===============================
 
-// Array to store remaining numbers and called numbers
 let numbers = [];
 let calledNumbers = [];
-let gameActive = false; // Indicates whether the game is active or not
-let callingLock = false; // Prevents multiple calls at once
-let soundEnabled = true; // Controls whether the sound is enabled
-let ttsEnabled = true; // Controls whether Text-to-Speech is enabled
+let gameActive = false;
+let callingLock = false;
+let soundEnabled = true;
+let ttsEnabled = true;
 
-let selectedCards = []; // Stores selected cards
-let modalSelections = new Set(); // Manages card selection in the modal
+let selectedCards = [];          
+let modalSelections = new Set();
 
-let firstLineCalled = false; // Flag to check if the first line has been called
-let firstFullHouseCalled = false; // Flag to check if the first full house has been called
+let firstLineCalled = false;
+let firstFullHouseCalled = false;
 
-let lastLineCards = new Set(); // Set of cards with last line win
-let lastFullHouseCards = new Set(); // Set of cards with last full house win
+let lastLineCards = new Set();
+let lastFullHouseCards = new Set();
 
-// Elements associated with the game controls
 const autoCheckToggle = document.getElementById('autoCheckToggle');
 
 
@@ -43,7 +39,7 @@ const checkCardContainer = document.getElementById('checkCardContainer');
 const cardSelect = document.getElementById('cardSelect');
 
 const bigLastNumber = document.getElementById('bigLastNumber');
-// Modal related elements for card selection
+
 const selectCardsModal = document.getElementById('selectCardsModal');
 const modalCardList = document.getElementById('modalCardList');
 const selectAllCardsBtn = document.getElementById('selectAllCardsBtn');
@@ -54,10 +50,10 @@ const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 
 
-// Animation for when someone wins
+
 const winAnimation = document.getElementById('winAnimation');
 
-// 1-90 mapping for Bingo grid cells
+
 const cells = {}; // 1–90 mapping
 
 
@@ -65,30 +61,29 @@ const cells = {}; // 1–90 mapping
 // ===============================
 // SOUND
 // ===============================
-// Audio object for the "ding" sound when a number is called
+
 const dingAudio = new Audio('ding.mp3');
 
-undoNumberBtn.disabled = true; // Disable the undo button initially
+undoNumberBtn.disabled = true;
 
 autoCheckToggle.onchange = () => {
-  localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked); // Save auto-check toggle state in localStorage
+  localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked);
 };
 
 
 
 function playSound() {
-  if (!soundEnabled) return; // If sound is disabled, do nothing
-  dingAudio.currentTime = 0; // Restart the audio from the beginning
-  dingAudio.play().catch(() => {}); // Play the sound
+  if (!soundEnabled) return;
+  dingAudio.currentTime = 0;
+  dingAudio.play().catch(() => {});
 }
 
-// Function to speak the number using Text-to-Speech (TTS) if enabled
 function speakNumber(num) {
-  if (!ttsEnabled || !('speechSynthesis' in window)) return; // Check if TTS is enabled and supported
-  window.speechSynthesis.cancel(); // Cancel any ongoing speech
+  if (!ttsEnabled || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
   setTimeout(() => {
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString())); // Speak the number
-  }, 50); // Delay to prevent interruption
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString()));
+  }, 50);
 }
 
 
@@ -98,190 +93,182 @@ function speakNumber(num) {
 // BINGO GRID
 // ===============================
 
-// Function to initialize the Bingo grid
 function initBingoGrid() {
-  bingoGrid.innerHTML = ''; // Clear the grid before re-building it
-  for (let row = 0; row < 11; row++) { // Loop through rows
-    for (let col = 0; col < 9; col++) { // Loop through columns
+  bingoGrid.innerHTML = '';
+  for (let row = 0; row < 11; row++) {
+    for (let col = 0; col < 9; col++) {
       const cell = document.createElement('div');
-      cell.className = 'grid-cell'; // Assign class to style the grid cell
+      cell.className = 'grid-cell';
       let num = null;
-
-      // Assign numbers to cells based on row and column
       if (col === 0 && row >= 1 && row <= 9) num = row;
       else if (col >= 1 && col <= 7 && row <= 9) num = col * 10 + row;
       else if (col === 8) num = 80 + row;
-
-      if (num && num <= 90) { // Ensure the number is valid
-        cell.textContent = num; // Display the number
-        cell.id = `cell-${num}`; // Set a unique id for each cell
-        cells[num] = cell; // Store the cell in the 'cells' object for later reference
+      if (num && num <= 90) {
+        cell.textContent = num;
+        cell.id = `cell-${num}`;
+        cells[num] = cell;
       }
-      bingoGrid.appendChild(cell); // Append the cell to the grid
+      bingoGrid.appendChild(cell);
     }
   }
 }
 
-// Function to mark a called number in the Bingo grid
 function markCalledNumber(num) {
-  if (!cells[num]) return; // If the cell doesn't exist, do nothing
-  if (window.lastCalledCell) window.lastCalledCell.classList.remove('lastCalled'); // Remove previous 'lastCalled' class
-  cells[num].classList.add('called', 'lastCalled'); // Mark the cell as called and the last called
-  window.lastCalledCell = cells[num]; // Store the last called cell
+  if (!cells[num]) return;
+  if (window.lastCalledCell) window.lastCalledCell.classList.remove('lastCalled');
+  cells[num].classList.add('called', 'lastCalled');
+  window.lastCalledCell = cells[num];
 }
 
-// Function to undo the marking of a called number
 function undoCalledNumber(num) {
-  if (cells[num]) cells[num].classList.remove('called', 'lastCalled'); // Remove the 'called' and 'lastCalled' classes
+  if (cells[num]) cells[num].classList.remove('called', 'lastCalled');
 }
 
-// Function to clear all markings from the Bingo grid
 function clearBingoGrid() {
-  Object.values(cells).forEach(cell => cell.classList.remove('called', 'lastCalled')); // Remove 'called' and 'lastCalled' from all cells
-  window.lastCalledCell = null; // Reset the last called cell
+  Object.values(cells).forEach(cell => cell.classList.remove('called', 'lastCalled'));
+  window.lastCalledCell = null;
 }
 
 // ===============================
 // GAME UI
 // ===============================
 
-// Function to update the remaining numbers display
 function updateRemaining() {
-  document.getElementById('remainingCount').textContent = numbers.length; // Display the remaining numbers
+  document.getElementById('remainingCount').textContent = numbers.length;
 }
 
-// Function to update the called numbers display
 function updateCalledNumbersDisplay() {
-  calledNumbersContainer.innerHTML = ''; // Clear the display
+  calledNumbersContainer.innerHTML = '';
   calledNumbers.forEach((num, i) => {
     const span = document.createElement('span');
     span.textContent = num;
-    if (i === calledNumbers.length - 1) span.id = 'lastNumber'; // Highlight the last number
-    calledNumbersContainer.appendChild(span); // Append the span with the called number
+    if (i === calledNumbers.length - 1) span.id = 'lastNumber';
+    calledNumbersContainer.appendChild(span);
   });
   const wrapper = document.getElementById('calledNumbersContainerWrapper');
-  wrapper.scrollLeft = wrapper.scrollWidth; // Scroll to the end of the called numbers list
+  wrapper.scrollLeft = wrapper.scrollWidth;
 }
 
-// Function to update the display of the last called number
 function updateBigLastNumber() {
-  const last = calledNumbers.at(-1) ?? '–'; // Get the last called number or display '–' if none
-  bigLastNumber.textContent = last; // Display the last called number
+  const last = calledNumbers.at(-1) ?? '–';
+  bigLastNumber.textContent = last;
 
   if (last !== '–') {
-    bigLastNumber.classList.remove('new-call'); // Remove the 'new-call' class
-    void bigLastNumber.offsetWidth; // Trigger a reflow
-    bigLastNumber.classList.add('new-call'); // Add the 'new-call' class to trigger animation
+    bigLastNumber.classList.remove('new-call');
+    void bigLastNumber.offsetWidth;
+    bigLastNumber.classList.add('new-call');
   }
 }
 
-// Function to update the undo button state
 function updateUndoButton() {
-  undoNumberBtn.disabled = !gameActive || !calledNumbers.length; // Disable undo if game is inactive or no numbers have been called
+  undoNumberBtn.disabled = !gameActive || !calledNumbers.length;
 }
 
-// Function to update the glow effect on the buttons based on the game state
 function updateButtonGlows() {
-  if (!gameActive) startGameBtn.classList.add('enabled-glow'); // Add glow to start button if game is inactive
-  else startGameBtn.classList.remove('enabled-glow'); // Remove glow if game is active
+  // Glow the start button only if the game is not active
+  if (!gameActive) startGameBtn.classList.add('enabled-glow');
+  else startGameBtn.classList.remove('enabled-glow');
 
-  if (gameActive && numbers.length) nextNumberBtn.classList.add('enabled-glow'); // Add glow to next number button if game is active and numbers remain
-  else nextNumberBtn.classList.remove('enabled-glow'); // Remove glow if no numbers remain
+  // Glow the next number button only if the game is active AND numbers remain
+  if (gameActive && numbers.length) nextNumberBtn.classList.add('enabled-glow');
+  else nextNumberBtn.classList.remove('enabled-glow');
 }
 
 // ===============================
 // GAME LOGIC
 // ===============================
 
-// Function to start a new game
 function startGame() {
-  numbers = Array.from({ length: 90 }, (_, i) => i + 1); // Initialize numbers from 1 to 90
-  calledNumbers = []; // Clear called numbers
-  gameActive = true; // Set game to active
-  firstLineCalled = false; // Reset first line flag
-  firstFullHouseCalled = false; // Reset first full house flag
-  startGameBtn.disabled = true; // Disable the start button
-  nextNumberBtn.disabled = false; // Enable the next number button
-  endGameBtn.disabled = false; // Enable the end game button
-  cardSelect.disabled = false; // Enable card selection dropdown
-  selectCardsBtn.disabled = true; // Disable card select button during game
-  updateRemaining(); // Update remaining numbers count
-  updateCalledNumbersDisplay(); // Update called numbers display
-  updateBigLastNumber(); // Update the last called number
-  updateUndoButton(); // Update the undo button
-  clearBingoGrid(); // Clear the Bingo grid
+  numbers = Array.from({ length: 90 }, (_, i) => i + 1);
+  calledNumbers = [];
+  gameActive = true;
+  firstLineCalled = false;
+  firstFullHouseCalled = false;
+  startGameBtn.disabled = true;
+  nextNumberBtn.disabled = false;
+  endGameBtn.disabled = false;
+  cardSelect.disabled = false; // enable dropdown when game starts
+  selectCardsBtn.disabled = true; // Disable modal button during game
+  updateRemaining();
+  updateCalledNumbersDisplay();
+  updateBigLastNumber();
+  updateUndoButton();
+  clearBingoGrid();
 
   if (!selectedCards.length) {
-    selectedCards = Object.keys(cards || {}); // Default to all cards if none selected
-    modalSelections = new Set(selectedCards); // Set the selected cards
+    selectedCards = Object.keys(cards || {}); // default to all
+    modalSelections = new Set(selectedCards);
   }
 
-  updateAutoCheckToggle(); // Update auto-check toggle state
-  saveGameState(); // Save game state to localStorage
-  updateButtonGlows(); // Update button glow states
+
+  updateAutoCheckToggle();
+  saveGameState();
+  updateButtonGlows();
 }
 
-// Function to call the next random number
 function nextNumber() {
-  if (!gameActive || callingLock || !numbers.length) return; // Prevent multiple calls if the game is inactive or no numbers remain
-  callingLock = true; // Lock the calling process to prevent multiple calls
+  if (!gameActive || callingLock || !numbers.length) return;
+  callingLock = true;
 
-  const idx = Math.floor(Math.random() * numbers.length); // Get a random index
-  const num = numbers.splice(idx, 1)[0]; // Remove the number from the list
-  calledNumbers.push(num); // Add the number to the called numbers list
+  const idx = Math.floor(Math.random() * numbers.length);
+  const num = numbers.splice(idx, 1)[0];
+  calledNumbers.push(num);
 
-  markCalledNumber(num); // Mark the number on the Bingo grid
-  playSound(); // Play sound for the called number
-  speakNumber(num); // Speak the number using TTS
+  markCalledNumber(num);
+  playSound();
+  speakNumber(num);
 
-  updateRemaining(); // Update the remaining numbers count
-  updateCalledNumbersDisplay(); // Update the called numbers display
-  updateBigLastNumber(); // Update the last called number
-  updateUndoButton(); // Update the undo button
+  updateRemaining();
+  updateCalledNumbersDisplay();
+  updateBigLastNumber();
+  updateUndoButton();
 
-  // Disable next number button if all numbers have been called
+    // Disable "Next Number" button if all numbers are called
   if (numbers.length === 0) {
     nextNumberBtn.disabled = true;
   }
 
-  if (autoCheckToggle.checked) checkAllSelectedCards(); // Check all selected cards if auto-check is enabled
+  if (autoCheckToggle.checked) checkAllSelectedCards();
 
-  callingLock = false; // Unlock the calling process
-  saveGameState(); // Save the game state to localStorage
+  callingLock = false;
+  saveGameState();
 }
 
-// Function to undo the last number called
 function undoNumber() {
-  if (!gameActive || !calledNumbers.length) return; // If the game is not active or no numbers are called, do nothing
-  if (!confirm('Undo last number?')) return; // Confirm if the user wants to undo the last number
+  if (!gameActive || !calledNumbers.length) return;
+  if (!confirm('Undo last number?')) return;
 
-  const num = calledNumbers.pop(); // Remove the last called number
-  numbers.push(num); // Add the number back to the remaining numbers list
-  numbers.sort((a, b) => a - b); // Sort the remaining numbers
+  const num = calledNumbers.pop();
+  numbers.push(num);
+  numbers.sort((a, b) => a - b);
 
-  firstLineCalled = false; // Reset first line called flag
-  firstFullHouseCalled = false; // Reset first full house called flag
+  // Reset first line/full house flags
+  firstLineCalled = false;
+  firstFullHouseCalled = false;
 
-  clearBingoGrid(); // Clear the Bingo grid
-  calledNumbers.forEach(markCalledNumber); // Redraw the called numbers
+  // Clear the grid and redraw called numbers
+  clearBingoGrid();
+  calledNumbers.forEach(markCalledNumber);
 
-  // Handle affected cards after undo
+  // Combine affected cards (all previously winning cards)
   const affectedCards = new Set([...lastLineCards, ...lastFullHouseCards]);
 
+  // Remove old card divs from DOM
   affectedCards.forEach(code => {
     const cardDiv = checkCardContainer.querySelector(`.card[data-code="${code}"]`);
-    if (cardDiv) cardDiv.remove(); // Remove previously winning card divs
+    if (cardDiv) cardDiv.remove();
   });
 
-  lastLineCards.clear(); // Clear the last line cards set
-  lastFullHouseCards.clear(); // Clear the last full house cards set
+  // Clear tracking sets
+  lastLineCards.clear();
+  lastFullHouseCards.clear();
 
   // Recalculate results for affected cards
   affectedCards.forEach(code => {
     const card = cards[code];
     if (!card) return;
 
-    const resultSpan = showCard(card, false); // Do not clear the container
+    const resultSpan = showCard(card, false); // do not clear container
     let resultText = 'No win yet';
 
     if (!firstLineCalled && checkLine(card)) {
@@ -297,45 +284,51 @@ function undoNumber() {
     showCardResult(resultText, resultSpan);
   });
 
-   updateRemaining(); // Update remaining numbers count
-  updateCalledNumbersDisplay(); // Update called numbers display
-  updateBigLastNumber(); // Update last called number
-  updateUndoButton(); // Update undo button
-  saveGameState(); // Save the game state to localStorage
+  updateRemaining();
+  updateCalledNumbersDisplay();
+  updateBigLastNumber();
+  updateUndoButton();
+  saveGameState();
 }
 
-// Function to end the game
+
+
+
+
+
+
 function endGame() {
-  if (!confirm('End the game?')) return; // Confirm if the user wants to end the game
-  calledNumbers = []; // Clear called numbers
-  numbers = []; // Clear remaining numbers
-  updateCalledNumbersDisplay(); // Update called numbers display
-  updateBigLastNumber(); // Update last called number
-  clearBingoGrid(); // Clear the Bingo grid
-  gameActive = false; // Set game to inactive
+  if (!confirm('End the game?')) return;
+  calledNumbers = [];
+  numbers = [];
+   updateCalledNumbersDisplay();   // ✅ CLEAR THE STRIP
+  updateBigLastNumber();          // (optional but recommended)
+  clearBingoGrid();
+  gameActive = false;
+  
+    // Reset first line/full house flags
+  firstLineCalled = false;
+  firstFullHouseCalled = false;
 
-  firstLineCalled = false; // Reset first line called flag
-  firstFullHouseCalled = false; // Reset first full house called flag
+  startGameBtn.disabled = false;
+  nextNumberBtn.disabled = true;
+  endGameBtn.disabled = true;
+  
+  selectCardsBtn.disabled = false;
+  undoNumberBtn.disabled = true;
+  cardSelect.disabled = true;
+  cardSelect.value = '';
 
-  startGameBtn.disabled = false; // Enable the start button
-  nextNumberBtn.disabled = true; // Disable the next number button
-  endGameBtn.disabled = true; // Disable the end game button
+  numbers = [];
+updateRemaining(); // Update remaining count to 0
 
-  selectCardsBtn.disabled = false; // Enable the card select button
-  undoNumberBtn.disabled = true; // Disable the undo button
-  cardSelect.disabled = true; // Disable card selection dropdown
-  cardSelect.value = ''; // Clear card selection
+  modalSelections.clear();
+  selectedCards = [];
+  populateCardSelect();
+  checkCardContainer.innerHTML = '';
 
-  numbers = []; // Clear numbers array
-  updateRemaining(); // Update remaining count to 0
-
-  modalSelections.clear(); // Clear modal selections
-  selectedCards = []; // Clear selected cards
-  populateCardSelect(); // Repopulate the card select dropdown
-  checkCardContainer.innerHTML = ''; // Clear the card check container
-
-  updateButtonGlows(); // Update button glows
-  saveGameState(); // Save the game state to localStorage
+  updateButtonGlows();
+  saveGameState();
 }
 
 
@@ -344,14 +337,13 @@ function endGame() {
 // CARD CHECK
 // ===============================
 
-// Function to display a card and its results
 function showCard(card, clearExisting = true) {
-  if (clearExisting) checkCardContainer.innerHTML = ''; // Clear the container before adding new cards
-  const last = calledNumbers.at(-1); // Get the last called number
+  if (clearExisting) checkCardContainer.innerHTML = '';
+  const last = calledNumbers.at(-1);
 
   const div = document.createElement('div');
   div.className = 'card';
-  div.dataset.code = card.code; // Store the card code in the dataset
+  div.dataset.code = card.code; // add this line
   const header = document.createElement('div');
   header.className = 'card-header';
   const h4 = document.createElement('h4');
@@ -370,9 +362,9 @@ function showCard(card, clearExisting = true) {
       const td = document.createElement('td');
       if (n !== null) {
         td.textContent = n;
-         if (calledNumbers.includes(n)) td.classList.add('called'); // Mark called numbers
-        if (n === last) td.classList.add('lastCalled'); // Mark the last called number
-    }
+        if (calledNumbers.includes(n)) td.classList.add('called');
+        if (n === last) td.classList.add('lastCalled');
+      }
       tr.appendChild(td);
     });
     table.appendChild(tr);
@@ -380,31 +372,31 @@ function showCard(card, clearExisting = true) {
   div.appendChild(table);
   checkCardContainer.appendChild(div);
 
-  // Smoothly scroll the card into view
+  // Auto scroll to the card smoothly
   div.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  return resultSpan; // Return the result span for later updates
+  return resultSpan;
 }
 
 function showCardResult(resultText, element) {
   element.textContent = resultText;
-   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
+  if (resultText === 'LINE!') element.style.color = 'orange';
   else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
   else element.style.color = 'yellow';
 
-  showWinAnimation(resultText); // Trigger the win animation
+  showWinAnimation(resultText);
 
   if (ttsEnabled && 'speechSynthesis' in window) {
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText)); // Speak the result
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
   }
 }
 
 function checkLine(card) {
-  return card.numbers.some(row => row.filter(n => n !== null).every(n => calledNumbers.includes(n))); // Check if all numbers in a row are called
+  return card.numbers.some(row => row.filter(n => n !== null).every(n => calledNumbers.includes(n)));
 }
 
 function checkFullHouse(card) {
-  return card.numbers.flat().filter(n => n !== null).every(n => calledNumbers.includes(n)); // Check if all numbers on the card are called
+  return card.numbers.flat().filter(n => n !== null).every(n => calledNumbers.includes(n));
 }
 
 function checkSelectedCard() {
@@ -424,19 +416,18 @@ function checkSelectedCard() {
 // AUTO CHECK
 // ===============================
 
-// Function to update the auto-check toggle state
 function updateAutoCheckToggle() {
   if (!selectedCards.length || selectedCards.length === Object.keys(cards).length) {
-    autoCheckToggle.disabled = true; // Disable toggle if all cards are selected
-    autoCheckToggle.checked = false; // Set it to unchecked
+    autoCheckToggle.disabled = true;
+    autoCheckToggle.checked = false;
   } else {
     autoCheckToggle.disabled = false;
+    // Restore saved state if available
     const saved = localStorage.getItem('bingobongo_autoCheck');
-    if (saved !== null) autoCheckToggle.checked = saved === 'true'; // Restore saved state
+    if (saved !== null) autoCheckToggle.checked = saved === 'true';
   }
 }
 
-// Function to update the state of auto-check toggle based on selected cards
 function updateAutoCheckState() {
   // Disable slider if all cards are selected
   if (selectedCards.length === Object.keys(cards || {}).length) {
@@ -446,7 +437,7 @@ function updateAutoCheckState() {
     autoCheckToggle.disabled = false;
   }
 }
-// Function to check all selected cards for wins
+
 function checkAllSelectedCards() {
   selectedCards.forEach(code => {
     const card = cards[code];
@@ -486,15 +477,14 @@ function recalcFirstWins() {
 // WIN ANIMATION
 // ===============================
 
-// Function to display the win animation
 function showWinAnimation(text) {
-  winAnimation.textContent = text; // Set the win text
-  winAnimation.style.display = 'block'; // Show the animation
+  winAnimation.textContent = text;
+  winAnimation.style.display = 'block';
   winAnimation.classList.remove('show');
-  void winAnimation.offsetWidth; // Trigger a reflow
-  winAnimation.classList.add('show'); // Add animation class to show it
+  void winAnimation.offsetWidth;
+  winAnimation.classList.add('show');
   setTimeout(() => {
-    winAnimation.style.display = 'none'; // Hide the animation after 6 seconds
+    winAnimation.style.display = 'none';
   }, 6000);
 }
 
@@ -502,18 +492,20 @@ function showWinAnimation(text) {
 // CARD SELECT / MODAL LOGIC
 // ===============================
 
-// Function to populate the card select dropdown
+
+
 function populateCardSelect() {
-  cardSelect.innerHTML = '<option value="">Select card…</option>'; // Add default option
+  cardSelect.innerHTML = '<option value="">Select card…</option>';
 
-  const list = selectedCards.length ? selectedCards : Object.keys(cards || {}); // Use selected cards or all cards
+  const list = selectedCards.length ? selectedCards : Object.keys(cards || {});
 
+  // Sort numerically by extracting the number from the card code
   list
-    .slice() // Clone to avoid modifying the original
+    .slice() // clone to avoid modifying original
     .sort((a, b) => {
       const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
       const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
-      return numA - numB; // Sort numerically by card code
+      return numA - numB;
     })
     .forEach(code => {
       const opt = document.createElement('option');
@@ -524,10 +516,8 @@ function populateCardSelect() {
 }
 
 function clearCardSelection() {
-  cardSelect.value = ''; // Clear the card selection
+  cardSelect.value = '';
 }
-
-// Function to adjust the width of the card select dropdown to fit the longest option
 
 /*function openSelectCardsModal() {
   if (!selectCardsModal) return;
@@ -547,11 +537,10 @@ function adjustCardSelectWidth() {
   tmp.style.fontFamily = window.getComputedStyle(select).fontFamily;
   tmp.textContent = select.options[select.selectedIndex]?.text || '';
   document.body.appendChild(tmp);
-   select.style.width = `${tmp.offsetWidth + 24}px`; // Adjust width based on longest option text
-  tmp.remove(); // Remove the temporary element
+  select.style.width = `${tmp.offsetWidth + 24}px`; // + padding
+  tmp.remove();
 }
 
-// Function to adjust the width of each card item in the modal
 function adjustModalCardItemWidth() {
   if (!modalCardList) return;
 
@@ -573,7 +562,7 @@ function adjustModalCardItemWidth() {
   });
 }
 
-// Function to render the modal card list for selecting cards
+// Call this after rendering modal items
 function renderModalCardList() {
   if (!modalCardList) return;
   modalCardList.innerHTML = '';
@@ -621,10 +610,10 @@ function renderModalCardList() {
   });
 
   // ✅ shrink items to fit text
-  adjustModalCardItemWidth();  // Adjust width after rendering modal items
+  adjustModalCardItemWidth();
 }
 
-// Event listeners and handlers for modals and checkboxes
+
 // Run on load and onchange
 if (cardSelect) {
   adjustCardSelectWidth();
@@ -723,9 +712,9 @@ function renderModalCardList() {
 
 
 // ===============================
-// STATE MANAGEMENT
+// STATE
 // ===============================
-// Function to save the game state to localStorage
+
 function saveGameState() {
   localStorage.setItem('bingobongo_state', JSON.stringify({
     numbers,
@@ -743,7 +732,7 @@ function saveGameState() {
     cardSelectDisabled: cardSelect?.disabled ?? false
   }));
 }
-// Function to load the game state from localStorage
+
 function loadGameState() {
   const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
 
@@ -810,19 +799,17 @@ function loadGameState() {
 // EVENT BINDINGS
 // ===============================
 
-// Binding actions for game buttons
 startGameBtn.onclick = startGame;
 nextNumberBtn.onclick = () => {
   clearCardSelection(); 
-  checkCardContainer.innerHTML = ''; // Clear previous card
+  checkCardContainer.innerHTML = ''; // remove previous card
   nextNumber();
 };
 undoNumberBtn.onclick = undoNumber;
 endGameBtn.onclick = endGame;
 
 window.addEventListener('load', () => {
-  // Initialize sound and TTS toggles
-   if (toggleSoundBtn)
+  if (toggleSoundBtn)
     toggleSoundBtn.onclick = () => { soundEnabled = !soundEnabled; toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇'; saveGameState(); };
   if (toggleTTSBtn)
     toggleTTSBtn.onclick = () => { ttsEnabled = !ttsEnabled; toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫'; saveGameState(); };
@@ -867,10 +854,10 @@ if (cardSelect) {
 // ===============================
 // INITIALIZATION
 // ===============================
-// Initialize the game when the window is loaded
+
 window.addEventListener('load', () => {
   initBingoGrid();
   loadGameState();
-  updateButtonGlows();
+  updateButtonGlows(); // glow now matches real game state
   if (window.cards) populateCardSelect();
 });

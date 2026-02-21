@@ -1,5 +1,3 @@
-
-
 // ===============================
 // BINGO APP SCRIPT
 // ===============================
@@ -24,8 +22,6 @@ let lastFullHouseCards = new Set(); // Set of cards with last full house win
 // Elements associated with the game controls
 const autoCheckToggle = document.getElementById('autoCheckToggle');
 
-
-
 // ===============================
 // ELEMENTS
 // ===============================
@@ -43,6 +39,7 @@ const checkCardContainer = document.getElementById('checkCardContainer');
 const cardSelect = document.getElementById('cardSelect');
 
 const bigLastNumber = document.getElementById('bigLastNumber');
+
 // Modal related elements for card selection
 const selectCardsModal = document.getElementById('selectCardsModal');
 const modalCardList = document.getElementById('modalCardList');
@@ -53,18 +50,16 @@ const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
 const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 
-
 // Animation for when someone wins
 const winAnimation = document.getElementById('winAnimation');
 
 // 1-90 mapping for Bingo grid cells
-const cells = {}; // 1–90 mapping
-
-
+const cells = {}; 
 
 // ===============================
 // SOUND
 // ===============================
+
 // Audio object for the "ding" sound when a number is called
 const dingAudio = new Audio('ding.mp3');
 
@@ -74,8 +69,7 @@ autoCheckToggle.onchange = () => {
   localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked); // Save auto-check toggle state in localStorage
 };
 
-
-
+// Function to play the "ding" sound when a number is called
 function playSound() {
   if (!soundEnabled) return; // If sound is disabled, do nothing
   dingAudio.currentTime = 0; // Restart the audio from the beginning
@@ -90,9 +84,6 @@ function speakNumber(num) {
     window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString())); // Speak the number
   }, 50); // Delay to prevent interruption
 }
-
-
-
 
 // ===============================
 // BINGO GRID
@@ -297,7 +288,7 @@ function undoNumber() {
     showCardResult(resultText, resultSpan);
   });
 
-   updateRemaining(); // Update remaining numbers count
+  updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
   updateBigLastNumber(); // Update last called number
   updateUndoButton(); // Update undo button
@@ -338,8 +329,6 @@ function endGame() {
   saveGameState(); // Save the game state to localStorage
 }
 
-
-
 // ===============================
 // CARD CHECK
 // ===============================
@@ -352,6 +341,7 @@ function showCard(card, clearExisting = true) {
   const div = document.createElement('div');
   div.className = 'card';
   div.dataset.code = card.code; // Store the card code in the dataset
+
   const header = document.createElement('div');
   header.className = 'card-header';
   const h4 = document.createElement('h4');
@@ -370,9 +360,9 @@ function showCard(card, clearExisting = true) {
       const td = document.createElement('td');
       if (n !== null) {
         td.textContent = n;
-         if (calledNumbers.includes(n)) td.classList.add('called'); // Mark called numbers
+        if (calledNumbers.includes(n)) td.classList.add('called'); // Mark called numbers
         if (n === last) td.classList.add('lastCalled'); // Mark the last called number
-    }
+      }
       tr.appendChild(td);
     });
     table.appendChild(tr);
@@ -388,7 +378,7 @@ function showCard(card, clearExisting = true) {
 
 function showCardResult(resultText, element) {
   element.textContent = resultText;
-   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
+  if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
   else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
   else element.style.color = 'yellow';
 
@@ -438,7 +428,6 @@ function updateAutoCheckToggle() {
 
 // Function to update the state of auto-check toggle based on selected cards
 function updateAutoCheckState() {
-  // Disable slider if all cards are selected
   if (selectedCards.length === Object.keys(cards || {}).length) {
     autoCheckToggle.disabled = true;
     autoCheckToggle.checked = false;
@@ -446,21 +435,19 @@ function updateAutoCheckState() {
     autoCheckToggle.disabled = false;
   }
 }
+
 // Function to check all selected cards for wins
 function checkAllSelectedCards() {
   selectedCards.forEach(code => {
     const card = cards[code];
     if (!card) return;
 
-    // First LINE
     if (!firstLineCalled && checkLine(card)) {
       firstLineCalled = true;
       lastLineCards.add(code);
       const resultSpan = showCard(card, false);
       showCardResult(`Bingobongo, LINE, ${code}`, resultSpan);
-    } 
-    // First FULL HOUSE
-    else if (!firstFullHouseCalled && checkFullHouse(card)) {
+    } else if (!firstFullHouseCalled && checkFullHouse(card)) {
       firstFullHouseCalled = true;
       lastFullHouseCards.add(code);
       const resultSpan = showCard(card, false);
@@ -480,7 +467,6 @@ function recalcFirstWins() {
     if (!firstFullHouseCalled && checkFullHouse(card)) firstFullHouseCalled = true;
   });
 }
-
 
 // ===============================
 // WIN ANIMATION
@@ -528,26 +514,18 @@ function clearCardSelection() {
 }
 
 // Function to adjust the width of the card select dropdown to fit the longest option
-
-/*function openSelectCardsModal() {
-  if (!selectCardsModal) return;
-  selectCardsModal.style.display = 'flex';
-  renderModalCardList();
-} */
-
-
 function adjustCardSelectWidth() {
   const select = document.getElementById('cardSelect');
   if (!select) return;
-  
+
   const tmp = document.createElement('span');
   tmp.style.visibility = 'hidden';
   tmp.style.position = 'absolute';
   tmp.style.fontSize = window.getComputedStyle(select).fontSize;
   tmp.style.fontFamily = window.getComputedStyle(select).fontFamily;
-  tmp.textContent = select.options[select.selectedIndex]?.text || '';
+  tmp.textContent = select.options[select.selectedIndex]?.text || ''; 
   document.body.appendChild(tmp);
-   select.style.width = `${tmp.offsetWidth + 24}px`; // Adjust width based on longest option text
+  select.style.width = `${tmp.offsetWidth + 24}px`; // Adjust width based on longest option text
   tmp.remove(); // Remove the temporary element
 }
 
@@ -559,7 +537,6 @@ function adjustModalCardItemWidth() {
     const label = div.querySelector('label');
     if (!label) return;
 
-    // Create temporary span to measure text
     const tmp = document.createElement('span');
     tmp.style.visibility = 'hidden';
     tmp.style.position = 'absolute';
@@ -620,53 +597,10 @@ function renderModalCardList() {
     modalCardList.appendChild(div);
   });
 
-  // ✅ shrink items to fit text
-  adjustModalCardItemWidth();  // Adjust width after rendering modal items
+  adjustModalCardItemWidth(); // Adjust width after rendering modal items
 }
 
 // Event listeners and handlers for modals and checkboxes
-// Run on load and onchange
-if (cardSelect) {
-  adjustCardSelectWidth();
-  cardSelect.onchange = () => {
-    adjustCardSelectWidth();
-    const code = cardSelect.value;
-    if (!code || !cards?.[code]) return;
-
-    const card = cards[code];
-    const resultSpan = showCard(card);
-
-    let resultText = 'No win yet';
-    if (checkFullHouse(card)) resultText = 'FULL HOUSE!';
-    else if (checkLine(card)) resultText = 'LINE!';
-
-    showCardResult(resultText, resultSpan);
-  };
-}
-
-function openSelectCardsModal() {
-  console.log("openSelectCardsModal called"); // for debugging
-  if (!selectCardsModal) {
-    console.error("selectCardsModal element not found!");
-    return;
-  }
-  selectCardsModal.style.display = 'flex';
-  selectCardsModal.style.position = 'fixed'; // ensure fixed on mobile
-  selectCardsModal.style.top = '0';
-  selectCardsModal.style.left = '0';
-  selectCardsModal.style.width = '100%';
-  selectCardsModal.style.height = '100vh';
-  selectCardsModal.style.justifyContent = 'center';
-  selectCardsModal.style.alignItems = 'center';
-  selectCardsModal.style.zIndex = '1000';
-  renderModalCardList();
-}
-
-function closeSelectCardsModal() {
-  if (!selectCardsModal) return;
-  selectCardsModal.style.display = 'none';
-}
-
 function handleModalCheckboxChange(code, checked) {
   if (checked) modalSelections.add(code);
   else modalSelections.delete(code);
@@ -674,57 +608,10 @@ function handleModalCheckboxChange(code, checked) {
   updateAutoCheckToggle();
 }
 
-function renderModalCardList() {
-  if (!modalCardList) return;
-  modalCardList.innerHTML = '';
-  const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
-  const allCardCodes = Object.keys(cards || {});
-
-  const pinned = allCardCodes.filter(code => modalSelections.has(code));
-  pinned.forEach(code => {
-    const div = document.createElement('div');
-    div.className = 'modal-card-item pinned';
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = true;
-    checkbox.dataset.code = code;
-    checkbox.onchange = () => handleModalCheckboxChange(code, checkbox.checked);
-    const label = document.createElement('label');
-    label.textContent = code;
-
-    div.appendChild(checkbox);
-    div.appendChild(label);
-    modalCardList.appendChild(div);
-  });
-
-  if (pinned.length) {
-    const divider = document.createElement('div');
-    divider.style.borderBottom = '1px solid #aaa';
-    divider.style.margin = '4px 0';
-    modalCardList.appendChild(divider);
-  }
-
-  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
-  others.forEach(code => {
-    const div = document.createElement('div');
-    div.className = 'modal-card-item';
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = false;
-    checkbox.dataset.code = code;
-    checkbox.onchange = () => handleModalCheckboxChange(code, checkbox.checked);
-    const label = document.createElement('label');
-    label.textContent = code;
-    div.appendChild(checkbox);
-    div.appendChild(label);
-    modalCardList.appendChild(div);
-  });
-}
-
-
 // ===============================
 // STATE MANAGEMENT
 // ===============================
+
 // Function to save the game state to localStorage
 function saveGameState() {
   localStorage.setItem('bingobongo_state', JSON.stringify({
@@ -743,6 +630,7 @@ function saveGameState() {
     cardSelectDisabled: cardSelect?.disabled ?? false
   }));
 }
+
 // Function to load the game state from localStorage
 function loadGameState() {
   const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
@@ -813,7 +701,7 @@ function loadGameState() {
 // Binding actions for game buttons
 startGameBtn.onclick = startGame;
 nextNumberBtn.onclick = () => {
-  clearCardSelection(); 
+  clearCardSelection();
   checkCardContainer.innerHTML = ''; // Clear previous card
   nextNumber();
 };
@@ -822,7 +710,7 @@ endGameBtn.onclick = endGame;
 
 window.addEventListener('load', () => {
   // Initialize sound and TTS toggles
-   if (toggleSoundBtn)
+  if (toggleSoundBtn)
     toggleSoundBtn.onclick = () => { soundEnabled = !soundEnabled; toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇'; saveGameState(); };
   if (toggleTTSBtn)
     toggleTTSBtn.onclick = () => { ttsEnabled = !ttsEnabled; toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫'; saveGameState(); };
@@ -844,8 +732,6 @@ if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
 };
 if (cardSearchBox) cardSearchBox.oninput = renderModalCardList;
 
-
-
 if (cardSelect) {
   cardSelect.onchange = () => {
     const code = cardSelect.value;
@@ -862,11 +748,10 @@ if (cardSelect) {
   };
 }
 
-
-
 // ===============================
 // INITIALIZATION
 // ===============================
+
 // Initialize the game when the window is loaded
 window.addEventListener('load', () => {
   initBingoGrid();
