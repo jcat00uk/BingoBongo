@@ -230,11 +230,9 @@ function nextNumber() {
   const num = numbers.splice(idx, 1)[0]; // Remove the number from the list
   calledNumbers.push(num); // Add the number to the called numbers list
 
-  // Speak the number before performing any other actions
-  speakNumber(num);
   markCalledNumber(num); // Mark the number on the Bingo grid
   playSound(); // Play sound for the called number
-
+  speakNumber(num); // Speak the number using TTS
 
   updateRemaining(); // Update the remaining numbers count
   updateCalledNumbersDisplay(); // Update the called numbers display
@@ -390,18 +388,18 @@ function showCard(card, clearExisting = true) {
 
 function showCardResult(resultText, element) {
   element.textContent = resultText;
+
+if (ttsEnabled && 'speechSynthesis' in window) {
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText)); // Speak the result
+  }
+
    if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
   else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
   else element.style.color = 'yellow';
 
   showWinAnimation(resultText); // Trigger the win animation
 
-  // Use setTimeout to delay win state speech to after number is spoken
-  if (ttsEnabled && 'speechSynthesis' in window) {
-    setTimeout(() => {
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
-    }, 500);  // 1 second delay to make sure the number is spoken first
-  }
+  
 }
 
 function checkLine(card) {
@@ -501,8 +499,8 @@ function showWinAnimation(text) {
   void winAnimation.offsetWidth; // Trigger a reflow
   winAnimation.classList.add('show'); // Add animation class to show it
   setTimeout(() => {
-    winAnimation.style.display = 'none'; // Hide the animation after 9 seconds
-  }, 9000);
+    winAnimation.style.display = 'none'; // Hide the animation after 6 seconds
+  }, 6000);
 }
 
 // ===============================

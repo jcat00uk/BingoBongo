@@ -396,11 +396,8 @@ function showCardResult(resultText, element) {
 
   showWinAnimation(resultText); // Trigger the win animation
 
-  // Use setTimeout to delay win state speech to after number is spoken
   if (ttsEnabled && 'speechSynthesis' in window) {
-    setTimeout(() => {
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
-    }, 500);  // 1 second delay to make sure the number is spoken first
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText)); // Speak the result
   }
 }
 
@@ -501,8 +498,8 @@ function showWinAnimation(text) {
   void winAnimation.offsetWidth; // Trigger a reflow
   winAnimation.classList.add('show'); // Add animation class to show it
   setTimeout(() => {
-    winAnimation.style.display = 'none'; // Hide the animation after 9 seconds
-  }, 9000);
+    winAnimation.style.display = 'none'; // Hide the animation after 6 seconds
+  }, 6000);
 }
 
 // ===============================

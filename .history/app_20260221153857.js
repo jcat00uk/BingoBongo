@@ -230,11 +230,9 @@ function nextNumber() {
   const num = numbers.splice(idx, 1)[0]; // Remove the number from the list
   calledNumbers.push(num); // Add the number to the called numbers list
 
-  // Speak the number before performing any other actions
-  speakNumber(num);
   markCalledNumber(num); // Mark the number on the Bingo grid
   playSound(); // Play sound for the called number
-
+  speakNumber(num); // Speak the number using TTS
 
   updateRemaining(); // Update the remaining numbers count
   updateCalledNumbersDisplay(); // Update the called numbers display
@@ -389,40 +387,37 @@ function showCard(card, clearExisting = true) {
 }
 
 function showCardResult(resultText, element) {
-  element.textContent = resultText;
-   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
+  element.textContent = resultText; // Display the result on screen
+  
+  // Set text color based on result
+  if (resultText === 'LINE!') element.style.color = 'orange';
   else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
   else element.style.color = 'yellow';
 
-  showWinAnimation(resultText); // Trigger the win animation
+  // Show the win animation (this will display the result for a few seconds)
+  showWinAnimation(resultText);
 
-  // Use setTimeout to delay win state speech to after number is spoken
+  // Extract the last called number
+  const lastCalledNumber = calledNumbers.at(-1);
+  
+  // Speak the last called number before the result text
+  if (lastCalledNumber) speakNumber(lastCalledNumber);
+  
+  // Now speak the win state (LINE or FULL HOUSE)
   if (ttsEnabled && 'speechSynthesis' in window) {
-    setTimeout(() => {
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
-    }, 500);  // 1 second delay to make sure the number is spoken first
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
   }
-}
-
-function checkLine(card) {
-  return card.numbers.some(row => row.filter(n => n !== null).every(n => calledNumbers.includes(n))); // Check if all numbers in a row are called
-}
-
-function checkFullHouse(card) {
-  return card.numbers.flat().filter(n => n !== null).every(n => calledNumbers.includes(n)); // Check if all numbers on the card are called
 }
 
 function checkSelectedCard() {
   const code = cardSelect.value;
-
+  if (!code || !cards?.[code]) return alert('Please select a valid card');
+  const card = cards[code];
+  const resultSpan = showCard(card);
 
   let resultText = 'No win yet';
   if (checkFullHouse(card)) resultText = 'FULL HOUSE!';
   else if (checkLine(card)) resultText = 'LINE!';
-
-    if (!code || !cards?.[code]) return alert('Please select a valid card');
-  const card = cards[code];
-  const resultSpan = showCard(card);
 
   showCardResult(resultText, resultSpan);
 }
@@ -494,16 +489,7 @@ function recalcFirstWins() {
 // ===============================
 
 // Function to display the win animation
-function showWinAnimation(text) {
-  winAnimation.textContent = text; // Set the win text
-  winAnimation.style.display = 'block'; // Show the animation
-  winAnimation.classList.remove('show');
-  void winAnimation.offsetWidth; // Trigger a reflow
-  winAnimation.classList.add('show'); // Add animation class to show it
-  setTimeout(() => {
-    winAnimation.style.display = 'none'; // Hide the animation after 9 seconds
-  }, 9000);
-}
+
 
 // ===============================
 // CARD SELECT / MODAL LOGIC

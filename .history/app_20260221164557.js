@@ -400,7 +400,7 @@ function showCardResult(resultText, element) {
   if (ttsEnabled && 'speechSynthesis' in window) {
     setTimeout(() => {
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(resultText));
-    }, 500);  // 1 second delay to make sure the number is spoken first
+    }, 1000);  // 1 second delay to make sure the number is spoken first
   }
 }
 
