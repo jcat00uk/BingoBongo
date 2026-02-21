@@ -21,8 +21,6 @@ let firstFullHouseCalled = false; // Flag to check if the first full house has b
 let lastLineCards = new Set(); // Set of cards with last line win
 let lastFullHouseCards = new Set(); // Set of cards with last full house win
 
-let isUndoing = false; //Undo button is pressed
-
 // Elements associated with the game controls
 const autoCheckToggle = document.getElementById('autoCheckToggle');
 
@@ -259,8 +257,9 @@ function undoNumber() {
   if (!gameActive || !calledNumbers.length) return; // If the game is not active or no numbers are called, do nothing
   if (!confirm('Undo last number?')) return; // Confirm if the user wants to undo the last number
 
-   // Set the flag to true while undoing
-  isUndoing = true;
+    // Temporarily disable card select onchange
+  const cardSelectHandler = cardSelect.onchange;
+  cardSelect.onchange = null;
 
   const num = calledNumbers.pop(); // Remove the last called number
   numbers.push(num); // Add the number back to the remaining numbers list
@@ -288,7 +287,7 @@ function undoNumber() {
     const card = cards[code];
     if (!card) return;
 
-    //const resultSpan = showCard(card, false); // Do not clear the container
+    const resultSpan = showCard(card, false); // Do not clear the container
     let resultText = 'No win yet';
 
     if (!firstLineCalled && checkLine(card)) {
@@ -301,16 +300,16 @@ function undoNumber() {
       lastFullHouseCards.add(code);
     }
 
-    //showCardResult(resultText, resultSpan);
-  }); 
+    showCardResult(resultText, resultSpan);
+  });
 
    updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
   updateBigLastNumber(); // Update last called number
   updateUndoButton(); // Update undo button
-  
   saveGameState(); // Save the game state to localStorage
-   isUndoing = false; // Reset the flag after undo
+    // Re-enable card select onchange
+  cardSelect.onchange = cardSelectHandler;
 }
 
 // Function to end the game
@@ -862,9 +861,6 @@ if (cardSearchBox) cardSearchBox.oninput = renderModalCardList;
 
 if (cardSelect) {
   cardSelect.onchange = () => {
-    // If undoing, prevent the onchange logic from running
-    if (isUndoing) return;
-
     const code = cardSelect.value;
     if (!code || !cards?.[code]) return;
 

@@ -288,7 +288,7 @@ function undoNumber() {
     const card = cards[code];
     if (!card) return;
 
-    //const resultSpan = showCard(card, false); // Do not clear the container
+    const resultSpan = showCard(card, false); // Do not clear the container
     let resultText = 'No win yet';
 
     if (!firstLineCalled && checkLine(card)) {
@@ -301,16 +301,15 @@ function undoNumber() {
       lastFullHouseCards.add(code);
     }
 
-    //showCardResult(resultText, resultSpan);
-  }); 
+    showCardResult(resultText, resultSpan);
+  });
 
    updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
   updateBigLastNumber(); // Update last called number
   updateUndoButton(); // Update undo button
-  
-  saveGameState(); // Save the game state to localStorage
    isUndoing = false; // Reset the flag after undo
+  saveGameState(); // Save the game state to localStorage
 }
 
 // Function to end the game

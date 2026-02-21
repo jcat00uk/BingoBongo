@@ -288,7 +288,7 @@ function undoNumber() {
     const card = cards[code];
     if (!card) return;
 
-    //const resultSpan = showCard(card, false); // Do not clear the container
+    const resultSpan = showCard(card, false); // Do not clear the container
     let resultText = 'No win yet';
 
     if (!firstLineCalled && checkLine(card)) {
@@ -302,7 +302,7 @@ function undoNumber() {
     }
 
     //showCardResult(resultText, resultSpan);
-  }); 
+  });
 
    updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display

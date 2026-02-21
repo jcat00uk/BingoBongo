@@ -282,13 +282,13 @@ function undoNumber() {
 
   lastLineCards.clear(); // Clear the last line cards set
   lastFullHouseCards.clear(); // Clear the last full house cards set
-
+/*
   // Recalculate results for affected cards
   affectedCards.forEach(code => {
     const card = cards[code];
     if (!card) return;
 
-    //const resultSpan = showCard(card, false); // Do not clear the container
+    const resultSpan = showCard(card, false); // Do not clear the container
     let resultText = 'No win yet';
 
     if (!firstLineCalled && checkLine(card)) {
@@ -302,7 +302,7 @@ function undoNumber() {
     }
 
     //showCardResult(resultText, resultSpan);
-  }); 
+  }); */
 
    updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
