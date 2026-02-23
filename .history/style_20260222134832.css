@@ -40,18 +40,9 @@ h2 {
   100% { transform: scale(1);   box-shadow: 0 0 8px rgba(255, 200, 0, 0.6); }
 }
 
-
-
-.grid-bottom-text {
-  display: flex;
-  justify-content: space-between;  /* Adjust space between the two divs */
-  align-items: center;  /* Align items vertically at the center */
-}
-
 /* ===========================
    REMAINING NUMBERS
 =========================== */
-
 #remainingNumbers {
   text-align: right;
   font-weight: bold;
@@ -69,7 +60,6 @@ h2 {
   font-size: 18px;
   color: red;
   margin: 8px 0;
-  
 }
 
 

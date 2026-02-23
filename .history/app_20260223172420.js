@@ -290,85 +290,30 @@ recalcFirstWins();
 // Undo last number
 function undoNumber() {
     if (!calledNumbers.length || !gameActive) return;
-
-    if (!confirm('Undo the last number called?')) return;
-
     const num = calledNumbers.pop();
     numbers.push(num);
     numbers.sort((a,b)=>a-b);
-
-    clearBingoGrid();
-    calledNumbers.forEach(markCalledNumber);
-
-    // Recalculate which first wins still qualify
+    
+    // Clear winning cards if their win is undone
     if (firstLineCalled) {
-        const stillLine = Array.from(lastLineCards).some(code => checkLine(cards[code]));
-        if (!stillLine) {
+        const [lineCard] = lastLineCards;
+        if (!checkLine(cards[lineCard])) {
             firstLineCalled = false;
             lastLineCards.clear();
         }
     }
-
     if (firstFullHouseCalled) {
-        const stillFullHouse = Array.from(lastFullHouseCards).some(code => checkFullHouse(cards[code]));
-        if (!stillFullHouse) {
+        const [fhCard] = lastFullHouseCards;
+        if (!checkFullHouse(cards[fhCard])) {
             firstFullHouseCalled = false;
             lastFullHouseCards.clear();
         }
     }
 
-    // Recalculate first wins for cards that now qualify without overwriting previous wins unnecessarily
-    let winTextForDisplay = 'No Win';
+    clearBingoGrid();
+    calledNumbers.forEach(markCalledNumber);
 
-    // LINE
-    if (firstLineCalled) {
-        const [code] = lastLineCards;
-        winTextForDisplay = `Bingobongo, LINE, ${code}`;
-    } else {
-        for (const code of selectedCards) {
-            const card = cards[code];
-            if (!card) continue;
-            if (checkLine(card)) {
-                firstLineCalled = true;
-                lastLineCards.add(code);
-                winTextForDisplay = `Bingobongo, LINE, ${code}`;
-                break;
-            }
-        }
-    }
-
-    // FULL HOUSE
-    if (firstFullHouseCalled) {
-        const [code] = lastFullHouseCards;
-        winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
-    } else {
-        for (const code of selectedCards) {
-            const card = cards[code];
-            if (!card) continue;
-            if (checkFullHouse(card)) {
-                firstFullHouseCalled = true;
-                lastFullHouseCards.add(code);
-                winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
-                break;
-            }
-        }
-    }
-
-    // Update win text
-    winTextOutput = winTextForDisplay;
-    toggleWinTextVisibility();
-
-    // Update currently selected card display
-    const code = cardSelect.value;
-    if (code && cards?.[code]) {
-        const card = cards[code];
-        const resultSpan = showCard(card);
-        let resultText = 'No win yet';
-        if (checkFullHouse(card)) resultText = 'FULL HOUSE!';
-        else if (checkLine(card)) resultText = 'LINE!';
-        showCardResult(resultText, resultSpan);
-    }
-
+    recalcFirstWins(); // recalc first wins only for cards that now qualify
     updateRemaining();
     updateCalledNumbersDisplay();
     updateBigLastNumber();
@@ -546,12 +491,9 @@ function updateAutoCheckState() {
 // Only triggers a win once per type per game (unless undone)
 // Only triggers a win once per type per game (unless undone)
 function recalcFirstWins() {
-    const autoCheckActive = autoCheckToggle.checked; // only respect if checked
+    let winTextForDisplay = 'No Win';
 
-    // Start with the previous win text (if any)
-    let winTextForDisplay = winTextOutput !== 'No Win' ? winTextOutput : 'No Win';
-
-    // Check for LINE only if not yet triggered
+    // Only trigger LINE if not yet triggered
     if (!firstLineCalled) {
         for (const code of selectedCards) {
             const card = cards[code];
@@ -559,18 +501,14 @@ function recalcFirstWins() {
             if (checkLine(card)) {
                 firstLineCalled = true;
                 lastLineCards.add(code);
-
-                if (autoCheckActive) {
-                    showCardResult(`Bingobongo, LINE, ${code}`, showCard(card, false));
-                }
-
+                showCardResult(`Bingobongo, LINE, ${code}`, showCard(card, false));
                 winTextForDisplay = `Bingobongo, LINE, ${code}`;
-                break; // only first card triggers first LINE
+                break; // Only first card triggers the first LINE
             }
         }
     }
 
-    // Check for FULL HOUSE only if not yet triggered
+    // Only trigger FULL HOUSE if not yet triggered
     if (!firstFullHouseCalled) {
         for (const code of selectedCards) {
             const card = cards[code];
@@ -578,21 +516,14 @@ function recalcFirstWins() {
             if (checkFullHouse(card)) {
                 firstFullHouseCalled = true;
                 lastFullHouseCards.add(code);
-
-                if (autoCheckActive) {
-                    showCardResult(`Bingobongo, FULL HOUSE, ${code}`, showCard(card, false));
-                }
-
+                showCardResult(`Bingobongo, FULL HOUSE, ${code}`, showCard(card, false));
                 winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
-                break; // only first card triggers first FULL HOUSE
+                break; // Only first card triggers the first FULL HOUSE
             }
         }
     }
 
-    // Always update internal winTextOutput
     winTextOutput = winTextForDisplay;
-
-    // Update display only if toggle is on
     toggleWinTextVisibility();
     saveGameState();
 }

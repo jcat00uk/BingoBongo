@@ -546,12 +546,11 @@ function updateAutoCheckState() {
 // Only triggers a win once per type per game (unless undone)
 // Only triggers a win once per type per game (unless undone)
 function recalcFirstWins() {
-    const autoCheckActive = autoCheckToggle.checked; // only respect if checked
+    let winTextForDisplay = 'No Win';
+const autoCheckActive = autoCheckToggle.checked; // only respect if checked
+    
 
-    // Start with the previous win text (if any)
-    let winTextForDisplay = winTextOutput !== 'No Win' ? winTextOutput : 'No Win';
-
-    // Check for LINE only if not yet triggered
+    // Only trigger LINE if not yet triggered
     if (!firstLineCalled) {
         for (const code of selectedCards) {
             const card = cards[code];
@@ -565,12 +564,12 @@ function recalcFirstWins() {
                 }
 
                 winTextForDisplay = `Bingobongo, LINE, ${code}`;
-                break; // only first card triggers first LINE
+                break; // Only first card triggers the first LINE
             }
         }
     }
 
-    // Check for FULL HOUSE only if not yet triggered
+    // Only trigger FULL HOUSE if not yet triggered
     if (!firstFullHouseCalled) {
         for (const code of selectedCards) {
             const card = cards[code];
@@ -584,15 +583,12 @@ function recalcFirstWins() {
                 }
 
                 winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
-                break; // only first card triggers first FULL HOUSE
+                break; // Only first card triggers the first FULL HOUSE
             }
         }
     }
 
-    // Always update internal winTextOutput
     winTextOutput = winTextForDisplay;
-
-    // Update display only if toggle is on
     toggleWinTextVisibility();
     saveGameState();
 }
