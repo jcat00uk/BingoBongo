@@ -234,7 +234,7 @@ pageEndInput.addEventListener('input', () => {
 // --- PREVIEW FUNCTION ---
 function renderPreview() {
   const container = document.getElementById('pagePreview');
-  container.innerHTML = '';
+  container.innerHTML='';
   const cardsObj = window.cards;
   const cardArray = Object.values(cardsObj);
 
@@ -256,26 +256,8 @@ function renderPreview() {
 
   const pageDiv = document.createElement('div');
   pageDiv.className='pageGrid';
-
-  // --- DYNAMIC GRID FOR PREVIEW ---
   pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
-
-  // Set a balanced height based on rows
-  let previewHeight = 0;
-  if(layoutSelect.value==='2x5'){
-    previewHeight = cardRows * 110; // each card ~110px tall
-  } else if(layoutSelect.value==='1x2'){
-    previewHeight = cardRows * 180;
-  } else if(layoutSelect.value==='2x3'){
-    previewHeight = cardRows * 130;
-  } else if(layoutSelect.value==='3x4'){
-    previewHeight = cardRows * 100;
-  } else if(layoutSelect.value==='4x5'){
-    previewHeight = cardRows * 90;
-  }
-
-  pageDiv.style.height = `${previewHeight}px`;
-  pageDiv.style.gap = '6px';
+  pageDiv.style.gridTemplateRows = `repeat(${cardRows}, 1fr)`;
 
   for(let i=0;i<cardsPerPage;i++){
     const card = displayArray[cardsPrinted];
@@ -283,32 +265,26 @@ function renderPreview() {
 
     const div = document.createElement('div');
     div.className='cardPreview';
+    div.style.gridTemplateRows='20% 80%';
 
-    // --- DYNAMIC CARD SIZE ---
-    if(layoutSelect.value==='2x5'){
-      div.style.gridTemplateRows='20% 80%';
-      div.style.height='110px';
-    } else if(layoutSelect.value==='1x2'){
-      div.style.height='180px';
-    } else if(layoutSelect.value==='2x3'){
-      div.style.height='130px';
-    } else if(layoutSelect.value==='3x4'){
-      div.style.height='100px';
-    } else if(layoutSelect.value==='4x5'){
-      div.style.height='90px';
-    }
-
-    // Card code
     const codeDiv = document.createElement('div');
     codeDiv.textContent = card.code;
     codeDiv.style.textAlign='center';
     codeDiv.style.fontWeight='bold';
-
-    if(layoutSelect.value==='2x5') codeDiv.style.fontSize='14px';
-
+if(layoutSelect.value==='3x4'){
+  codeDiv.style.fontSize='14px';  // was 10px → +4
+} else if(layoutSelect.value==='4x5'){
+  codeDiv.style.fontSize='12px';  // was 10px → +2
+} else if(layoutSelect.value==='1x2'){
+  codeDiv.style.fontSize='14px';
+} else if(layoutSelect.value==='2x3'){
+  codeDiv.style.fontSize='11px';
+} else if(layoutSelect.value==='2x5'){
+  codeDiv.style.fontSize='14px';   // card code
+  td.style.fontSize='14px';        // numbers
+}
     div.appendChild(codeDiv);
 
-    // Table
     const table = document.createElement('table');
     const rows = card.numbers.length;
     const colsInCard = card.numbers[0].length;
@@ -321,9 +297,16 @@ function renderPreview() {
         td.style.fontWeight='bold';
         td.style.textAlign='center';
         td.style.verticalAlign='middle';
-
-        if(layoutSelect.value==='2x5') td.style.fontSize='14px';
-
+// Cell numbers
+if(layoutSelect.value==='3x4'){
+  td.style.fontSize='12px';  // was 8px → +4
+} else if(layoutSelect.value==='4x5'){
+  td.style.fontSize='10px';  // was 8px → +2
+} else if(layoutSelect.value==='1x2'){
+  td.style.fontSize='20px';
+} else if(layoutSelect.value==='2x3'){
+  td.style.fontSize='12px';
+}
         tr.appendChild(td);
       }
       table.appendChild(tr);
