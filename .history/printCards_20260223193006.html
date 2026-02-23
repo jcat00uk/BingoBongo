@@ -120,15 +120,20 @@ button {
     padding: 14px 16px;
   }
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
   .pageGrid {
-    width: auto;       /* let JS set width/aspect-ratio */
-    height: auto;      /* auto height for scaling */
+    /* Keep the A4 ratio, scale to fit screen */
+    width: auto;
+    height: auto;
     max-width: 95vw;
     max-height: 90vh;
+
+    /* Maintain aspect ratio */
+    aspect-ratio: 210 / 297; /* portrait by default */
   }
   .cardPreview {
-    width: 100%;       /* fill grid cell */
+    /* let cards fill the grid cells */
+    width: 100%;
     height: 100%;
   }
 }
