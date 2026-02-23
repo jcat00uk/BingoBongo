@@ -20,7 +20,22 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
   margin-top: 12px;
 }
 
+.pageGrid {
+  display: grid;
+  border: 1px solid #666;
+  background: #fefefe;
+  box-sizing: border-box;
 
+  /* A4 ratio scaled to screen */
+  width: 210mm;
+  height: 297mm;
+  max-width: 95vw;   /* scale down for screen */
+  max-height: 90vh;
+  padding: 6px;
+  gap: 6px;
+
+  /* Grid rows/columns will be set in JS */
+}
 
 .cardPreview {
   display: grid;
@@ -140,7 +155,8 @@ button {
   aspect-ratio: 297 / 210;
 }
 
- 
+  /* We'll use JS to set width/height */
+  transform-origin: top left;
 }
 </style>
 
