@@ -143,15 +143,21 @@ button {
   position: relative;
 }
 
+#pagePreviewWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
 .pageGrid {
-  border: 1px solid #666;
-  background: #fefefe;
   box-sizing: border-box;
   padding: 6px;
   gap: 6px;
-
-  /* We'll use JS to set width/height */
-  transform-origin: top left;
+  transform-origin: top left; /* scale from top-left */
 }
 </style>
 
@@ -308,11 +314,9 @@ const pageDiv = document.createElement('div');
 pageDiv.className = 'pageGrid';
 pageDiv.dataset.layout = layoutSelect.value;
 
-// ------------------
-// SET PAGE SIZE & ORIENTATION
-// ------------------
+// --- SET PAGE ORIENTATION BASED ON LAYOUT ---
 if(layoutSelect.value === '2x5'){
-    // Portrait layout
+    // Portrait
     pageDiv.style.width = '210mm';
     pageDiv.style.height = '297mm';
     pageDiv.style.aspectRatio = '210 / 297';
@@ -324,7 +328,6 @@ if(layoutSelect.value === '2x5'){
 }
 pageDiv.style.maxWidth = '95vw';
 pageDiv.style.maxHeight = '90vh';
-// ------------------
 
   // Set dynamic grid
   pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
@@ -382,18 +385,19 @@ pageDiv.style.maxHeight = '90vh';
   }
 
   container.appendChild(pageDiv);
-const wrapper = document.getElementById('pagePreviewWrapper');
+  const wrapper = document.getElementById('pagePreviewWrapper');
 const page = pageDiv;
 
-// Compute scale to fit screen without squishing
+// Get wrapper and page dimensions
 const wrapperWidth = wrapper.clientWidth;
 const wrapperHeight = wrapper.clientHeight;
 const pageWidth = page.offsetWidth;
 const pageHeight = page.offsetHeight;
 
+// Compute scale factor while preserving aspect ratio
 const scale = Math.min(wrapperWidth / pageWidth, wrapperHeight / pageHeight, 1);
 
-// Apply proportional scaling
+// Apply transform scale
 page.style.transform = `scale(${scale})`;
 
 }

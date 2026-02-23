@@ -138,20 +138,17 @@ button {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  overflow: auto;
+  height: 100vh;
+  overflow: hidden;
   position: relative;
 }
 
 .pageGrid {
-  border: 1px solid #666;
-  background: #fefefe;
   box-sizing: border-box;
   padding: 6px;
   gap: 6px;
-
-  /* We'll use JS to set width/height */
-  transform-origin: top left;
+  transform-origin: top left; /* scale from top-left */
+}
 }
 </style>
 
@@ -382,6 +379,7 @@ pageDiv.style.maxHeight = '90vh';
   }
 
   container.appendChild(pageDiv);
+// scale page to fit wrapper without squishing
 const wrapper = document.getElementById('pagePreviewWrapper');
 const page = pageDiv;
 

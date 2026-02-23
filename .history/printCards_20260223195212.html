@@ -308,11 +308,9 @@ const pageDiv = document.createElement('div');
 pageDiv.className = 'pageGrid';
 pageDiv.dataset.layout = layoutSelect.value;
 
-// ------------------
-// SET PAGE SIZE & ORIENTATION
-// ------------------
+// --- SET PAGE ORIENTATION BASED ON LAYOUT ---
 if(layoutSelect.value === '2x5'){
-    // Portrait layout
+    // Portrait
     pageDiv.style.width = '210mm';
     pageDiv.style.height = '297mm';
     pageDiv.style.aspectRatio = '210 / 297';
@@ -324,7 +322,6 @@ if(layoutSelect.value === '2x5'){
 }
 pageDiv.style.maxWidth = '95vw';
 pageDiv.style.maxHeight = '90vh';
-// ------------------
 
   // Set dynamic grid
   pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;

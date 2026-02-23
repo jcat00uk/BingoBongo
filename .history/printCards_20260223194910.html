@@ -138,8 +138,8 @@ button {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  overflow: auto;
+  height: 100vh;  /* fill viewport height */
+  overflow: hidden;
   position: relative;
 }
 
@@ -150,8 +150,12 @@ button {
   padding: 6px;
   gap: 6px;
 
-  /* We'll use JS to set width/height */
-  transform-origin: top left;
+  /* base size for A4 page */
+  width: 210mm;      /* will be swapped to 297mm for landscape */
+  height: 297mm;     /* will be swapped to 210mm for landscape */
+  aspect-ratio: 210 / 297;
+
+  transform-origin: top left;  /* scale from top-left */
 }
 </style>
 
@@ -382,18 +386,20 @@ pageDiv.style.maxHeight = '90vh';
   }
 
   container.appendChild(pageDiv);
+// scale page to fit wrapper without squishing
 const wrapper = document.getElementById('pagePreviewWrapper');
 const page = pageDiv;
 
-// Compute scale to fit screen without squishing
+// Get actual dimensions
 const wrapperWidth = wrapper.clientWidth;
 const wrapperHeight = wrapper.clientHeight;
 const pageWidth = page.offsetWidth;
 const pageHeight = page.offsetHeight;
 
-const scale = Math.min(wrapperWidth / pageWidth, wrapperHeight / pageHeight, 1);
+// scale proportionally to fit both width & height
+const scale = Math.min(wrapperWidth / pageWidth, wrapperHeight / pageHeight);
 
-// Apply proportional scaling
+// apply scale
 page.style.transform = `scale(${scale})`;
 
 }
