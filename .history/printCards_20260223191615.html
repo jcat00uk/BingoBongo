@@ -273,20 +273,6 @@ function renderPreview() {
   pageDiv.className = 'pageGrid';
   pageDiv.dataset.layout = layoutSelect.value;
 
-// ====== ADD THIS BLOCK ======
-if(layoutSelect.value === '2x5' || layoutSelect.value === '1x2'){
-    // Portrait layout
-    pageDiv.style.width = '210mm';
-    pageDiv.style.height = '297mm';
-} else {
-    // Landscape layout for wider layouts
-    pageDiv.style.width = '297mm';
-    pageDiv.style.height = '210mm';
-}
-pageDiv.style.maxWidth = '95vw';
-pageDiv.style.maxHeight = '90vh';
-// ===========================
-
   // Set dynamic grid
   pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
   pageDiv.style.gridTemplateRows = `repeat(${cardRows}, 1fr)`;

@@ -26,17 +26,18 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
   background: #fefefe;
   box-sizing: border-box;
 
-  /* A4 ratio scaled to screen */
-  width: 210mm;
-  height: 297mm;
-  max-width: 95vw;   /* scale down for screen */
+  /* Use actual A4 ratio for scaling */
+  width: 210mm;   /* A4 width in mm */
+  height: 297mm;  /* A4 height in mm */
+  max-width: 100%; /* scale down to fit screen */
   max-height: 90vh;
-  padding: 6px;
+  padding: 5px;
   gap: 6px;
 
-  /* Grid rows/columns will be set in JS */
+  /* grid layout will be set dynamically in JS */
 }
 
+/* Individual card preview */
 .cardPreview {
   display: grid;
   grid-template-rows: 20% 80%;
@@ -46,8 +47,20 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
   box-sizing: border-box;
   background: #fff;
 
-  width: 100%;   /* fill grid cell */
+  /* Default dimensions */
+  width: 100%;
   height: 100%;
+}
+
+/* --- DYNAMIC SIZING FOR 2x5 (portrait) --- */
+.pageGrid[data-layout="2x5"] {
+  width: 350px;           /* narrower for 2 columns */
+  height: 550px;          /* taller for 5 rows */
+  grid-auto-rows: 110px;  /* each card row */
+}
+
+.cardPreview[data-layout="2x5"] {
+  height: 100px;
 }
 
 .cardPreview table {
@@ -56,7 +69,6 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
   border-collapse: collapse;
   table-layout: fixed;
 }
-
 .cardPreview td {
   border: 1px solid #000;
   text-align: center;
@@ -254,68 +266,98 @@ function renderPreview() {
   const cardArray = Object.values(cardsObj);
 
   let displayArray = [...cardArray];
-  if(orderSelect.value==='random') displayArray.sort(()=>Math.random()-0.5);
+  if(orderSelect.value==='random') displayArray = displayArray.sort(()=>Math.random()-0.5);
   finalCardOrder = displayArray;
 
-  const cardsPerPage = cardCols * cardRows;
+  const cardsPerPage = cardCols*cardRows;
 
   let startPage=1, endPage=Math.ceil(cardArray.length/cardsPerPage);
   if(orderSelect.value==='sequential'){
-    startPage = parseInt(pageStartInput.value)||1;
-    endPage = parseInt(pageEndInput.value)||endPage;
+    startPage=parseInt(pageStartInput.value)||1;
+    endPage=parseInt(pageEndInput.value)||endPage;
   } else {
-    endPage = parseInt(numPagesInput.value)||1;
+    endPage=parseInt(numPagesInput.value)||1;
   }
 
   let cardsPrinted = (startPage-1)*cardsPerPage;
 
   const pageDiv = document.createElement('div');
-  pageDiv.className = 'pageGrid';
-  pageDiv.dataset.layout = layoutSelect.value;
+pageDiv.className = 'pageGrid';
+pageDiv.dataset.layout = layoutSelect.value;
 
-// ====== ADD THIS BLOCK ======
-if(layoutSelect.value === '2x5' || layoutSelect.value === '1x2'){
-    // Portrait layout
-    pageDiv.style.width = '210mm';
-    pageDiv.style.height = '297mm';
-} else {
-    // Landscape layout for wider layouts
-    pageDiv.style.width = '297mm';
-    pageDiv.style.height = '210mm';
+// Set grid rows and columns dynamically
+pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
+pageDiv.style.gridTemplateRows = `repeat(${cardRows}, 1fr)`;
+
+// Each card will auto-fit the grid cell
+for(let i=0;i<cardsPerPage;i++){
+  const card = displayArray[cardsPrinted];
+  if(!card) break;
+
+  const div = document.createElement('div');
+  div.className='cardPreview';
+  div.dataset.layout = layoutSelect.value;
+
+  // No fixed height — will fit cell of the grid
+  div.style.width = '100%';
+  div.style.height = '100%';
+
+  // Card code & table as before...
 }
-pageDiv.style.maxWidth = '95vw';
-pageDiv.style.maxHeight = '90vh';
-// ===========================
 
-  // Set dynamic grid
-  pageDiv.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
-  pageDiv.style.gridTemplateRows = `repeat(${cardRows}, 1fr)`;
+  // Set a balanced height based on rows
+  let previewHeight = 0;
+  if(layoutSelect.value==='2x5'){
+    previewHeight = cardRows * 110; // each card ~110px tall
+  } else if(layoutSelect.value==='1x2'){
+    previewHeight = cardRows * 180;
+  } else if(layoutSelect.value==='2x3'){
+    previewHeight = cardRows * 130;
+  } else if(layoutSelect.value==='3x4'){
+    previewHeight = cardRows * 100;
+  } else if(layoutSelect.value==='4x5'){
+    previewHeight = cardRows * 90;
+  }
+
+  pageDiv.style.height = `${previewHeight}px`;
+  pageDiv.style.gap = '6px';
 
   for(let i=0;i<cardsPerPage;i++){
     const card = displayArray[cardsPrinted];
     if(!card) break;
 
     const div = document.createElement('div');
-    div.className = 'cardPreview';
-    div.dataset.layout = layoutSelect.value;
+    div.className='cardPreview';
+
+    // --- DYNAMIC CARD SIZE ---
+    if(layoutSelect.value==='2x5'){
+      div.style.gridTemplateRows='20% 80%';
+      div.style.height='110px';
+    } else if(layoutSelect.value==='1x2'){
+      div.style.height='180px';
+    } else if(layoutSelect.value==='2x3'){
+      div.style.height='130px';
+    } else if(layoutSelect.value==='3x4'){
+      div.style.height='100px';
+    } else if(layoutSelect.value==='4x5'){
+      div.style.height='90px';
+    }
 
     // Card code
     const codeDiv = document.createElement('div');
     codeDiv.textContent = card.code;
-    codeDiv.style.textAlign = 'center';
-    codeDiv.style.fontWeight = 'bold';
+    codeDiv.style.textAlign='center';
+    codeDiv.style.fontWeight='bold';
 
-    // Dynamic font sizing
-    if(layoutSelect.value==='1x2') codeDiv.style.fontSize='18px';
-    else if(layoutSelect.value==='2x3') codeDiv.style.fontSize='14px';
-    else if(layoutSelect.value==='2x5') codeDiv.style.fontSize='14px';
-    else if(layoutSelect.value==='3x4') codeDiv.style.fontSize='12px';
-    else if(layoutSelect.value==='4x5') codeDiv.style.fontSize='10px';
+    if(layoutSelect.value==='2x5') codeDiv.style.fontSize='14px';
 
     div.appendChild(codeDiv);
 
-    // Bingo table
+    // Table
     const table = document.createElement('table');
+    const rows = card.numbers.length;
+    const colsInCard = card.numbers[0].length;
+
     for(const row of card.numbers){
       const tr = document.createElement('tr');
       for(const n of row){
@@ -325,12 +367,7 @@ pageDiv.style.maxHeight = '90vh';
         td.style.textAlign='center';
         td.style.verticalAlign='middle';
 
-        // Dynamic font for table cells
-        if(layoutSelect.value==='1x2') td.style.fontSize='20px';
-        else if(layoutSelect.value==='2x3') td.style.fontSize='12px';
-        else if(layoutSelect.value==='2x5') td.style.fontSize='14px';
-        else if(layoutSelect.value==='3x4') td.style.fontSize='12px';
-        else if(layoutSelect.value==='4x5') td.style.fontSize='10px';
+        if(layoutSelect.value==='2x5') td.style.fontSize='14px';
 
         tr.appendChild(td);
       }
