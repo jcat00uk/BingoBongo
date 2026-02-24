@@ -256,7 +256,6 @@ function startGame() {
   updateButtonGlows(); // Update button glow states
   //
   winTextOutput = 'No Win';
-  toggleWinTextVisibility();
 winText.textContent = autoCheckToggle.checked ? winTextOutput : '';
 }
 
@@ -958,7 +957,6 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
   winTextOutput = state.winTextOutput || 'No Win';
-  toggleWinTextVisibility();
   winText.textContent = autoCheckToggle.checked ? winTextOutput : '';
 
   // Load night mode if previously enabled
