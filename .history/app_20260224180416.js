@@ -23,6 +23,18 @@ let lastFullHouseCards = new Set(); // Set of cards with last full house win
 
 let isUndoing = false; //Undo button is pressed
 
+// ===============================
+// FIRST WIN TRACKING (TIMELINE)
+// ===============================
+
+// These flags say IF a win has ever happened
+let firstLineCalled = false;        // Has the first LINE been called at all?
+let firstFullHouseCalled = false;   // Has the first FULL HOUSE been called at all?
+
+// These store WHICH cards caused the first wins
+let lastLineCards = new Set();      // Card(s) that won the FIRST LINE
+let lastFullHouseCards = new Set(); // Card(s) that won the FIRST FULL HOUSE
+
 // 🔑 These store WHEN the first wins happened
 // (the exact number that completed the win)
 // Needed so undo knows if we crossed back before the win

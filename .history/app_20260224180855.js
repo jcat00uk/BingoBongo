@@ -295,65 +295,30 @@ recalcFirstWins();
 // Function to undo the last number called
 // Undo last number
 function undoNumber() {
-    if (!calledNumbers.length || !gameActive) return;
-    if (!confirm('Undo the last number called?')) return;
+  if (!calledNumbers.length || !gameActive) return;
+  if (!confirm('Undo the last number called?')) return;
 
-    // Remove the last called number
-    const undoneNumber = calledNumbers.pop();
-    numbers.push(undoneNumber);
-    numbers.sort((a, b) => a - b);
+  // Restore number pool
+  const num = calledNumbers.pop();
+  numbers.push(num);
+  numbers.sort((a, b) => a - b);
 
-    // Rebuild grid from scratch
-    clearBingoGrid();
-    calledNumbers.forEach(markCalledNumber);
+  // Rebuild grid state
+  clearBingoGrid();
+  calledNumbers.forEach(markCalledNumber);
 
-    // ===============================
-    // LINE TIMELINE CHECK
-    // ===============================
-    // If the undone number WAS the number that caused the first LINE,
-    // then the LINE must be undone completely
-    if (firstLineCalled && undoneNumber === firstLineNumber) {
-        firstLineCalled = false;
-        firstLineNumber = null;
-        lastLineCards.clear();
-    }
+  // Recalculate wins from scratch
+  recalcCurrentWins();
 
-    // ===============================
-    // FULL HOUSE TIMELINE CHECK
-    // ===============================
-    // Same logic for FULL HOUSE
-    if (firstFullHouseCalled && undoneNumber === firstFullHouseNumber) {
-        firstFullHouseCalled = false;
-        firstFullHouseNumber = null;
-        lastFullHouseCards.clear();
-    }
+  // 🔐 Only render if a win STILL exists
+  renderWinningCardIfAny();
 
-    // ===============================
-    // REBUILD winText BASED ON CURRENT STATE
-    // ===============================
-    let winTextForDisplay = 'No Win';
-
-    if (firstFullHouseCalled) {
-        const [code] = lastFullHouseCards;
-        winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
-    } else if (firstLineCalled) {
-        const [code] = lastLineCards;
-        winTextForDisplay = `Bingobongo, LINE, ${code}`;
-    }
-
-    winTextOutput = winTextForDisplay;
-    toggleWinTextVisibility();
-
-    // ===============================
-    // REMOVE CARD DISPLAY IF IT SHOULD NOT EXIST
-    // ===============================
-    checkCardContainer.innerHTML = '';
-
-    updateRemaining();
-    updateCalledNumbersDisplay();
-    updateBigLastNumber();
-    updateUndoButton();
-    saveGameState();
+  // UI updates
+  updateRemaining();
+  updateCalledNumbersDisplay();
+  updateBigLastNumber();
+  updateUndoButton();
+  saveGameState();
 }
 // Function to end the game
 function endGame() {
