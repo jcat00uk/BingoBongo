@@ -250,7 +250,7 @@ function startGame() {
   gameActive = true; // Set game to active
   firstLineCalled = false; // Reset first line flag
   firstFullHouseCalled = false; // Reset first full house flag
-  updateControlButtons();
+ updateControlButtons();
   updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
   updateBigLastNumber(); // Update the last called number
@@ -301,13 +301,13 @@ recalcFirstWins();
   updateBigLastNumber(); // Update the last called number
   updateUndoButton(); // Update the undo button
   
-   updateControlButtons();
+
   // Disable next number button if all numbers have been called
   if (numbers.length === 0) {
     nextNumberBtn.disabled = true;
     undoNumberBtn.disabled = true;
   }
- 
+
 
   callingLock = false; // Unlock the calling process
   saveGameState(); // Save the game state to localStorage
@@ -1000,7 +1000,11 @@ function loadGameState() {
   populateCardSelect();
   updateAutoCheckToggle();
 
-  updateControlButtons();
+  startGameBtn.disabled = gameActive;
+  nextNumberBtn.disabled = !gameActive;
+  endGameBtn.disabled = !gameActive;
+  selectCardsBtn.disabled = gameActive;
+  cardSelect.disabled = state.cardSelectDisabled ?? !gameActive;
   recalcFirstWins(); // recalc LINE/FULL HOUSE based on saved calledNumbers
   toggleWinTextVisibility();
   updateRemaining();
