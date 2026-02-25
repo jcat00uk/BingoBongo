@@ -601,18 +601,18 @@ function recalcFirstWins() {
 function showWinAnimation(text, duration = 9000) {
   if (!winAnimation) return;
 
-  // Update text every time
-  winAnimation.textContent = text;
+  // Only update text if changed
+  if (winAnimation.textContent !== text) {
+    winAnimation.textContent = text;
 
-  // Restart CSS animation unconditionally
-  winAnimation.classList.remove('show');
-  void winAnimation.offsetWidth; // Force reflow
-  winAnimation.classList.add('show');
+    // Restart CSS animation
+    winAnimation.classList.remove('show');
+    void winAnimation.offsetWidth; // force reflow
+    winAnimation.classList.add('show');
+  }
 
-  // Cancel previous timer
+  // Cancel previous timer and start new one
   clearTimeout(winAnimationTimeout);
-
-  // Ensure animation hides after duration
   winAnimation.style.display = 'block';
   winAnimationTimeout = setTimeout(() => {
     winAnimation.style.display = 'none';

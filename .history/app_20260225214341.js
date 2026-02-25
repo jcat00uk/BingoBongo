@@ -487,22 +487,26 @@ function showCard(card, clearExisting = true) {
 
 
 
-function showCardResult(resultText, element) {
-  element.textContent = resultText;
-   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
-  else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
-  else element.style.color = 'yellow';
+function showWinAnimation(text, duration = 9000) {
+  if (!winAnimation) return;
 
-  showWinAnimation(resultText); // Trigger the win animation
+  // Update text every time
+  winAnimation.textContent = text;
 
-  // Use setTimeout to delay win state speech to after number is spoken
-if (ttsEnabled && 'speechSynthesis' in window) {
-    const utter = new SpeechSynthesisUtterance(resultText);
-    utter.rate = 0.9; // slightly slower, clearer speech
-    setTimeout(() => {
-        window.speechSynthesis.speak(utter);
-    }, 600); // small delay so number is spoken first
-}
+  // Restart CSS animation unconditionally
+  winAnimation.classList.remove('show');
+  void winAnimation.offsetWidth; // Force reflow
+  winAnimation.classList.add('show');
+
+  // Cancel previous timer
+  clearTimeout(winAnimationTimeout);
+
+  // Ensure animation hides after duration
+  winAnimation.style.display = 'block';
+  winAnimationTimeout = setTimeout(() => {
+    winAnimation.style.display = 'none';
+    winAnimationTimeout = null;
+  }, duration);
 }
 
 
@@ -601,18 +605,18 @@ function recalcFirstWins() {
 function showWinAnimation(text, duration = 9000) {
   if (!winAnimation) return;
 
-  // Update text every time
-  winAnimation.textContent = text;
+  // Only update text if changed
+  if (winAnimation.textContent !== text) {
+    winAnimation.textContent = text;
 
-  // Restart CSS animation unconditionally
-  winAnimation.classList.remove('show');
-  void winAnimation.offsetWidth; // Force reflow
-  winAnimation.classList.add('show');
+    // Restart CSS animation
+    winAnimation.classList.remove('show');
+    void winAnimation.offsetWidth; // force reflow
+    winAnimation.classList.add('show');
+  }
 
-  // Cancel previous timer
+  // Cancel previous timer and start new one
   clearTimeout(winAnimationTimeout);
-
-  // Ensure animation hides after duration
   winAnimation.style.display = 'block';
   winAnimationTimeout = setTimeout(() => {
     winAnimation.style.display = 'none';
