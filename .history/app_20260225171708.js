@@ -320,6 +320,7 @@ updateControlButtons();
 updateUndoButton(); // undo state now covers "no numbers left"
 
 // Only update win text IF auto-check is ON
+winTextOutput = 'No Win';
 toggleWinTextVisibility();
 
 callingLock = false;
@@ -376,7 +377,11 @@ function undoNumber() {
     }
 
 winTextOutput = winTextForDisplay;
-toggleWinTextVisibility();
+
+// Only update the DOM if auto-check is ON
+if (autoCheckToggle.checked) {
+    winText.textContent = winTextOutput;
+}
 
     // ===============================
     // REMOVE CARD DISPLAY IF IT SHOULD NOT EXIST
@@ -943,6 +948,7 @@ function loadGameState() {
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
   winTextOutput = state.winTextOutput || 'No Win';
   toggleWinTextVisibility();
+  winText.textContent = autoCheckToggle.checked ? winTextOutput : '';
 
   // Load night mode if previously enabled
   if (state.nightMode || isFirstVisit) {

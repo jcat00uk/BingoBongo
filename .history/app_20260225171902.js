@@ -942,7 +942,7 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
   winTextOutput = state.winTextOutput || 'No Win';
-  toggleWinTextVisibility();
+toggleWinTextVisibility();
 
   // Load night mode if previously enabled
   if (state.nightMode || isFirstVisit) {
