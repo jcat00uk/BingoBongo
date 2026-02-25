@@ -84,7 +84,7 @@ autoCheckToggle.onchange = () => {
   localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked); // Save auto-check toggle state in localStorage
 };
 // Event listener to monitor changes on the autoCheckToggle
-autoCheckToggle.addEventListener('change', updateWinTextDisplay);
+autoCheckToggle.addEventListener('change', toggleWinTextVisibility);
 
     // Function to handle clearing or showing the winText based on the toggle's checked or disabled state
 
@@ -94,7 +94,8 @@ function updateWinTextDisplay() {
     winText.textContent = autoCheckToggle?.checked ? winTextOutput : '';
 }
 
-
+// Call the function initially to set the state on page load
+//toggleWinTextVisibility();
 
 
 
@@ -262,7 +263,7 @@ function updateWinText() {
     } else {
         winTextOutput = 'No Win';
     }
-    updateWinTextDisplay()
+    toggleWinTextVisibility();
 }
 
 // Finds the first card that has a win of a given type
@@ -325,7 +326,7 @@ function startGame() {
   updateButtonGlows(); // Update button glow states
   //
 winTextOutput = 'No Win';
-updateWinTextDisplay()
+toggleWinTextVisibility();
 }
 
 // Function to call the next random number
@@ -357,7 +358,7 @@ updateControlButtons();
 
 
 // Only update win text IF auto-check is ON
-updateWinTextDisplay()
+toggleWinTextVisibility();
 
 callingLock = false;
 saveGameState();
@@ -832,7 +833,7 @@ function loadGameState() {
   lastLineCards = new Set(state.lastLineCards || []);
   lastFullHouseCards = new Set(state.lastFullHouseCards || []);
   winTextOutput = state.winTextOutput || 'No Win';
-  updateWinTextDisplay()
+  toggleWinTextVisibility();
 
   // Load night mode if previously enabled
   if (state.nightMode || isFirstVisit) {
@@ -855,7 +856,7 @@ function loadGameState() {
 
   updateControlButtons();
   recalcFirstWins(); // recalc LINE/FULL HOUSE based on saved calledNumbers
-  updateWinTextDisplay()
+  toggleWinTextVisibility();
   updateRemaining();
   updateCalledNumbersDisplay();
   updateBigLastNumber();

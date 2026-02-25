@@ -84,10 +84,17 @@ autoCheckToggle.onchange = () => {
   localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked); // Save auto-check toggle state in localStorage
 };
 // Event listener to monitor changes on the autoCheckToggle
-autoCheckToggle.addEventListener('change', updateWinTextDisplay);
+autoCheckToggle.addEventListener('change', toggleWinTextVisibility);
 
     // Function to handle clearing or showing the winText based on the toggle's checked or disabled state
 
+function toggleWinTextVisibility() {
+    if (!autoCheckToggle.checked) {
+        winText.textContent = '';  
+    } else {
+        winText.textContent = winTextOutput;  
+    }
+}
 
 function updateWinTextDisplay() {
     if (!winText) return;
