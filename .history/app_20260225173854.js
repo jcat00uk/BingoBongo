@@ -626,9 +626,14 @@ function updateAutoCheckState() {
 // Only triggers a win once per type per game (unless undone)
 function recalcFirstWins() {
     const autoCheckActive = autoCheckToggle.checked;
+    let winTextForDisplay = 'No Win';
+
+    // Clear winners if they haven't been triggered yet
+    if (!firstLineCalled) lastLineCards.clear();
+    if (!firstFullHouseCalled) lastFullHouseCards.clear();
 
     // -------------------------
-    // Check for FIRST FULL HOUSE first (final win)
+    // 1️⃣ Check FIRST FULL HOUSE first
     // -------------------------
     if (!firstFullHouseCalled) {
         for (const code of selectedCards) {
@@ -640,15 +645,15 @@ function recalcFirstWins() {
                 firstFullHouseNumber = calledNumbers.at(-1);
                 lastFullHouseCards.add(code);
 
-                winTextOutput = `Bingobongo, FULL HOUSE, ${code}`; // Overrides LINE if it exists
-                if (autoCheckActive) showCardResult(winTextOutput, showCard(card, false));
+                winTextForDisplay = `Bingobongo, FULL HOUSE, ${code}`;
+                if (autoCheckActive) showCardResult(winTextForDisplay, showCard(card, false));
                 break; // Only first FULL HOUSE counts
             }
         }
     }
 
     // -------------------------
-    // Check for FIRST LINE only if no LINE yet AND FULL HOUSE not yet happened
+    // 2️⃣ Check FIRST LINE only if FULL HOUSE not found
     // -------------------------
     if (!firstLineCalled && !firstFullHouseCalled) {
         for (const code of selectedCards) {
@@ -660,17 +665,16 @@ function recalcFirstWins() {
                 firstLineNumber = calledNumbers.at(-1);
                 lastLineCards.add(code);
 
-                winTextOutput = `Bingobongo, LINE, ${code}`; // LINE only if FULL HOUSE not yet
-                if (autoCheckActive) showCardResult(winTextOutput, showCard(card, false));
+                winTextForDisplay = `Bingobongo, LINE, ${code}`;
+                if (autoCheckActive) showCardResult(winTextForDisplay, showCard(card, false));
                 break; // Only first LINE counts
             }
         }
     }
 
-    // Only show text if toggle is on
+    // Update global state and display
+    winTextOutput = winTextForDisplay;
     toggleWinTextVisibility();
-
-    // Save the current game state
     saveGameState();
 }
 
