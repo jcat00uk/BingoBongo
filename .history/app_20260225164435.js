@@ -203,11 +203,7 @@ function updateBigLastNumber() {
 
 // Function to update the undo button state
 function updateUndoButton() {
-  // Disable undo if:
-  // 1️⃣ Game is not active
-  // 2️⃣ No numbers have been called
-  // 3️⃣ All numbers have been called (nothing left to undo)
-  undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.length === 0;
+  undoNumberBtn.disabled = !gameActive || !calledNumbers.length; // Disable undo if game is inactive or no numbers have been called
 }
 
 // Function to update the glow effect on the buttons based on the game state
@@ -291,12 +287,8 @@ function startGame() {
   saveGameState(); // Save game state to localStorage
   updateButtonGlows(); // Update button glow states
   //
-winTextOutput = 'No Win';
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-} else {
-    winText.textContent = '';
-}
+  winTextOutput = 'No Win';
+  toggleWinTextVisibility();
 winText.textContent = autoCheckToggle.checked ? winTextOutput : '';
 }
 
@@ -324,17 +316,13 @@ recalcFirstWins();
   
    updateControlButtons();
   // Disable next number button if all numbers have been called
-// Update buttons safely
+// Update button states after calling a number
 updateControlButtons();
-updateUndoButton(); // undo state now covers "no numbers left"
+updateUndoButton(); // ensure undo is correctly enabled/disabled
+ 
 
-// Only update win text IF auto-check is ON
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-}
-
-callingLock = false;
-saveGameState();
+  callingLock = false; // Unlock the calling process
+  saveGameState(); // Save the game state to localStorage
 }
 
 // Function to undo the last number called
@@ -386,12 +374,8 @@ function undoNumber() {
         winTextForDisplay = `Bingobongo, LINE, ${code}`;
     }
 
-winTextOutput = winTextForDisplay;
-
-// Only update the DOM if auto-check is ON
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-}
+    winTextOutput = winTextForDisplay;
+    toggleWinTextVisibility();
 
     // ===============================
     // REMOVE CARD DISPLAY IF IT SHOULD NOT EXIST

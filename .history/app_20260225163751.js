@@ -203,11 +203,7 @@ function updateBigLastNumber() {
 
 // Function to update the undo button state
 function updateUndoButton() {
-  // Disable undo if:
-  // 1️⃣ Game is not active
-  // 2️⃣ No numbers have been called
-  // 3️⃣ All numbers have been called (nothing left to undo)
-  undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.length === 0;
+  undoNumberBtn.disabled = !gameActive || !calledNumbers.length; // Disable undo if game is inactive or no numbers have been called
 }
 
 // Function to update the glow effect on the buttons based on the game state
@@ -291,12 +287,8 @@ function startGame() {
   saveGameState(); // Save game state to localStorage
   updateButtonGlows(); // Update button glow states
   //
-winTextOutput = 'No Win';
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-} else {
-    winText.textContent = '';
-}
+  winTextOutput = 'No Win';
+  toggleWinTextVisibility();
 winText.textContent = autoCheckToggle.checked ? winTextOutput : '';
 }
 
@@ -324,17 +316,14 @@ recalcFirstWins();
   
    updateControlButtons();
   // Disable next number button if all numbers have been called
-// Update buttons safely
-updateControlButtons();
-updateUndoButton(); // undo state now covers "no numbers left"
+  if (numbers.length === 0) {
+    nextNumberBtn.disabled = true;
+    undoNumberBtn.disabled = true;
+  }
+ 
 
-// Only update win text IF auto-check is ON
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-}
-
-callingLock = false;
-saveGameState();
+  callingLock = false; // Unlock the calling process
+  saveGameState(); // Save the game state to localStorage
 }
 
 // Function to undo the last number called
@@ -386,12 +375,8 @@ function undoNumber() {
         winTextForDisplay = `Bingobongo, LINE, ${code}`;
     }
 
-winTextOutput = winTextForDisplay;
-
-// Only update the DOM if auto-check is ON
-if (autoCheckToggle.checked) {
-    winText.textContent = winTextOutput;
-}
+    winTextOutput = winTextForDisplay;
+    toggleWinTextVisibility();
 
     // ===============================
     // REMOVE CARD DISPLAY IF IT SHOULD NOT EXIST
@@ -803,7 +788,56 @@ function adjustModalCardItemWidth() {
   });
 }
 
+// Function to render the modal card list for selecting cards
+function renderModalCardList() {
+  if (!modalCardList) return;
+  modalCardList.innerHTML = '';
+  const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
+  const allCardCodes = Object.keys(cards || {});
 
+  const pinned = allCardCodes.filter(code => modalSelections.has(code));
+  pinned.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'modal-card-item pinned';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = true;
+    checkbox.dataset.code = code;
+    checkbox.onchange = () => handleModalCheckboxChange(code, checkbox.checked);
+    const label = document.createElement('label');
+    label.textContent = code;
+
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    modalCardList.appendChild(div);
+  });
+
+  if (pinned.length) {
+    const divider = document.createElement('div');
+    divider.style.borderBottom = '1px solid #aaa';
+    divider.style.margin = '4px 0';
+    modalCardList.appendChild(divider);
+  }
+
+  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
+  others.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'modal-card-item';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = false;
+    checkbox.dataset.code = code;
+    checkbox.onchange = () => handleModalCheckboxChange(code, checkbox.checked);
+    const label = document.createElement('label');
+    label.textContent = code;
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    modalCardList.appendChild(div);
+  });
+
+  // ✅ shrink items to fit text
+  adjustModalCardItemWidth();  // Adjust width after rendering modal items
+}
 
 // Event listeners and handlers for modals and checkboxes
 // Run on load and onchange
