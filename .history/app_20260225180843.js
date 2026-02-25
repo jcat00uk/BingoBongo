@@ -201,7 +201,14 @@ function updateBigLastNumber() {
   }
 }
 
-
+// Function to update the undo button state
+function updateUndoButton() {
+  // Disable undo if:
+  // 1️⃣ Game is not active
+  // 2️⃣ No numbers have been called
+  // 3️⃣ All numbers have been called (nothing left to undo)
+  undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.length === 0;
+}
 
 // Function to update the glow effect on the buttons based on the game state
 function updateButtonGlows() {
@@ -224,8 +231,8 @@ function updateControlButtons() {
   // Next number is disabled if game not active or no numbers left
   nextNumberBtn.disabled = !gameActive || numbers.length === 0;
 
-// Undo is disabled if game not active or no numbers have been called
-undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.length === 0;
+  // Undo is disabled if game not active or no numbers have been called
+  undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0;
 
   // End button only enabled when game is active
   endGameBtn.disabled = !gameActive;
@@ -235,8 +242,6 @@ undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.le
 
   // Card dropdown only active during game
   cardSelect.disabled = !gameActive;
-
-  
 }
 
 // Returns 'FULL HOUSE', 'LINE', or null
@@ -311,7 +316,7 @@ function startGame() {
   updateRemaining(); // Update remaining numbers count
   updateCalledNumbersDisplay(); // Update called numbers display
   updateBigLastNumber(); // Update the last called number
- 
+  updateUndoButton(); // Update the undo button
   clearBingoGrid(); // Clear the Bingo grid
 
   if (!selectedCards.length) {
@@ -351,13 +356,13 @@ recalcFirstWins();
   updateRemaining(); // Update the remaining numbers count
   updateCalledNumbersDisplay(); // Update the called numbers display
   updateBigLastNumber(); // Update the last called number
-
+  updateUndoButton(); // Update the undo button
   
-  
+   updateControlButtons();
   // Disable next number button if all numbers have been called
 // Update buttons safely
 updateControlButtons();
-
+updateUndoButton(); // undo state now covers "no numbers left"
 
 // Only update win text IF auto-check is ON
 toggleWinTextVisibility();
@@ -392,7 +397,7 @@ function undoNumber() {
     updateRemaining();
     updateCalledNumbersDisplay();
     updateBigLastNumber();
-  
+    updateUndoButton();
     saveGameState();
 }
 // Function to end the game
@@ -485,9 +490,69 @@ function showCard(card, clearExisting = true) {
   return resultSpan; // Return the result span for later updates
 }
 
+function renderWinningCardIfAny() {
+  // FULL HOUSE has priority
+  for (const code of selectedCards) {
+    const card = cards[code];
+    if (!card) continue;
 
+    if (checkFullHouse(card)) {
+      const span = showCard(card);
+      showCardResult('FULL HOUSE!', span);
+      return;
+    }
+  }
 
+  // Then LINE
+  for (const code of selectedCards) {
+    const card = cards[code];
+    if (!card) continue;
 
+    if (checkLine(card)) {
+      const span = showCard(card);
+      showCardResult('LINE!', span);
+      return;
+    }
+  }
+
+  // ❗ No wins at all → CLEAR the card
+  checkCardContainer.innerHTML = '';
+}
+
+function recalcCurrentWins() {
+  winTextOutput = 'No Win';
+
+  firstLineCalled = false;
+  firstFullHouseCalled = false;
+  lastLineCards.clear();
+  lastFullHouseCards.clear();
+
+  for (const code of selectedCards) {
+    const card = cards[code];
+    if (!card) continue;
+
+    if (checkLine(card)) {
+      firstLineCalled = true;
+      lastLineCards.add(code);
+      winTextOutput = `Bingobongo, LINE, ${code}`;
+      break;
+    }
+  }
+
+  for (const code of selectedCards) {
+    const card = cards[code];
+    if (!card) continue;
+
+    if (checkFullHouse(card)) {
+      firstFullHouseCalled = true;
+      lastFullHouseCards.add(code);
+      winTextOutput = `Bingobongo, FULL HOUSE, ${code}`;
+      break;
+    }
+  }
+
+  toggleWinTextVisibility();
+}
 
 function showCardResult(resultText, element) {
   element.textContent = resultText;
@@ -548,7 +613,19 @@ function updateAutoCheckToggle() {
   }
 }
 
+// Function to update the state of auto-check toggle based on selected cards
+function updateAutoCheckState() {
+  // Disable slider if all cards are selected
+  if (selectedCards.length === Object.keys(cards || {}).length) {
+    autoCheckToggle.disabled = true;
+    autoCheckToggle.checked = false;
+    winText.textContent = '';
 
+  } else {
+    autoCheckToggle.disabled = false;
+    updateCalledNumbersDisplay()
+  }
+}
 
 
 
@@ -845,7 +922,7 @@ function loadGameState() {
   updateRemaining();
   updateCalledNumbersDisplay();
   updateBigLastNumber();
-
+  updateUndoButton();
   
 }
 
