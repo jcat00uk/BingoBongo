@@ -488,21 +488,21 @@ function showCard(card, clearExisting = true) {
 
 
 function showCardResult(resultText, element) {
-  element.textContent = resultText;
-   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
-  else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
-  else element.style.color = 'yellow';
+    element.textContent = resultText;
+    if (resultText === 'LINE!') element.style.color = 'orange';
+    else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
+    else element.style.color = 'yellow';
 
-  showWinAnimation(resultText); // Trigger the win animation
+    showWinAnimation(resultText);
 
-  // Use setTimeout to delay win state speech to after number is spoken
-if (ttsEnabled && 'speechSynthesis' in window) {
-    const utter = new SpeechSynthesisUtterance(resultText);
-    utter.rate = 0.9; // slightly slower, clearer speech
-    setTimeout(() => {
-        window.speechSynthesis.speak(utter);
-    }, 600); // small delay so number is spoken first
-}
+    if (ttsEnabled && 'speechSynthesis' in window) {
+        const lastNumUtter = new SpeechSynthesisUtterance(calledNumbers.at(-1));
+        const resultUtter = new SpeechSynthesisUtterance(resultText);
+        lastNumUtter.rate = 1;
+        resultUtter.rate = 0.9;
+        window.speechSynthesis.speak(lastNumUtter);
+        lastNumUtter.onend = () => window.speechSynthesis.speak(resultUtter);
+    }
 }
 
 
@@ -890,31 +890,10 @@ window.addEventListener('load', () => {
     toggleNightModeBtn.onclick = () => { document.body.classList.toggle('night-mode'); toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞'; saveGameState(); };
 });
 
-if (selectCardsBtn) selectCardsBtn.onclick = () => {
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    openSelectCardsModal();
-};
-
-if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    closeSelectCardsModal();
-};
-
-if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
-    renderModalCardList(); 
-    updateAutoCheckToggle(); 
-    saveGameState(); 
-};
-
-if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => { 
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    modalSelections.clear(); 
-    renderModalCardList(); 
-    updateAutoCheckToggle(); 
-    saveGameState(); 
-};
+if (selectCardsBtn) selectCardsBtn.onclick = openSelectCardsModal;
+if (closeCardsModalBtn) closeCardsModalBtn.onclick = closeSelectCardsModal;
+if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { Object.keys(cards || {}).forEach(code => modalSelections.add(code)); renderModalCardList(); updateAutoCheckToggle(); saveGameState(); };
+if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => { modalSelections.clear(); renderModalCardList(); updateAutoCheckToggle(); saveGameState(); };
 
 if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
   selectedCards = Array.from(modalSelections);
@@ -949,26 +928,4 @@ window.addEventListener('load', () => {
   loadGameState();
   updateButtonGlows();
   if (window.cards) populateCardSelect();
-  
-});
-
-window.addEventListener('keydown', (e) => {
-    // Prevent shortcuts if modal is open
-    if (selectCardsModal && selectCardsModal.style.display === 'flex') return;
-
-    switch(e.key.toLowerCase()) {
-        case ' ': // Space = next number
-            e.preventDefault(); // prevent scrolling
-            nextNumberBtn.click();
-            break;
-        case 'u': // U = undo
-            undoNumberBtn.click();
-            break;
-        case 's': // S = start game
-            startGameBtn.click();
-            break;
-        case 'e': // E = end game
-            endGameBtn.click();
-            break;
-    }
 });

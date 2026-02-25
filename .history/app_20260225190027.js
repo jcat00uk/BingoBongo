@@ -147,11 +147,10 @@ function initBingoGrid() {
 
 // Function to mark a called number in the Bingo grid
 function markCalledNumber(num) {
-  if (!cells[num]) return;
-  if (window.lastCalledCell) window.lastCalledCell.classList.remove('lastCalled', 'highlight');
-  cells[num].classList.add('called', 'lastCalled', 'highlight');
-  window.lastCalledCell = cells[num];
-  setTimeout(() => cells[num]?.classList.remove('highlight'), 800);
+  if (!cells[num]) return; // If the cell doesn't exist, do nothing
+  if (window.lastCalledCell) window.lastCalledCell.classList.remove('lastCalled'); // Remove previous 'lastCalled' class
+  cells[num].classList.add('called', 'lastCalled'); // Mark the cell as called and the last called
+  window.lastCalledCell = cells[num]; // Store the last called cell
 }
 
 // Function to undo the marking of a called number
@@ -504,8 +503,6 @@ if (ttsEnabled && 'speechSynthesis' in window) {
     }, 600); // small delay so number is spoken first
 }
 }
-
-
 
 function checkLine(card) {
   return card.numbers.some(row => row.filter(n => n !== null).every(n => calledNumbers.includes(n))); // Check if all numbers in a row are called
@@ -890,31 +887,10 @@ window.addEventListener('load', () => {
     toggleNightModeBtn.onclick = () => { document.body.classList.toggle('night-mode'); toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞'; saveGameState(); };
 });
 
-if (selectCardsBtn) selectCardsBtn.onclick = () => {
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    openSelectCardsModal();
-};
-
-if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    closeSelectCardsModal();
-};
-
-if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
-    renderModalCardList(); 
-    updateAutoCheckToggle(); 
-    saveGameState(); 
-};
-
-if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => { 
-    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
-    modalSelections.clear(); 
-    renderModalCardList(); 
-    updateAutoCheckToggle(); 
-    saveGameState(); 
-};
+if (selectCardsBtn) selectCardsBtn.onclick = openSelectCardsModal;
+if (closeCardsModalBtn) closeCardsModalBtn.onclick = closeSelectCardsModal;
+if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { Object.keys(cards || {}).forEach(code => modalSelections.add(code)); renderModalCardList(); updateAutoCheckToggle(); saveGameState(); };
+if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => { modalSelections.clear(); renderModalCardList(); updateAutoCheckToggle(); saveGameState(); };
 
 if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
   selectedCards = Array.from(modalSelections);
@@ -949,26 +925,4 @@ window.addEventListener('load', () => {
   loadGameState();
   updateButtonGlows();
   if (window.cards) populateCardSelect();
-  
-});
-
-window.addEventListener('keydown', (e) => {
-    // Prevent shortcuts if modal is open
-    if (selectCardsModal && selectCardsModal.style.display === 'flex') return;
-
-    switch(e.key.toLowerCase()) {
-        case ' ': // Space = next number
-            e.preventDefault(); // prevent scrolling
-            nextNumberBtn.click();
-            break;
-        case 'u': // U = undo
-            undoNumberBtn.click();
-            break;
-        case 's': // S = start game
-            startGameBtn.click();
-            break;
-        case 'e': // E = end game
-            endGameBtn.click();
-            break;
-    }
 });
