@@ -712,11 +712,10 @@ function closeSelectCardsModal() {
 function handleModalCheckboxChange(code, checked) {
   if (checked) modalSelections.add(code);
   else modalSelections.delete(code);
-    // ✅ Clear the search box whenever a checkbox is clicked
-  if (cardSearchBox) cardSearchBox.value = '';
   renderModalCardList();
   updateAutoCheckToggle();
-  
+    // ✅ Clear the search box whenever a checkbox is clicked
+  if (cardSearchBox) cardSearchBox.value = '';
 }
 
 function renderModalCardList() {
