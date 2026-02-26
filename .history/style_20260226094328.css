@@ -47,8 +47,8 @@ h2 {
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: right;
-  text-align: right;
+  justify-content: center;
+  text-align: center;
  color: red;  
 }
 
