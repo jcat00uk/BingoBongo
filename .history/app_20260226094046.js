@@ -362,7 +362,7 @@ function updateBingoCallText() {
 
   const callText = bingoCalls[lastNumber] || '';
  bingoCallText.textContent = callText;
-
+ resizeBingoCallText();  // dynamically adjust font size
 
   // Restart animation every time
   bingoCallText.classList.remove('animate');
@@ -370,7 +370,22 @@ function updateBingoCallText() {
   bingoCallText.classList.add('animate');
 }
 
+function resizeBingoCallText() {
+  const box = document.getElementById('bingoCallText');
+  if (!box) return;
 
+  const parentWidth = box.parentElement.offsetWidth - 16; // padding buffer
+  let fontSize = 32; // starting font-size in px
+  box.style.fontSize = fontSize + 'px';
+
+  while (box.scrollWidth > parentWidth && fontSize > 10) {
+    fontSize -= 1;
+    box.style.fontSize = fontSize + 'px';
+  }
+}
+
+// Call this on window resize and after updating text
+window.addEventListener('resize', resizeBingoCallText);
 
 // Returns 'FULL HOUSE', 'LINE', or null
 function getCardWinStatus(card) {
