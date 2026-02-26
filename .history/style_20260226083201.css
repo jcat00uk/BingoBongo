@@ -341,7 +341,6 @@ body.night-mode .grid-cell.called { background-color: #ff6666; color: #fff; }
 body.night-mode .card td.called { color: #ff6666; }
 body.night-mode .card td.lastCalled { color: #66ccff; }
 body.night-mode select { background-color: #333; color: #eee; border: 1px solid #555; }
-body.night-mode .title-text { color: #ff6666; }
 
 /* Top section layout */
 .top-section {

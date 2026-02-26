@@ -76,7 +76,7 @@ const bingoCallText = document.getElementById('bingoCallText');
 // ===============================
 // UK BINGO LINGO (1–90)
 // ===============================
-const bingoCalls = {
+const bingoLingo = {
   1: "Kelly's Eye",
   2: "One Little Duck",
   3: "Cup of Tea",

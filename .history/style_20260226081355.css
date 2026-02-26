@@ -16,47 +16,21 @@ h2 {
 =========================== */
 
 /* Header row aligned to bingo grid */
-/* Container for header and bingo call */
 .header-row {
   display: flex;
-  justify-content: space-between; /* left/right alignment */
+  justify-content: center;
+  width: 100%;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%; /* full width of the grid */
-  margin-bottom: 8px;
+  width: 100%;
+  max-width: 420px; /* match bingo grid width */
+  padding: 2px 2px;
+  
 }
-
-/* Bingo title aligned with grid */
-.title-text {
-  margin: 0; /* remove default h2 margin */
-  padding-left: 4px; /* optional fine-tune to line up exactly with grid */
-  font-size: 2.2rem;
-  color: red;             /* make the title red */
-}
-
-/* Yellow textbox for bingo call */
-.call-text-box {
-  background-color: #ffeb3b;  /* bright yellow */
-  color: #000;               /* black text for readability */
-  font-weight: 700;
-  font-size: 1.6rem;
-  padding: 6px 12px;
-  border-radius: 6px;
-  min-width: 120px;          /* ensures box isn’t too small */
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Optional: bigger on desktop */
-@media (min-width: 768px) {
-  .call-text-box {
-    font-size: 2rem;
-    min-width: 160px;
-  }
-}
-
-
 
 #gameTitle {
   margin: 0;
@@ -70,7 +44,7 @@ h2 {
    =============================== */
 
 #bingoCallText {
-  font-size: 1.6rem;        /* 🔼 Bigger text */
+  font-size: 1.4rem;        /* 🔼 Bigger text */
   font-weight: 700;
   text-align: right;
   
@@ -80,7 +54,12 @@ h2 {
   line-height: 1;
 }
 
-
+/* Slightly bigger on desktop */
+@media (min-width: 768px) {
+  #bingoCallText {
+    font-size: 2rem;
+  }
+}
 
 
 
@@ -341,7 +320,6 @@ body.night-mode .grid-cell.called { background-color: #ff6666; color: #fff; }
 body.night-mode .card td.called { color: #ff6666; }
 body.night-mode .card td.lastCalled { color: #66ccff; }
 body.night-mode select { background-color: #333; color: #eee; border: 1px solid #555; }
-body.night-mode .title-text { color: #ff6666; }
 
 /* Top section layout */
 .top-section {
