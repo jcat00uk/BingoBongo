@@ -265,50 +265,13 @@ function renderSelectedCards(cardsProgress={}) {
           if(cardsProgress[code] && cardsProgress[code].includes(n)){
             td.classList.add('called');
           }
-td.addEventListener('click', () => {
-  // If the number isn't called, mark it called on single tap
-  if (!td.classList.contains('called')) {
-    td.classList.add('called');
-    td.classList.add('highlight');
-    setTimeout(() => td.classList.remove('highlight'), 500);
-    checkFullHouse(div, c);
-    saveState();
-  }
-});
-
-// Desktop: double click to unmark
-td.addEventListener('dblclick', () => {
-  if (td.classList.contains('called')) {
-    td.classList.remove('called');
-    td.classList.add('highlight');
-    setTimeout(() => td.classList.remove('highlight'), 500);
-    saveState();
-  }
-});
-
-// Mobile: double tap to unmark
-let lastTap = 0;
-td.addEventListener('touchend', (e) => {
-  const currentTime = new Date().getTime();
-  const tapLength = currentTime - lastTap;
-  if (tapLength < 400 && tapLength > 0) { // double-tap detected
-    if (td.classList.contains('called')) {
-      td.classList.remove('called');
-      td.classList.add('highlight');
-      setTimeout(() => td.classList.remove('highlight'), 500);
-      saveState();
-    }
-    e.preventDefault();
-  } else if (!td.classList.contains('called')) {
-    // single tap selects if not already called
-    td.classList.add('called');
-    td.classList.add('highlight');
-    setTimeout(() => td.classList.remove('highlight'), 500);
-    checkFullHouse(div, c);
-    saveState();
-  }
-  lastTap = currentTime;
-});
+          td.addEventListener('click', ()=>{
+            td.classList.toggle('called');
+            td.classList.add('highlight');
+            setTimeout(()=>td.classList.remove('highlight'),500);
+            checkFullHouse(div, c);
+            saveState();
+          });
         }
         tr.appendChild(td);
       });
