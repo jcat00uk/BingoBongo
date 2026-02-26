@@ -50,13 +50,13 @@ h2 {
   justify-content: right;
   text-align: right;
  color: red;  
- 
+ padding: 2px 2px;
 }
 
 /*
 /* Yellow textbox for bingo call */
 .call-text-box {
-  
+  background-color: #ffeb3b;  /* bright yellow */
   color: #000;               /* black text for readability */
   font-weight: 700;
   font-size: 1.4rem;

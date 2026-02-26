@@ -49,25 +49,16 @@ h2 {
   align-items: center;
   justify-content: right;
   text-align: right;
- color: red;  
- 
+   color: red;           /* main text color */
+  text-shadow: 
+    0 0 5px hsl(60, 3%, 88%),      /* small glow */
+    0 0 10px #b8b8b5,     /* medium glow */
+    0 0 20px #70706f;     /* bigger glow */
+  font-weight: bold;       /* optional for extra punch */  
 }
 
 /*
-/* Yellow textbox for bingo call */
-.call-text-box {
-  
-  color: #000;               /* black text for readability */
-  font-weight: 700;
-  font-size: 1.4rem;
-  padding: 6px 12px;
-  border-radius: 6px;
-  min-width: 120px;          /* ensures box isn’t too small */
-  text-align: right;
-  white-space: wrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+
 
 /* Optional: bigger on desktop */
 @media (min-width: 768px) {
