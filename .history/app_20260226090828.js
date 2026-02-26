@@ -375,16 +375,13 @@ function resizeBingoCallText() {
   if (!box) return;
 
   const parentWidth = box.parentElement.offsetWidth - 16; // padding buffer
-  let fontSize = 32; // starting font-size
+  let fontSize = 32; // starting font-size in px
   box.style.fontSize = fontSize + 'px';
-  box.style.whiteSpace = 'nowrap'; // prevent wrapping
 
   while (box.scrollWidth > parentWidth && fontSize > 10) {
     fontSize -= 1;
     box.style.fontSize = fontSize + 'px';
   }
-
-  box.style.lineHeight = box.style.height; // keep vertical centering
 }
 
 // Call this on window resize and after updating text

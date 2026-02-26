@@ -23,7 +23,6 @@ h2 {
   align-items: center;
   width: 100%; /* full width of the grid */
   margin-bottom: 8px;
-  line-height: 1.2;
 }
 
 /* Bingo title aligned with grid */
@@ -34,35 +33,17 @@ h2 {
   color: red;             /* make the title red */
 }
 
-
-/* ===============================
-   BINGO CALL TEXT (UK LINGO)
-   =============================== */
-
-
-
-
-#bingoCallText {
-  height: 50px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
- color: red;  
-}
-
 /* Yellow textbox for bingo call */
 .call-text-box {
   background-color: #ffeb3b;  /* bright yellow */
   color: #000;               /* black text for readability */
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   padding: 6px 12px;
   border-radius: 6px;
   min-width: 120px;          /* ensures box isn’t too small */
   text-align: center;
-  white-space: wrap;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -77,8 +58,42 @@ h2 {
 
 
 
-/* Bingo call text wrapper */
+#gameTitle {
+  margin: 0;
+  font-size: 2rem;
+  text-align: left;
+  color: red;
+}
 
+/* ===============================
+   BINGO CALL TEXT (UK LINGO)
+   =============================== */
+
+#bingoCallText {
+  font-size: 1.6rem;        /* 🔼 Bigger text */
+  font-weight: 700;
+  text-align: right;
+  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: red;           /* readable in night mode */
+  line-height: 1;
+}
+
+/* Bingo call text wrapper */
+.call-text-box {
+  font-size: 2rem;          /* starting font size */
+  font-weight: bold;
+  color: yellow;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;          /* don’t exceed container width */
+  height: 3rem;             /* fixed height to match your grid alignment */
+  overflow: hidden;         /* hide any overflowing text */
+  white-space: nowrap;      /* keep it on one line */
+  text-overflow: ellipsis;  /* optional: add "..." if too long */
+  padding: 0 8px;           /* small horizontal padding */
+}
 
 /* Responsive adjustment for small screens */
 @media (max-width: 600px) {
@@ -92,17 +107,6 @@ h2 {
     font-size: 1.1rem;          /* even smaller on tiny screens */
   }
 }
-
-#gameTitle {
-  margin: 0;
-  font-size: 2rem;
-  text-align: left;
-  color: red;
-}
-
-
-
-
 
 
 

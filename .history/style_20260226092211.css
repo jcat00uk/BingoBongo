@@ -38,18 +38,15 @@ h2 {
 /* ===============================
    BINGO CALL TEXT (UK LINGO)
    =============================== */
-
-
-
-
 #bingoCallText {
-  height: 50px;
+  font-size: 1.6rem;        /* 🔼 Bigger text */
+  font-weight: 700;
+  text-align: right;
+  
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
- color: red;  
+  text-overflow: ellipsis;
+  color: red;           /* readable in night mode */
+  
 }
 
 /* Yellow textbox for bingo call */

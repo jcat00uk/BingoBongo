@@ -38,47 +38,31 @@ h2 {
 /* ===============================
    BINGO CALL TEXT (UK LINGO)
    =============================== */
-
-
-
-
 #bingoCallText {
-  height: 50px;
+  font-size: 1.6rem;        /* 🔼 Bigger text */
+  font-weight: 700;
+  text-align: right;
+  
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
- color: red;  
+  text-overflow: ellipsis;
+  color: red;           /* readable in night mode */
+  
 }
 
 /* Yellow textbox for bingo call */
-.call-text-box {
-  background-color: #ffeb3b;  /* bright yellow */
-  color: #000;               /* black text for readability */
-  font-weight: 700;
-  font-size: 1.4rem;
-  padding: 6px 12px;
-  border-radius: 6px;
-  min-width: 120px;          /* ensures box isn’t too small */
-  text-align: center;
-  white-space: wrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Optional: bigger on desktop */
-@media (min-width: 768px) {
-  .call-text-box {
-    font-size: 2rem;
-    min-width: 160px;
-  }
-}
-
-
-
 /* Bingo call text wrapper */
-
+.call-text-box {
+  font-size: 2rem;             /* base size */
+  font-weight: bold;
+  color: yellow;
+  text-align: center;
+  white-space: normal;          /* allow wrapping */
+  word-wrap: break-word;        /* break long words */
+  overflow-wrap: anywhere;      /* modern way to break */
+  line-height: 1.2;
+  max-width: 100%;              /* don’t exceed container width */
+  padding: 0 8px;               /* small horizontal padding */
+}
 
 /* Responsive adjustment for small screens */
 @media (max-width: 600px) {

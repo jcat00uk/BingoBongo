@@ -40,16 +40,13 @@ h2 {
    =============================== */
 
 
-
-
 #bingoCallText {
-  height: 50px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
- color: red;  
+  height: 50px;        /* match header-row height */
+  line-height: 50px;   /* vertically center single line */
+  overflow: hidden;    /* hide any extra text */
+  white-space: nowrap; /* prevent wrapping */
+  text-overflow: ellipsis; /* optional: show ... if text too long */
+  color: red;           /* readable in night mode */
 }
 
 /* Yellow textbox for bingo call */

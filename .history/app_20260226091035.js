@@ -374,17 +374,15 @@ function resizeBingoCallText() {
   const box = document.getElementById('bingoCallText');
   if (!box) return;
 
-  const parentWidth = box.parentElement.offsetWidth - 16; // padding buffer
-  let fontSize = 32; // starting font-size
+  const parentWidth = box.offsetWidth - 16; // buffer for padding
+  let fontSize = 32; // start font size in px
   box.style.fontSize = fontSize + 'px';
-  box.style.whiteSpace = 'nowrap'; // prevent wrapping
 
+  // shrink font until it fits the width
   while (box.scrollWidth > parentWidth && fontSize > 10) {
     fontSize -= 1;
     box.style.fontSize = fontSize + 'px';
   }
-
-  box.style.lineHeight = box.style.height; // keep vertical centering
 }
 
 // Call this on window resize and after updating text
