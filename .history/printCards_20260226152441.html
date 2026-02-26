@@ -22,14 +22,16 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
 
 
 
-/* ===== BASE SHARED CARD STYLES FOR PDF MATCH ===== */
 .cardPreview {
   display: grid;
   grid-template-rows: 20% 80%;
   justify-items: center;
   align-items: center;
+  border: 1px solid #000;
   box-sizing: border-box;
-  width: 100%;
+  background: #fff;
+
+  width: 100%;   /* fill grid cell */
   height: 100%;
 }
 
@@ -41,48 +43,11 @@ button { padding: 6px 12px; font-size: 14px; cursor: pointer; }
 }
 
 .cardPreview td {
+  border: 1px solid #000;
   text-align: center;
   vertical-align: middle;
   font-weight: bold;
 }
-
-/* --- STYLE DEFINITIONS MATCHING PDF --- */
-const pdfStyleMap = {
-  plain: {
-    bg: [255,255,255], cardBorder: [0,0,0], grid: [0,0,0], text: [0,0,0], radius: 0
-  },
-  christmas: {
-    bg: [255,253,245], cardBorder: [179,0,0], grid: [31,122,31], text: [0,51,0], radius: 10
-  },
-  easter: {
-    bg: [255,246,251], // use gradient start color as closest match
-    cardBorder: [217,167,199], grid: [159,211,199], text: [51,51,51], radius: 14
-  },
-  neon: {
-    bg: [4,68,105], // exact match to #044469
-    cardBorder: [0,255,255], grid: [0,255,255], text: [255,255,255], radius: 12
-  },
-  halloween: {
-    bg: [51,51,51], // exact match to #333333
-    cardBorder: [255,122,0], grid: [255,122,0], text: [255,255,204], radius: 12
-  },
-  retro: {
-    bg: [253,246,227], cardBorder: [107,79,44], grid: [107,79,44], text: [59,42,26], radius: 8
-  },
-  gold: {
-    bg: [255,255,255], cardBorder: [201,162,39], grid: [0,0,0], text: [0,0,0], radius: 10
-  },
-  kids: {
-    bg: [255,255,255], cardBorder: [255,111,145], grid: [110,198,255], text: [51,51,51], radius: 16
-  },
-  minimal: {
-    bg: [247,247,247], cardBorder: [204,204,204], grid: [221,221,221], text: [34,34,34], radius: 0
-  },
-  casino: {
-    bg: [22,68,55], // exact match to #164437
-    cardBorder: [212,175,55], grid: [255,255,255], text: [255,255,204], radius: 12
-  }
-};
 
 
 
@@ -193,7 +158,7 @@ button {
 .style-christmas {
   background: #fffdf5;
   border: 2px solid #b30000;
-  border-radius: 0px;
+  border-radius: 10px;
 }
 
 .style-christmas > div:first-child {
@@ -208,7 +173,7 @@ button {
 .style-easter {
   background: linear-gradient(135deg, #fff6fb, #f0fff4);
   border: 2px solid #d9a7c7;
-  border-radius: 0px;
+  border-radius: 14px;
 }
 
 .style-easter > div:first-child {
@@ -218,43 +183,45 @@ button {
 .style-easter td {
   border: 1px solid #9fd3c7;
   color: #333;
-  border-radius: 0px;
+  border-radius: 6px;
 }
 
-/* Neon: keep the vibrant border but use darker text background for readability */
 .style-neon {
-  background: #044469; /* slightly lighter than pure black */
+  background: #000;
   border: 2px solid #00ffff;
-  border-radius: 0px;
+  border-radius: 12px;
 }
+
+.style-neon > div:first-child {
+  color: #ff00ff;
+  text-shadow: 0 0 6px #ff00ff;
+}
+
 .style-neon td {
   border: 1px solid #00ffff;
-  color: #ffffff; /* white for high contrast */
-  text-shadow: none;
-}
-.style-neon > div:first-child {
-  color: #9e9e9e;
+  color: #00ffff;
+  text-shadow: 0 0 4px #00ffff;
 }
 
-
-/* Halloween: lighten background and use darker numbers */
 .style-halloween {
-  background: #333333; /* lighter than #1a1a1a */
+  background: #1a1a1a;
   border: 2px solid #ff7a00;
-  border-radius: 0px;
-}
-.style-halloween td {
-  border: 1px solid #ff7a00;
-  color: #ffffcc; /* soft yellow for easier reading */
+  border-radius: 12px;
 }
 
 .style-halloween > div:first-child {
   color: #b266ff;
 }
+
+.style-halloween td {
+  border: 1px solid #ff7a00;
+  color: #ffffff;
+}
+
 .style-retro {
   background: #fdf6e3;
   border: 2px solid #6b4f2c;
-  border-radius: 0px;
+  border-radius: 8px;
 }
 
 .style-retro > div:first-child {
@@ -269,7 +236,7 @@ button {
 .style-gold {
   background: #ffffff;
   border: 3px solid #c9a227;
-  border-radius: 0px;
+  border-radius: 10px;
 }
 
 .style-gold > div:first-child {
@@ -283,7 +250,7 @@ button {
 .style-kids {
   background: #ffffff;
   border: 2px solid #ff6f91;
-  border-radius: 0px;
+  border-radius: 16px;
 }
 
 .style-kids > div:first-child {
@@ -293,7 +260,7 @@ button {
 .style-kids td {
   border: 2px solid #6ec6ff;
   color: #333;
-  border-radius: 0px;
+  border-radius: 10px;
 }
 
 .style-minimal {
@@ -310,22 +277,20 @@ button {
   color: #222;
 }
 
-/* Casino: lighten background for readability */
 .style-casino {
-  background: #164437; /* darker green but not black */
+  background: #0b3d2e;
   border: 2px solid #d4af37;
-  border-radius: 0px;
-}
-.style-casino td {
-  border: 1px solid #ffffff;
-  color: #ffffcc; /* soft yellow instead of pure white */
+  border-radius: 12px;
 }
 
 .style-casino > div:first-child {
   color: #d4af37;
 }
 
-
+.style-casino td {
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
  /* styles */
 
 </style>
@@ -338,6 +303,7 @@ button {
 <div id="controls">
   <label>Card Layout:
 <select id="cardLayout">
+  <option value="">Select...</option>
   <option value="1x2">1×2 (large cards)</option>
   <option value="2x3">2×3</option>
   <option value="2x5">2×5 (portrait)</option> <!-- NEW -->
@@ -363,6 +329,7 @@ button {
 
   <label>Order:
     <select id="orderSelect">
+      <option value="">Select...</option>
       <option value="sequential">Sequential</option>
       <option value="random">Random</option>
     </select>
@@ -403,60 +370,33 @@ const pageStartInput = document.getElementById('pageStart');
 const pageEndInput = document.getElementById('pageEnd');
 const styleSelect = document.getElementById('styleSelect');
 
-// --- PDF style map ---
-const pdfStyleMap = {
-  plain: {
-    bg: [255,255,255], cardBorder: [0,0,0], grid: [0,0,0], text: [0,0,0], radius: 0
-  },
-  christmas: {
-    bg: [255,253,245], cardBorder: [179,0,0], grid: [31,122,31], text: [0,51,0], radius: 10
-  },
-  easter: {
-    bg: [255,246,251], cardBorder: [217,167,199], grid: [159,211,199], text: [51,51,51], radius: 14
-  },
-  neon: {
-    bg: [4,68,105], cardBorder: [0,255,255], grid: [0,255,255], text: [255,255,255], radius: 12
-  },
-  halloween: {
-    bg: [51,51,51], cardBorder: [255,122,0], grid: [255,122,0], text: [255,255,204], radius: 12
-  },
-  retro: {
-    bg: [253,246,227], cardBorder: [107,79,44], grid: [107,79,44], text: [59,42,26], radius: 8
-  },
-  gold: {
-    bg: [255,255,255], cardBorder: [201,162,39], grid: [0,0,0], text: [0,0,0], radius: 10
-  },
-  kids: {
-    bg: [255,255,255], cardBorder: [255,111,145], grid: [110,198,255], text: [51,51,51], radius: 16
-  },
-  minimal: {
-    bg: [247,247,247], cardBorder: [204,204,204], grid: [221,221,221], text: [34,34,34], radius: 0
-  },
-  casino: {
-    bg: [22,68,55], cardBorder: [212,175,55], grid: [255,255,255], text: [255,255,204], radius: 12
-  }
-};
-
 // --- INITIAL LOAD ---
 window.addEventListener('DOMContentLoaded', () => {
   layoutSelect.value = '3x4';
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-  orderSelect.value = 'random';      // default to random
-  previewBtn.disabled = false;       // enable preview
-  downloadBtn.disabled = false;      // enable download
-  renderPreview();                   // render preview immediately
+  orderSelect.value = '';
 });
 
 // --- LAYOUT CHANGE ---
 layoutSelect.addEventListener('change', () => {
-  if (!layoutSelect.value) return;
-
-  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-
-  // Always render preview if order is set
-  if (orderSelect.value) {
-    renderPreview();
+  if(!layoutSelect.value){
+    orderSelect.value = '';
+    orderSelect.disabled = false;
+    previewBtn.disabled = true;
+    downloadBtn.disabled = true;
+    pagesLabel.style.display = 'none';
+    rangeLabel.style.display = 'none';
+    document.getElementById('pagePreview').innerHTML = '';
+    return;
   }
+  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
+  orderSelect.value = '';
+  previewBtn.disabled = true;
+  downloadBtn.disabled = true;
+  pagesLabel.style.display = 'none';
+  rangeLabel.style.display = 'none';
+  document.getElementById('pagePreview').innerHTML = '';
+  orderSelect.disabled = false;
 });
 
 // --- ORDER CHANGE ---
@@ -593,106 +533,79 @@ if (layoutSelect.value === '2x5') {
 }
 
 // --- PDF DOWNLOAD ---
-downloadBtn.addEventListener('click', () => {
+downloadBtn.addEventListener('click', ()=>{
   const { jsPDF } = window.jspdf;
 
-  const pdfOrientation = (layoutSelect.value === '2x5') ? 'portrait' : 'landscape';
-  const pdf = new jsPDF(pdfOrientation, 'mm', 'a4');
+  // --- Set orientation based on layout ---
+  const pdfOrientation = (layoutSelect.value==='2x5') ? 'portrait' : 'landscape';
+  const pdf = new jsPDF(pdfOrientation,'mm','a4');
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const padding = 5;
 
-  const cardsPerPage = cardCols * cardRows;
-  const cardWidth = (pageWidth - (cardCols + 1) * padding) / cardCols;
-  const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
+  const cardsPerPage = cardCols*cardRows;
+  const cardWidth = (pageWidth - (cardCols+1)*padding)/cardCols;
+  const cardHeight = (pageHeight - (cardRows+1)*padding)/cardRows;
 
-  let startPage = 1,
-      endPage = Math.ceil(finalCardOrder.length / cardsPerPage);
-  if (orderSelect.value === 'sequential') {
-    startPage = parseInt(pageStartInput.value) || 1;
-    endPage = parseInt(pageEndInput.value) || endPage;
+  let startPage=1, endPage=Math.ceil(finalCardOrder.length/cardsPerPage);
+  if(orderSelect.value==='sequential'){
+    startPage=parseInt(pageStartInput.value)||1;
+    endPage=parseInt(pageEndInput.value)||endPage;
   } else {
-    endPage = parseInt(numPagesInput.value) || 1;
+    endPage=parseInt(numPagesInput.value)||1;
   }
 
-  let cardsPrinted = (startPage - 1) * cardsPerPage;
+  let cardsPrinted = (startPage-1)*cardsPerPage;
 
-  for (let p = startPage; p <= endPage; p++) {
-    let x = padding, y = padding;
-
-    for (let i = 0; i < cardsPerPage; i++) {
+  for(let p=startPage; p<=endPage; p++){
+    let x=padding, y=padding;
+    for(let i=0;i<cardsPerPage;i++){
       const card = finalCardOrder[cardsPrinted];
-      if (!card) break;
+      if(!card) break;
 
-      const style = pdfStyleMap[styleSelect.value] || pdfStyleMap.plain;
+      pdf.setDrawColor(0);
+      pdf.rect(x,y,cardWidth,cardHeight);
+      pdf.setFont(undefined,'bold');
 
-      // Draw card background
-      pdf.setFillColor(...style.bg);
-      pdf.setDrawColor(...style.cardBorder);
-      pdf.rect(x, y, cardWidth, cardHeight, 'FD');
+      // --- Font size per layout ---
+      let fontSize = 12;
+      if(layoutSelect.value==='3x4') fontSize = 12;
+      else if(layoutSelect.value==='4x5') fontSize = 10;
+      else if(layoutSelect.value==='1x2') fontSize = 20;
+      else if(layoutSelect.value==='2x3') fontSize = 12;
+      else if(layoutSelect.value==='2x5') fontSize = 14;
 
-      // --- Draw card code (first-row header) ---
-      pdf.setFont(undefined, 'bold');
-      pdf.setFontSize(layoutSelect.value === '1x2' ? 18 :
-                      layoutSelect.value === '2x3' ? 14 :
-                      layoutSelect.value === '2x5' ? 14 :
-                      layoutSelect.value === '3x4' ? 12 : 10);
+      pdf.setFontSize(fontSize);
 
-      let headerColor = [...style.text]; // default
-      // Override header color based on preview styles
-      switch(styleSelect.value){
-        case 'christmas': headerColor = [179,0,0]; break;
-        case 'easter': headerColor = [122,75,148]; break;
-        case 'neon': headerColor = [158,158,158]; break;
-        case 'halloween': headerColor = [178,102,255]; break;
-        case 'retro': headerColor = [196,122,44]; break;
-        case 'gold': headerColor = [140,109,31]; break;
-        case 'kids': headerColor = [255,111,145]; break;
-        case 'minimal': headerColor = [68,68,68]; break;
-        case 'casino': headerColor = [212,175,55]; break;
-      }
+      // Card code
+      pdf.text(card.code, x+cardWidth/2, y+6, {align:'center'});
 
-      pdf.setTextColor(...headerColor);
-      pdf.text(card.code, x + cardWidth / 2, y + 6, {align:'center'});
-
-      // --- Draw table cells ---
+      // Table cells
       const rows = card.numbers.length;
       const colsInCard = card.numbers[0].length;
       const tableTop = y + 10;
       const tableHeight = cardHeight - 12;
-      const cellWidth = cardWidth / colsInCard;
-      const cellHeight = tableHeight / rows;
+      const cellWidth = cardWidth/colsInCard;
+      const cellHeight = tableHeight/rows;
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < colsInCard; c++) {
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<colsInCard;c++){
           const num = card.numbers[r][c];
-          const cellX = x + c * cellWidth;
-          const cellY = tableTop + r * cellHeight;
-
-          // Cell border
-          pdf.setDrawColor(...style.grid);
+          const cellX = x + c*cellWidth;
+          const cellY = tableTop + r*cellHeight;
           pdf.rect(cellX, cellY, cellWidth, cellHeight);
-
-          // Number text
-          if (num !== null) {
-            pdf.setTextColor(...style.text);
-            pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
-                            layoutSelect.value === '2x3' ? 12 :
-                            layoutSelect.value === '2x5' ? 14 :
-                            layoutSelect.value === '3x4' ? 12 : 10);
+          if(num!==null){
             pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {align:'center', baseline:'middle'});
           }
         }
       }
 
-      // Advance x/y for next card
       x += cardWidth + padding;
-      if ((i+1) % cardCols === 0) { x = padding; y += cardHeight + padding; }
+      if((i+1)%cardCols===0){ x=padding; y+=cardHeight+padding; }
       cardsPrinted++;
     }
-
-    if (p < endPage) pdf.addPage();
+    if(p<endPage) pdf.addPage();
   }
 
   pdf.save('bingo_cards.pdf');
@@ -704,18 +617,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 styleSelect.addEventListener('change', () => {
-  if (!previewBtn.disabled) {
-    renderPreview();
-  }
-});
-
-layoutSelect.addEventListener('change', () => {
-  if (!previewBtn.disabled) {
-    renderPreview();
-  }
-});
-
-orderSelect.addEventListener('change', () => {
   if (!previewBtn.disabled) {
     renderPreview();
   }

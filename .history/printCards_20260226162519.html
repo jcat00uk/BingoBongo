@@ -338,6 +338,7 @@ button {
 <div id="controls">
   <label>Card Layout:
 <select id="cardLayout">
+  <option value="">Select...</option>
   <option value="1x2">1×2 (large cards)</option>
   <option value="2x3">2×3</option>
   <option value="2x5">2×5 (portrait)</option> <!-- NEW -->
@@ -441,22 +442,29 @@ const pdfStyleMap = {
 window.addEventListener('DOMContentLoaded', () => {
   layoutSelect.value = '3x4';
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-  orderSelect.value = 'random';      // default to random
-  previewBtn.disabled = false;       // enable preview
-  downloadBtn.disabled = false;      // enable download
-  renderPreview();                   // render preview immediately
+  orderSelect.value = '';
 });
 
 // --- LAYOUT CHANGE ---
 layoutSelect.addEventListener('change', () => {
-  if (!layoutSelect.value) return;
-
-  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-
-  // Always render preview if order is set
-  if (orderSelect.value) {
-    renderPreview();
+  if(!layoutSelect.value){
+    //orderSelect.value = '';
+    orderSelect.disabled = false;
+    previewBtn.disabled = true;
+    downloadBtn.disabled = true;
+    pagesLabel.style.display = 'none';
+    rangeLabel.style.display = 'none';
+    document.getElementById('pagePreview').innerHTML = '';
+    return;
   }
+  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
+ // orderSelect.value = '';
+  previewBtn.disabled = true;
+  downloadBtn.disabled = true;
+  pagesLabel.style.display = 'none';
+  rangeLabel.style.display = 'none';
+  document.getElementById('pagePreview').innerHTML = '';
+  orderSelect.disabled = false;
 });
 
 // --- ORDER CHANGE ---

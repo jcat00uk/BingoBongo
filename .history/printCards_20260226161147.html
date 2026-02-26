@@ -325,7 +325,78 @@ button {
   color: #d4af37;
 }
 
-
+const pdfStyleMap = {
+  plain: {
+    bg: [255,255,255],
+    cardBorder: [0,0,0],
+    grid: [0,0,0],
+    text: [0,0,0],
+    radius: 0
+  },
+  christmas: {
+    bg: [255,253,245],
+    cardBorder: [179,0,0],
+    grid: [31,122,31],
+    text: [0,51,0],
+    radius: 0
+  },
+  easter: {
+    bg: [255,246,251],  // match linear-gradient start ~ closest solid for PDF
+    cardBorder: [217,167,199],
+    grid: [159,211,199],
+    text: [51,51,51],
+    radius: 0
+  },
+  neon: {
+    bg: [4,68,105], // slightly lighter black (#044469)
+    cardBorder: [0,255,255],
+    grid: [0,255,255],
+    text: [255,255,255],
+    radius: 0
+  },
+  halloween: {
+    bg: [51,51,51], // lighter than #1a1a1a
+    cardBorder: [255,122,0],
+    grid: [255,122,0],
+    text: [255,255,204], // soft yellow
+    radius: 0
+  },
+  retro: {
+    bg: [253,246,227],
+    cardBorder: [107,79,44],
+    grid: [107,79,44],
+    text: [59,42,26],
+    radius: 0
+  },
+  gold: {
+    bg: [255,255,255],
+    cardBorder: [201,162,39],
+    grid: [0,0,0],
+    text: [0,0,0],
+    radius: 0
+  },
+  kids: {
+    bg: [255,255,255],
+    cardBorder: [255,111,145],
+    grid: [110,198,255],
+    text: [51,51,51],
+    radius: 0
+  },
+  minimal: {
+    bg: [247,247,247],
+    cardBorder: [204,204,204],
+    grid: [221,221,221],
+    text: [34,34,34],
+    radius: 0
+  },
+  casino: {
+    bg: [22,68,55], // #164437 background
+    cardBorder: [212,175,55],
+    grid: [255,255,255],
+    text: [255,255,204], // soft yellow
+    radius: 0
+  }
+};
  /* styles */
 
 </style>
@@ -338,6 +409,7 @@ button {
 <div id="controls">
   <label>Card Layout:
 <select id="cardLayout">
+  <option value="">Select...</option>
   <option value="1x2">1×2 (large cards)</option>
   <option value="2x3">2×3</option>
   <option value="2x5">2×5 (portrait)</option> <!-- NEW -->
@@ -363,6 +435,7 @@ button {
 
   <label>Order:
     <select id="orderSelect">
+      <option value="">Select...</option>
       <option value="sequential">Sequential</option>
       <option value="random">Random</option>
     </select>
@@ -412,13 +485,13 @@ const pdfStyleMap = {
     bg: [255,253,245], cardBorder: [179,0,0], grid: [31,122,31], text: [0,51,0], radius: 10
   },
   easter: {
-    bg: [255,246,251], cardBorder: [217,167,199], grid: [159,211,199], text: [51,51,51], radius: 14
+    bg: [245,250,248], cardBorder: [217,167,199], grid: [159,211,199], text: [51,51,51], radius: 14
   },
   neon: {
-    bg: [4,68,105], cardBorder: [0,255,255], grid: [0,255,255], text: [255,255,255], radius: 12
+    bg: [0,0,0], cardBorder: [0,255,255], grid: [0,255,255], text: [0,255,255], radius: 12
   },
   halloween: {
-    bg: [51,51,51], cardBorder: [255,122,0], grid: [255,122,0], text: [255,255,204], radius: 12
+    bg: [26,26,26], cardBorder: [255,122,0], grid: [255,122,0], text: [255,255,255], radius: 12
   },
   retro: {
     bg: [253,246,227], cardBorder: [107,79,44], grid: [107,79,44], text: [59,42,26], radius: 8
@@ -433,7 +506,7 @@ const pdfStyleMap = {
     bg: [247,247,247], cardBorder: [204,204,204], grid: [221,221,221], text: [34,34,34], radius: 0
   },
   casino: {
-    bg: [22,68,55], cardBorder: [212,175,55], grid: [255,255,255], text: [255,255,204], radius: 12
+    bg: [11,61,46], cardBorder: [212,175,55], grid: [255,255,255], text: [255,255,255], radius: 12
   }
 };
 
@@ -441,22 +514,29 @@ const pdfStyleMap = {
 window.addEventListener('DOMContentLoaded', () => {
   layoutSelect.value = '3x4';
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-  orderSelect.value = 'random';      // default to random
-  previewBtn.disabled = false;       // enable preview
-  downloadBtn.disabled = false;      // enable download
-  renderPreview();                   // render preview immediately
+  orderSelect.value = '';
 });
 
 // --- LAYOUT CHANGE ---
 layoutSelect.addEventListener('change', () => {
-  if (!layoutSelect.value) return;
-
-  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
-
-  // Always render preview if order is set
-  if (orderSelect.value) {
-    renderPreview();
+  if(!layoutSelect.value){
+    orderSelect.value = '';
+    orderSelect.disabled = false;
+    previewBtn.disabled = true;
+    downloadBtn.disabled = true;
+    pagesLabel.style.display = 'none';
+    rangeLabel.style.display = 'none';
+    document.getElementById('pagePreview').innerHTML = '';
+    return;
   }
+  [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
+  orderSelect.value = '';
+  previewBtn.disabled = true;
+  downloadBtn.disabled = true;
+  pagesLabel.style.display = 'none';
+  rangeLabel.style.display = 'none';
+  document.getElementById('pagePreview').innerHTML = '';
+  orderSelect.disabled = false;
 });
 
 // --- ORDER CHANGE ---
