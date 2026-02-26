@@ -244,7 +244,9 @@ confirmSelectionBtn.onclick = () => {
   saveState();
 };
 
-
+// ========================
+// RENDER SELECTED CARDS
+// ========================
 // ========================
 // RENDER SELECTED CARDS
 // ========================

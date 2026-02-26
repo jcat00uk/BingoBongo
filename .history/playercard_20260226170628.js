@@ -244,12 +244,12 @@ confirmSelectionBtn.onclick = () => {
   saveState();
 };
 
-
 // ========================
 // RENDER SELECTED CARDS
 // ========================
 function renderSelectedCards(cardsProgress = {}) {
-  cardsWrapper.innerHTML = ''; // clear previous cards
+  // Clear any previously rendered cards
+  cardsWrapper.innerHTML = '';
 
   selectedCards.forEach(code => {
     const c = cards[code];
@@ -258,11 +258,9 @@ function renderSelectedCards(cardsProgress = {}) {
     const div = document.createElement('div');
     div.className = 'card';
     div.dataset.code = code;
-
-    // Card header showing code
     div.innerHTML = `<h4>${c.code}</h4>`;
 
-    // Create table for numbers
+    // Create table for bingo numbers
     const table = document.createElement('table');
 
     c.numbers.forEach(row => {
@@ -274,39 +272,64 @@ function renderSelectedCards(cardsProgress = {}) {
         if (n !== null) {
           td.textContent = n;
 
-          // Restore previously called numbers
+          // Restore previously "called" numbers from saved progress
           if (cardsProgress[code] && cardsProgress[code].includes(n)) {
             td.classList.add('called');
           }
 
-          // =========================
-          // DOUBLE-TAP DESELECT LOGIC
-          // =========================
-          td.lastTap = 0; // store last tap timestamp for this cell
+          // -----------------------------
+          // DOUBLE-TAP / SINGLE-TAP LOGIC
+          // -----------------------------
 
+          td.lastTap = 0;           // Timestamp of the last tap for this cell
+          td.singleTapTimeout = null; // Timeout ID for delayed single-tap action
+
+          // Function to handle both click and touch events
           const handleTap = () => {
             const currentTime = new Date().getTime();
-            const tapLength = currentTime - td.lastTap;
+            const tapLength = currentTime - td.lastTap; // Time since last tap
             td.lastTap = currentTime;
 
-            if (tapLength < 400 && td.classList.contains('called')) {
-              // Double-tap detected on a selected cell → deselect
-              td.classList.remove('called');
-              td.classList.add('highlight'); // visual feedback
-              setTimeout(() => td.classList.remove('highlight'), 500);
-              saveState();
-            } else if (!td.classList.contains('called')) {
-              // Single tap on unselected cell → select immediately
-              td.classList.add('called');
-              td.classList.add('highlight');
-              setTimeout(() => td.classList.remove('highlight'), 500);
-              checkFullHouse(div, c);
-              saveState();
+            if (tapLength < 400 && tapLength > 0) {
+              // -----------------------------
+              // DOUBLE TAP DETECTED
+              // -----------------------------
+              // Only deselect if the number is currently selected
+              if (td.classList.contains('called')) {
+                td.classList.remove('called');
+                td.classList.add('highlight'); // Flash animation
+                setTimeout(() => td.classList.remove('highlight'), 500);
+                saveState(); // Persist state
+              }
+
+              // Cancel pending single-tap action if it exists
+              if (td.singleTapTimeout) {
+                clearTimeout(td.singleTapTimeout);
+                td.singleTapTimeout = null;
+              }
+
+            } else {
+              // -----------------------------
+              // SINGLE TAP DETECTED (DELAYED)
+              // -----------------------------
+              // Wait a short moment to see if a second tap comes (double-tap)
+              td.singleTapTimeout = setTimeout(() => {
+                // Only select if not already called
+                if (!td.classList.contains('called')) {
+                  td.classList.add('called');
+                  td.classList.add('highlight'); // Flash animation
+                  setTimeout(() => td.classList.remove('highlight'), 500);
+
+                  checkFullHouse(div, c); // Check if all numbers called
+                  saveState();             // Persist state
+                }
+
+                td.singleTapTimeout = null; // Clear timeout reference
+              }, 250); // Delay to allow double-tap detection
             }
-            // Single tap on already-selected cell does nothing
           };
 
-          // Attach both click and touchend for desktop & mobile
+          // Add event listeners for click (desktop) and touch (mobile)
           td.addEventListener('click', handleTap);
           td.addEventListener('touchend', handleTap);
         }

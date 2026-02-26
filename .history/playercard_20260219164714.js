@@ -244,79 +244,39 @@ confirmSelectionBtn.onclick = () => {
   saveState();
 };
 
-
 // ========================
 // RENDER SELECTED CARDS
 // ========================
-function renderSelectedCards(cardsProgress = {}) {
-  cardsWrapper.innerHTML = ''; // clear previous cards
-
-  selectedCards.forEach(code => {
+function renderSelectedCards(cardsProgress={}) {
+  cardsWrapper.innerHTML='';
+  selectedCards.forEach(code=>{
     const c = cards[code];
-
-    // Create card container
     const div = document.createElement('div');
-    div.className = 'card';
+    div.className='card';
     div.dataset.code = code;
-
-    // Card header showing code
-    div.innerHTML = `<h4>${c.code}</h4>`;
-
-    // Create table for numbers
+    div.innerHTML=`<h4>${c.code}</h4>`;
     const table = document.createElement('table');
-
-    c.numbers.forEach(row => {
+    c.numbers.forEach(row=>{
       const tr = document.createElement('tr');
-
-      row.forEach(n => {
+      row.forEach(n=>{
         const td = document.createElement('td');
-
-        if (n !== null) {
+        if(n!==null){
           td.textContent = n;
-
-          // Restore previously called numbers
-          if (cardsProgress[code] && cardsProgress[code].includes(n)) {
+          if(cardsProgress[code] && cardsProgress[code].includes(n)){
             td.classList.add('called');
           }
-
-          // =========================
-          // DOUBLE-TAP DESELECT LOGIC
-          // =========================
-          td.lastTap = 0; // store last tap timestamp for this cell
-
-          const handleTap = () => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - td.lastTap;
-            td.lastTap = currentTime;
-
-            if (tapLength < 400 && td.classList.contains('called')) {
-              // Double-tap detected on a selected cell → deselect
-              td.classList.remove('called');
-              td.classList.add('highlight'); // visual feedback
-              setTimeout(() => td.classList.remove('highlight'), 500);
-              saveState();
-            } else if (!td.classList.contains('called')) {
-              // Single tap on unselected cell → select immediately
-              td.classList.add('called');
-              td.classList.add('highlight');
-              setTimeout(() => td.classList.remove('highlight'), 500);
-              checkFullHouse(div, c);
-              saveState();
-            }
-            // Single tap on already-selected cell does nothing
-          };
-
-          // Attach both click and touchend for desktop & mobile
-          td.addEventListener('click', handleTap);
-          td.addEventListener('touchend', handleTap);
+          td.addEventListener('click', ()=>{
+            td.classList.toggle('called');
+            td.classList.add('highlight');
+            setTimeout(()=>td.classList.remove('highlight'),500);
+            checkFullHouse(div, c);
+            saveState();
+          });
         }
-
         tr.appendChild(td);
       });
-
       table.appendChild(tr);
     });
-
     div.appendChild(table);
     cardsWrapper.appendChild(div);
   });
