@@ -288,43 +288,31 @@ td.addEventListener('dblclick', () => {
 
 // Mobile: double tap to unmark
 // Inside renderSelectedCards loop for each td
-// Mobile double-tap detection (per cell, isolated)
-td._tapCount = 0;
-td._tapTimer = null;
+td.lastTap = 0; // per-cell last tap timestamp
 
-td.addEventListener('touchstart', function(e) {
-  td._tapCount++;
+td.addEventListener('touchend', (e) => {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - td.lastTap;
 
-  if (td._tapCount === 1) {
-    // Wait to see if a second tap happens
-    td._tapTimer = setTimeout(() => {
-      // Single tap behaviour
-      if (!td.classList.contains('called')) {
-        td.classList.add('called');
-        td.classList.add('highlight');
-        setTimeout(() => td.classList.remove('highlight'), 500);
-        checkFullHouse(div, c);
-        saveState();
-      }
-      td._tapCount = 0;
-    }, 300);
-  } 
-  else if (td._tapCount === 2) {
-    clearTimeout(td._tapTimer);
-
-    // Double tap only works if already called
+  if (tapLength < 400 && tapLength > 0) { // double-tap on this cell
     if (td.classList.contains('called')) {
       td.classList.remove('called');
-      td.classList.add('undo-highlight');
+      td.classList.add('undo-highlight'); // purple flash class
       setTimeout(() => td.classList.remove('undo-highlight'), 500);
       saveState();
     }
-
-    td._tapCount = 0;
+    e.preventDefault();
+  } else if (!td.classList.contains('called')) {
+    // single tap selects if not already called
+    td.classList.add('called');
+    td.classList.add('highlight'); // yellow flash
+    setTimeout(() => td.classList.remove('highlight'), 500);
+    checkFullHouse(div, c);
+    saveState();
   }
 
-  e.preventDefault();
-}, { passive: false });
+  td.lastTap = currentTime;
+});
         }
         tr.appendChild(td);
       });
