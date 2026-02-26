@@ -175,19 +175,6 @@ body {
   100% { transform: scale(1); }
 }
 
-/* Undo highlight animation (purple) */
-.undo-highlight {
-  background-color: purple !important;
-  color: white !important;
-  animation: undoHighlightAnim 0.5s;
-}
-
-@keyframes undoHighlightAnim {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
-}
-
 /* BingoBongo text overlay */
 #bingoText {
   position: absolute;
