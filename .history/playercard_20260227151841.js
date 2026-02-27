@@ -75,7 +75,7 @@ endGameBtn.onclick = () => {
   endGameBtn.disabled = true;
 
   document.querySelectorAll('.card td').forEach(td=>{
-    td.classList.remove('called','highlight','undo-highlight');
+    td.classList.remove('called','highlight');
   });
 
   saveState();
@@ -84,13 +84,18 @@ endGameBtn.onclick = () => {
 // ========================
 // POPULATE CARD LIST
 // ========================
+// ========================
+// POPULATE CARD LIST WITH PREVIEW
+// ========================
 let previewState = {}; // store which cards are previewed
 
 function populateCardList(filter='') {
   cardList.innerHTML = '';
 
+  // Filter cards by search
   const filteredCards = Object.values(cards).filter(c => c.code.toLowerCase().includes(filter.toLowerCase()));
 
+  // Sort selected cards to top
   const sortedCards = filteredCards.sort((a, b) => {
     const aSelected = tempSelection.includes(a.code);
     const bSelected = tempSelection.includes(b.code);
@@ -107,6 +112,7 @@ function populateCardList(filter='') {
     label.style.display = 'flex';
     label.style.flexDirection = 'column';
 
+    // Top row: checkbox + code + info button
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.alignItems = 'center';
@@ -130,16 +136,18 @@ function populateCardList(filter='') {
       } else {
         tempSelection = tempSelection.filter(x => x !== code);
       }
-      populateCardList(searchInput.value);
+      populateCardList(searchInput.value); // re-render list
     });
 
     const span = document.createElement('span');
     span.textContent = c.code;
 
+    // Info button
     const infoBtn = document.createElement('button');
     infoBtn.textContent = 'ℹ️';
     infoBtn.className = 'preview-btn';
 
+    // Card preview table
     const previewTable = document.createElement('table');
     previewTable.className = 'card-preview';
 
@@ -153,10 +161,11 @@ function populateCardList(filter='') {
       previewTable.appendChild(tr);
     });
 
+    // Restore preview state if it exists
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
     infoBtn.addEventListener('click', () => {
-      previewState[c.code] = !previewState[c.code];
+      previewState[c.code] = !previewState[c.code];  // toggle state
       previewTable.style.display = previewState[c.code] ? 'table' : 'none';
     });
 
@@ -171,6 +180,8 @@ function populateCardList(filter='') {
   });
 }
 
+
+
 // ========================
 // QUICK PICK RANDOM CARDS
 // ========================
@@ -183,23 +194,28 @@ function pickRandomCards(count){
     if(!selected.includes(rand)) selected.push(rand);
   }
 
+  // Remove previous Quick Pick cards from tempSelection, keep manual ones
   tempSelection = [
     ...tempSelection.filter(code => !allCodes.includes(code)),
     ...selected
   ];
 
+  // Re-render list so checked boxes are updated at top
   populateCardList(searchInput.value);
 
+  // FLASH the newly selected cards
   selected.forEach(code=>{
     const checkbox = document.getElementById('chk_' + code);
     if(checkbox){
-      const label = checkbox.parentElement;
+      const label = checkbox.parentElement;  // flash the label, not the tiny checkbox
       label.classList.add('flash');
       setTimeout(()=>label.classList.remove('flash'), 600);
     }
   });
 }
 
+
+// Quick pick buttons
 quickPickButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const count = parseInt(btn.dataset.count);
@@ -207,6 +223,8 @@ quickPickButtons.forEach(btn=>{
   });
 });
 
+
+// This prevents the list from re-rendering on every keystroke, which is important for 1000+ cards.
 let searchTimeout;
 searchInput.addEventListener('input', () => {
   clearTimeout(searchTimeout);
@@ -238,7 +256,6 @@ function renderSelectedCards(cardsProgress={}) {
     div.dataset.code = code;
     div.innerHTML=`<h4>${c.code}</h4>`;
     const table = document.createElement('table');
-
     c.numbers.forEach(row=>{
       const tr = document.createElement('tr');
       row.forEach(n=>{
@@ -248,84 +265,50 @@ function renderSelectedCards(cardsProgress={}) {
           if(cardsProgress[code] && cardsProgress[code].includes(n)){
             td.classList.add('called');
           }
+td.addEventListener('click', () => {
+  // If the number isn't called, mark it called on single tap
+  if (!td.classList.contains('called')) {
+    td.classList.add('called');
+    td.classList.add('highlight');
+    setTimeout(() => td.classList.remove('highlight'), 500);
+    checkFullHouse(div, c);
+    saveState();
+  }
+});
 
-          // ======= NEW TAP HANDLER =======
-          let lastTapTime = 0;
-          let lastTappedCell = null;
-          const DOUBLE_TAP_DELAY = 300;
-          const TAP_LOCK_DELAY = 80;
-          let tapLocked = false;
+// Desktop: double click to unmark
+td.addEventListener('dblclick', () => {
+  if (td.classList.contains('called')) {
+    td.classList.remove('called');
+    td.classList.add('highlight');
+    setTimeout(() => td.classList.remove('highlight'), 500);
+    saveState();
+  }
+});
 
-          function handleCellTap(cell, cardDiv, cardData) {
-            if (tapLocked) return;
-
-            tapLocked = true;
-            setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
-
-            const now = Date.now();
-            const timeSinceLastTap = now - lastTapTime;
-            const isSameCell = cell === lastTappedCell;
-            const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
-
-            lastTapTime = now;
-            lastTappedCell = cell;
-
-            if (!cell.classList.contains("called")) {
-              selectCell(cell, cardDiv, cardData);
-              return;
-            }
-
-            if (isDoubleTap) {
-              undoCell(cell);
-            }
-          }
-
-          function selectCell(cell, cardDiv, cardData) {
-            cell.classList.add("called");
-            cell.classList.add("highlight");
-
-            cell.style.transform = "scale(1.1)";
-            setTimeout(() => {
-              cell.classList.remove("highlight");
-              cell.style.transform = "";
-            }, 200);
-
-            checkFullHouse(cardDiv, cardData);
-            saveState();
-
-            if (navigator.vibrate) navigator.vibrate(15);
-          }
-
-          function undoCell(cell) {
-            cell.classList.remove("called");
-            cell.classList.add("undo-highlight");
-
-            cell.style.transform = "scale(1.1)";
-            setTimeout(() => {
-              cell.classList.remove("undo-highlight");
-              cell.style.transform = "";
-            }, 200);
-
-            saveState();
-
-            if (navigator.vibrate) navigator.vibrate([10,40,10]);
-          }
-
-          td.addEventListener("click", () => handleCellTap(td, div, c));
-          td.addEventListener("touchend", (e) => {
-            e.preventDefault();
-            handleCellTap(td, div, c);
-          }, { passive: false });
-
-        }
-        tr.appendChild(td);
-      });
-      table.appendChild(tr);
-    });
-    div.appendChild(table);
-    cardsWrapper.appendChild(div);
-  });
-}
+// Mobile: double tap to unmark
+let lastTap = 0;
+td.addEventListener('touchend', (e) => {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  if (tapLength < 400 && tapLength > 0) { // double-tap detected
+    if (td.classList.contains('called')) {
+      td.classList.remove('called');
+      td.classList.add('highlight');
+      setTimeout(() => td.classList.remove('highlight'), 500);
+      saveState();
+    }
+    e.preventDefault();
+  } else if (!td.classList.contains('called')) {
+    // single tap selects if not already called
+    td.classList.add('called');
+    td.classList.add('highlight');
+    setTimeout(() => td.classList.remove('highlight'), 500);
+    checkFullHouse(div, c);
+    saveState();
+  }
+  lastTap = currentTime;
+});
 
 // ========================
 // CHECK FULL HOUSE
