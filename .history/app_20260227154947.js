@@ -33,7 +33,14 @@ let firstFullHouseNumber = null;    // Number that caused the FIRST FULL HOUSE
 
 // Elements associated with the game controls
 
-let lastReadBingoCall = ""; // Tracks last read text for bingoCallText
+// --- Track last read text ---
+let lastReadBingoCall = "";
+
+// Grab elements
+const bingoCallText = document.getElementById("bingoCallText");
+const toggleTTSBtn = document.getElementById("toggleTTSBtn"); // your TTS toggle
+let ttsEnabled = false;
+
 
 
 // ===============================
@@ -357,17 +364,13 @@ function updateBingoCallText() {
   if (!lastNumber) {
     bingoCallText.textContent = '';
     bingoCallText.classList.remove('animate');
-    lastReadBingoCall = ""; // reset TTS flag
     return;
   }
+  
 
   const callText = bingoCalls[lastNumber] || '';
-  bingoCallText.textContent = callText;
+ bingoCallText.textContent = callText;
 
-  // Reset the "already read" flag whenever text changes
-  if (callText !== lastReadBingoCall) {
-    lastReadBingoCall = ""; // allow TTS to read this new text
-  }
 
   // Restart animation every time
   bingoCallText.classList.remove('animate');
@@ -375,20 +378,7 @@ function updateBingoCallText() {
   bingoCallText.classList.add('animate');
 }
 
-bingoCallText.addEventListener("click", () => {
-  const text = bingoCallText.textContent.trim();
-  if (!ttsEnabled) return;
-  if (!text) return;
 
-  // Only speak if it hasn't been read yet
-  if (text !== lastReadBingoCall) {
-    if ('speechSynthesis' in window) {
-      const utter = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utter);
-      lastReadBingoCall = text; // mark as read
-    }
-  }
-});
 
 // Returns 'FULL HOUSE', 'LINE', or null
 function getCardWinStatus(card) {
@@ -936,6 +926,7 @@ function renderModalCardList() {
 }
 
 
+
 // ===============================
 // STATE MANAGEMENT
 // ===============================
@@ -975,6 +966,7 @@ function loadGameState() {
       ...state // keep existing state values
     }));
   }
+
 
   // Load saved game state
   numbers = state.numbers || [];

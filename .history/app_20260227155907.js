@@ -375,20 +375,7 @@ function updateBingoCallText() {
   bingoCallText.classList.add('animate');
 }
 
-bingoCallText.addEventListener("click", () => {
-  const text = bingoCallText.textContent.trim();
-  if (!ttsEnabled) return;
-  if (!text) return;
 
-  // Only speak if it hasn't been read yet
-  if (text !== lastReadBingoCall) {
-    if ('speechSynthesis' in window) {
-      const utter = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utter);
-      lastReadBingoCall = text; // mark as read
-    }
-  }
-});
 
 // Returns 'FULL HOUSE', 'LINE', or null
 function getCardWinStatus(card) {

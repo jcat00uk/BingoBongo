@@ -33,7 +33,14 @@ let firstFullHouseNumber = null;    // Number that caused the FIRST FULL HOUSE
 
 // Elements associated with the game controls
 
-let lastReadBingoCall = ""; // Tracks last read text for bingoCallText
+// --- Track last read text ---
+let lastReadBingoCall = "";
+
+// Grab elements
+const bingoCallText = document.getElementById("bingoCallText");
+const toggleTTSBtn = document.getElementById("toggleTTSBtn"); // your TTS toggle
+let ttsEnabled = false;
+
 
 
 // ===============================
@@ -357,17 +364,13 @@ function updateBingoCallText() {
   if (!lastNumber) {
     bingoCallText.textContent = '';
     bingoCallText.classList.remove('animate');
-    lastReadBingoCall = ""; // reset TTS flag
     return;
   }
+  
 
   const callText = bingoCalls[lastNumber] || '';
-  bingoCallText.textContent = callText;
+ bingoCallText.textContent = callText;
 
-  // Reset the "already read" flag whenever text changes
-  if (callText !== lastReadBingoCall) {
-    lastReadBingoCall = ""; // allow TTS to read this new text
-  }
 
   // Restart animation every time
   bingoCallText.classList.remove('animate');
@@ -375,20 +378,7 @@ function updateBingoCallText() {
   bingoCallText.classList.add('animate');
 }
 
-bingoCallText.addEventListener("click", () => {
-  const text = bingoCallText.textContent.trim();
-  if (!ttsEnabled) return;
-  if (!text) return;
 
-  // Only speak if it hasn't been read yet
-  if (text !== lastReadBingoCall) {
-    if ('speechSynthesis' in window) {
-      const utter = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utter);
-      lastReadBingoCall = text; // mark as read
-    }
-  }
-});
 
 // Returns 'FULL HOUSE', 'LINE', or null
 function getCardWinStatus(card) {
@@ -773,7 +763,35 @@ function showWinAnimation(text, duration = 9000) {
   }, duration);
 }
 
+// Update TTS state on button click
+toggleTTSBtn.addEventListener("click", () => {
+  ttsEnabled = !ttsEnabled;
+  toggleTTSBtn.textContent = ttsEnabled ? "🗣️ On" : "🗣️ Off";
+});
 
+// Function to read text via TTS
+function readBingoCall(text) {
+  if (!window.speechSynthesis) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(utterance);
+}
+
+// Trigger TTS on click, only if new text
+bingoCallText.addEventListener("click", () => {
+  const currentText = bingoCallText.textContent.trim();
+  if (!ttsEnabled) return;
+  if (currentText && currentText !== lastReadBingoCall) {
+    readBingoCall(currentText);
+    lastReadBingoCall = currentText;
+  }
+});
+
+// Reset last read text whenever bingo call updates
+function updateBingoCallText(newText) {
+  bingoCallText.textContent = newText;
+  // reset read flag so it can be read again
+  lastReadBingoCall = "";
+}
 
 // ===============================
 // CARD SELECT / MODAL LOGIC
@@ -936,6 +954,7 @@ function renderModalCardList() {
 }
 
 
+
 // ===============================
 // STATE MANAGEMENT
 // ===============================
@@ -975,6 +994,7 @@ function loadGameState() {
       ...state // keep existing state values
     }));
   }
+
 
   // Load saved game state
   numbers = state.numbers || [];
