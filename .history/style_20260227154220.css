@@ -1028,7 +1028,3 @@ body.night-mode .modal-header {
   }
 }
 
-/* Add glowing effect to the title */
-.title-text {
-  text-shadow: 0 0 8px #ff6666, 0 0 16px #ff0000;
-}

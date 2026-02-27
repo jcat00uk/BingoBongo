@@ -1028,7 +1028,30 @@ body.night-mode .modal-header {
   }
 }
 
-/* Add glowing effect to the title */
-.title-text {
-  text-shadow: 0 0 8px #ff6666, 0 0 16px #ff0000;
+/* Pulse animation for BingoBongo title */
+.title-text.pulse {
+  animation: titlePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); } /* slight grow */
+}
+
+/* Pulse + glowing animation */
+.title-text.pulse {
+  animation: titlePulseGlow 1.5s ease-in-out infinite;
+  /* optional smooth transition when stopping */
+  transition: text-shadow 0.3s, transform 0.3s;
+}
+
+@keyframes titlePulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 8px #ff6666, 0 0 12px #ff0000;
+  }
+  50% {
+    transform: scale(1.08); /* slight grow */
+    text-shadow: 0 0 16px #ff9999, 0 0 24px #ff3300; /* brighter glow */
+  }
 }

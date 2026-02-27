@@ -99,6 +99,16 @@
 <!-- Load JS -->
 <script src="cards.js"></script>
 <script src="app.js"></script>
+<script>
+  const title = document.querySelector('.title-text');
 
+  // Start pulsing initially
+  title.classList.add('pulse');
+
+  // Toggle pulse on click/tap
+  title.addEventListener('click', () => {
+    title.classList.toggle('pulse');
+  });
+</script>
 </body>
 </html>
