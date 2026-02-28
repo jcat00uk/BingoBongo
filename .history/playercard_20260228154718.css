@@ -297,7 +297,7 @@ body {
   background-color: #444;
   color: #eee;
   border: 1px solid #555;
-  border-radius: 12px;  /* soft rounded square / pill */
+  border-radius: 50%;
   width: 32px;
   height: 32px;
   font-weight: bold;
@@ -306,14 +306,6 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
-  
-}
-
-button.info-icon {
-    border-radius: 50% !important; /* enforce round */
-    width: 36px;
-    height: 36px;
-    padding: 0;
 }
 
 .info-icon:hover {

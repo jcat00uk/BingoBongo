@@ -309,13 +309,6 @@ body {
   
 }
 
-button.info-icon {
-    border-radius: 50% !important; /* enforce round */
-    width: 36px;
-    height: 36px;
-    padding: 0;
-}
-
 .info-icon:hover {
   background-color: #555;
 }

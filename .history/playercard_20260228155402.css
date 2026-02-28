@@ -293,31 +293,28 @@ body {
 }
 
 /* Info icon button */
+/* Updated Info Icon — more rounded and “popped” */
 .info-icon {
-  background-color: #444;
-  color: #eee;
-  border: 1px solid #555;
-  border-radius: 12px;  /* soft rounded square / pill */
-  width: 32px;
-  height: 32px;
+  background-color: #444;        /* dark gray base */
+  color: #fff;                   /* white “i” */
+  border: none;                  /* remove border for smoother circle */
+  border-radius: 50%;            /* perfect circle */
+  width: 36px;                   /* slightly bigger */
+  height: 36px;
   font-weight: bold;
-  cursor: pointer;
+  font-size: 18px;               /* bigger text inside */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
-  
-}
-
-button.info-icon {
-    border-radius: 50% !important; /* enforce round */
-    width: 36px;
-    height: 36px;
-    padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3); /* subtle 3D pop */
+  transition: all 0.25s ease;
 }
 
 .info-icon:hover {
   background-color: #555;
+  transform: scale(1.1);          /* slightly grows on hover */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4); /* stronger shadow on hover */
 }
 
 /* Popover (hidden by default using opacity/visibility for animation) */

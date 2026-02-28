@@ -19,21 +19,20 @@ h2 {
 /* Header row aligned to bingo grid */
 /* Container for header and bingo call */
 .header-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; /* keep left-aligned */
-    gap: 10px; /* optional spacing */
+  display: flex;
+  justify-content: space-between; /* left/right alignment */
+  align-items: center;
+  width: 100%; /* full width of the grid */
+  margin-bottom: 8px;
+  line-height: 1.2;
 }
 
 /* Bingo title aligned with grid */
 .title-text {
-    flex-shrink: 0; /* prevent shrinking */
-    min-width: 150px; /* optional: reserve space so it never moves */
-    font-size: 2rem; /* bigger size */
-    font-weight: bold; /* optional: make it bold */
-    text-align: left; /* keep left-aligned */
-    margin: 10px 0; /* optional spacing above/below */
-
+  margin: 0; /* remove default h2 margin */
+  padding-left: 4px; /* optional fine-tune to line up exactly with grid */
+  font-size: 2.2rem;
+  color: red;             /* make the title red */
 }
 
 
@@ -58,8 +57,17 @@ h2 {
 /*
 /* Yellow textbox for bingo call */
 .call-text-box {
-    flex-grow: 1; /* takes the remaining space */
-    text-align: left; /* or center if you want */
+  
+  color: #000;               /* black text for readability */
+  font-weight: 700;
+  font-size: 1.4rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  min-width: 120px;          /* ensures box isn’t too small */
+  text-align: right;
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Optional: bigger on desktop */
