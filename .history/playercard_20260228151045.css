@@ -313,41 +313,40 @@ body {
 }
 
 /* Popover (hidden by default using opacity/visibility for animation) */
-/* Popover */
 .popover {
   position: absolute;
-  top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
+  top: 40px;              /* below icon */
+  left: 100%;             /* to the right of icon */
+  margin-left: 8px;       /* small gap */
   background-color: #222;
   color: #eee;
   border: 1px solid #555;
   border-radius: 8px;
   padding: 14px;
   width: 260px;
-  max-width: 90vw;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   font-size: 14px;
 
+  /* Animation setup */
   opacity: 0;
   visibility: hidden;
+  transform: translateY(-5px);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* Visible */
+/* Active (visible) state */
 .popover.show {
   opacity: 1;
   visibility: visible;
-  transform: translateX(0) translateY(0);
+  transform: translateY(0);
 }
 
-/* Arrow centered under icon */
+/* Arrow */
 .popover .arrow {
   position: absolute;
   top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
+  left: 12px; /* aligns arrow toward left side */
   width: 0;
   height: 0;
   border-left: 8px solid transparent;
@@ -367,7 +366,7 @@ body {
   padding-left: 18px;
   margin: 0;
   list-style-type: disc;
-  text-align: left;  /* LEFT ALIGN */
+  text-align: center;  /* LEFT ALIGN */
 }
 
 .popover ul li {

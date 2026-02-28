@@ -313,12 +313,11 @@ body {
 }
 
 /* Popover (hidden by default using opacity/visibility for animation) */
-/* Popover */
 .popover {
   position: absolute;
   top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
+  left: 50%;              /* anchor to middle of info container */
+  transform: translateX(-50%) translateY(-5px);
   background-color: #222;
   color: #eee;
   border: 1px solid #555;
@@ -339,15 +338,15 @@ body {
 .popover.show {
   opacity: 1;
   visibility: visible;
-  transform: translateX(0) translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
-/* Arrow centered under icon */
+/* Arrow centered under info button */
 .popover .arrow {
   position: absolute;
   top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 8px solid transparent;

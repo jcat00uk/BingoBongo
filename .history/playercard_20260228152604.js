@@ -267,28 +267,29 @@ function renderSelectedCards(cardsProgress={}) {
 
 function handleCellTap(cell, cardDiv, cardData) {
   if (tapLocked) return;
+
   tapLocked = true;
   setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
 
-  // Only check double-tap if the cell is already called
-  if (cell.classList.contains("called")) {
-    const now = Date.now();
-    const timeSinceLastTap = now - lastTapTime;
-    const isSameCell = cell === lastTappedCell;
-    const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
+  const now = Date.now();
+  const timeSinceLastTap = now - lastTapTime;
+  const isSameCell = cell === lastTappedCell;
+  const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
 
-    if (isDoubleTap) {
-      undoCell(cell);
-    }
+  lastTapTime = now;
+  lastTappedCell = cell;
 
-    lastTapTime = now;
-    lastTappedCell = cell;
-    return;
+  if (!cell.classList.contains("called")) {
+    // Cell is uncalled → just select it on single tap
+    selectCell(cell, cardDiv, cardData);
+    return; 
   }
 
-  // Cell not yet called → just select it
-  selectCell(cell, cardDiv, cardData);
-};
+  // Cell is already called → only undo if double tap
+  if (isDoubleTap) {
+    undoCell(cell);
+  }
+}
 
           function selectCell(cell, cardDiv, cardData) {
             cell.classList.add("called");

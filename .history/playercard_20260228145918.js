@@ -81,15 +81,6 @@ endGameBtn.onclick = () => {
   saveState();
 };
 
-function positionPopover() {
-  const rect = infoPopover.getBoundingClientRect();
-
-  if (rect.right > window.innerWidth - 8) {
-    infoPopover.style.left = "auto";
-    infoPopover.style.right = "0";
-  }
-}
-
 // ========================
 // POPULATE CARD LIST
 // ========================
@@ -265,30 +256,29 @@ function renderSelectedCards(cardsProgress={}) {
           const TAP_LOCK_DELAY = 80;
           let tapLocked = false;
 
-function handleCellTap(cell, cardDiv, cardData) {
-  if (tapLocked) return;
-  tapLocked = true;
-  setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
+          function handleCellTap(cell, cardDiv, cardData) {
+            if (tapLocked) return;
 
-  // Only check double-tap if the cell is already called
-  if (cell.classList.contains("called")) {
-    const now = Date.now();
-    const timeSinceLastTap = now - lastTapTime;
-    const isSameCell = cell === lastTappedCell;
-    const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
+            tapLocked = true;
+            setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
 
-    if (isDoubleTap) {
-      undoCell(cell);
-    }
+            const now = Date.now();
+            const timeSinceLastTap = now - lastTapTime;
+            const isSameCell = cell === lastTappedCell;
+            const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
 
-    lastTapTime = now;
-    lastTappedCell = cell;
-    return;
-  }
+            lastTapTime = now;
+            lastTappedCell = cell;
 
-  // Cell not yet called → just select it
-  selectCell(cell, cardDiv, cardData);
-};
+            if (!cell.classList.contains("called")) {
+              selectCell(cell, cardDiv, cardData);
+              return;
+            }
+
+            if (isDoubleTap) {
+              undoCell(cell);
+            }
+          }
 
           function selectCell(cell, cardDiv, cardData) {
             cell.classList.add("called");
@@ -372,45 +362,17 @@ function checkFullHouse(div, card){
   }
 }
 
-
-// Info toggle
 const infoBtn = document.getElementById('infoBtn');
 const infoPopover = document.getElementById('infoPopover');
 
-function positionPopover() {
-  const rect = infoPopover.getBoundingClientRect();
-
-  // If overflowing right side
-  if (rect.right > window.innerWidth) {
-    infoPopover.style.right = "auto";
-    infoPopover.style.left = "0";
-  } else {
-    infoPopover.style.left = "";
-    infoPopover.style.right = "0";
-  }
-}
-
 infoBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  infoPopover.classList.toggle('show');
-
-  if (infoPopover.classList.contains('show')) {
-    positionPopover();
-  }
+  e.stopPropagation(); // prevent document click from hiding immediately
+  infoPopover.style.display = infoPopover.style.display === 'block' ? 'none' : 'block';
 });
 
-// Close if clicking outside
-document.addEventListener('click', (e) => {
-  if (!infoPopover.contains(e.target) && e.target !== infoBtn) {
-    infoPopover.classList.remove('show');
-  }
-});
-
-// Recheck position on resize
-window.addEventListener('resize', () => {
-  if (infoPopover.classList.contains('show')) {
-    positionPopover();
-  }
+// Hide popover if clicking anywhere else
+document.addEventListener('click', () => {
+  infoPopover.style.display = 'none';
 });
 
 // ========================

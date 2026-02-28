@@ -81,15 +81,6 @@ endGameBtn.onclick = () => {
   saveState();
 };
 
-function positionPopover() {
-  const rect = infoPopover.getBoundingClientRect();
-
-  if (rect.right > window.innerWidth - 8) {
-    infoPopover.style.left = "auto";
-    infoPopover.style.right = "0";
-  }
-}
-
 // ========================
 // POPULATE CARD LIST
 // ========================
@@ -265,30 +256,29 @@ function renderSelectedCards(cardsProgress={}) {
           const TAP_LOCK_DELAY = 80;
           let tapLocked = false;
 
-function handleCellTap(cell, cardDiv, cardData) {
-  if (tapLocked) return;
-  tapLocked = true;
-  setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
+          function handleCellTap(cell, cardDiv, cardData) {
+            if (tapLocked) return;
 
-  // Only check double-tap if the cell is already called
-  if (cell.classList.contains("called")) {
-    const now = Date.now();
-    const timeSinceLastTap = now - lastTapTime;
-    const isSameCell = cell === lastTappedCell;
-    const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
+            tapLocked = true;
+            setTimeout(() => tapLocked = false, TAP_LOCK_DELAY);
 
-    if (isDoubleTap) {
-      undoCell(cell);
-    }
+            const now = Date.now();
+            const timeSinceLastTap = now - lastTapTime;
+            const isSameCell = cell === lastTappedCell;
+            const isDoubleTap = isSameCell && timeSinceLastTap < DOUBLE_TAP_DELAY;
 
-    lastTapTime = now;
-    lastTappedCell = cell;
-    return;
-  }
+            lastTapTime = now;
+            lastTappedCell = cell;
 
-  // Cell not yet called → just select it
-  selectCell(cell, cardDiv, cardData);
-};
+            if (!cell.classList.contains("called")) {
+              selectCell(cell, cardDiv, cardData);
+              return;
+            }
+
+            if (isDoubleTap) {
+              undoCell(cell);
+            }
+          }
 
           function selectCell(cell, cardDiv, cardData) {
             cell.classList.add("called");

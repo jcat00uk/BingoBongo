@@ -312,42 +312,72 @@ body {
   background-color: #555;
 }
 
-/* Popover (hidden by default using opacity/visibility for animation) */
+/* ======================== */
+/* Info Icon + Popover */
+/* ======================== */
+
+.info-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Info icon button */
+.info-icon {
+  background-color: #444;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.info-icon:hover {
+  background-color: #555;
+}
+
 /* Popover */
 .popover {
   position: absolute;
-  top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
+  top: 42px;       /* below icon */
+  right: 0;        /* align right edge to icon */
   background-color: #222;
   color: #eee;
   border: 1px solid #555;
   border-radius: 8px;
   padding: 14px;
   width: 260px;
-  max-width: 90vw;
+  max-width: 90vw;  /* prevent overflow on small screens */
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   font-size: 14px;
 
+  /* Animation */
   opacity: 0;
   visibility: hidden;
+  transform: translateY(-5px);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* Visible */
+/* Visible state */
 .popover.show {
   opacity: 1;
   visibility: visible;
-  transform: translateX(0) translateY(0);
+  transform: translateY(0);
 }
 
-/* Arrow centered under icon */
+/* Arrow centered under button */
 .popover .arrow {
   position: absolute;
   top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 8px solid transparent;
@@ -367,7 +397,7 @@ body {
   padding-left: 18px;
   margin: 0;
   list-style-type: disc;
-  text-align: left;  /* LEFT ALIGN */
+  text-align: left;
 }
 
 .popover ul li {

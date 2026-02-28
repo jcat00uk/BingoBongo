@@ -316,16 +316,16 @@ body {
 /* Popover */
 .popover {
   position: absolute;
-  top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
+  top: 42px;                 /* space below icon */
+  left: 50%;                 /* center under icon */
+  transform: translateX(-50%) translateY(-5px);
   background-color: #222;
   color: #eee;
   border: 1px solid #555;
   border-radius: 8px;
   padding: 14px;
   width: 260px;
-  max-width: 90vw;
+  max-width: 90vw;           /* prevents off-screen */
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   font-size: 14px;
@@ -335,19 +335,19 @@ body {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* Visible */
+/* Visible state */
 .popover.show {
   opacity: 1;
   visibility: visible;
-  transform: translateX(0) translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
-/* Arrow centered under icon */
+/* Arrow perfectly centered */
 .popover .arrow {
   position: absolute;
   top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 8px solid transparent;

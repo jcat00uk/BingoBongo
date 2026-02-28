@@ -282,15 +282,23 @@ body {
   color: #fff;
 }
 
-/* ======================== */
-/* Info Icon + Popover */
-/* ======================== */
-
-.info-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+/* Info button */
+.preview-btn {
+  margin-left: auto;
+  background: #444;
+  border: 1px solid #555;
+  color: #eee;
+  border-radius: 6px;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s;
 }
+
+.preview-btn:hover {
+  background-color: #555;
+}
+
 
 /* Info icon button */
 .info-icon {
@@ -303,7 +311,7 @@ body {
   font-weight: bold;
   cursor: pointer;
   display: flex;
-  align-items: center;
+  align-items: left;
   justify-content: center;
   transition: all 0.3s;
 }
@@ -312,42 +320,30 @@ body {
   background-color: #555;
 }
 
-/* Popover (hidden by default using opacity/visibility for animation) */
 /* Popover */
 .popover {
   position: absolute;
-  top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
+  top: 40px; /* below the icon */
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #222;
   color: #eee;
   border: 1px solid #555;
   border-radius: 8px;
-  padding: 14px;
+  padding: 12px;
   width: 260px;
-  max-width: 90vw;
+  display: none; /* hidden by default */
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   font-size: 14px;
-
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-/* Visible */
-.popover.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0) translateY(0);
-}
-
-/* Arrow centered under icon */
+/* Arrow pointing to icon */
 .popover .arrow {
   position: absolute;
   top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 8px solid transparent;
@@ -355,21 +351,20 @@ body {
   border-bottom: 8px solid #222;
 }
 
-/* Left aligned content */
+/* Popover header */
 .popover h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   font-size: 16px;
   color: #ff6666;
-  text-align: left;
 }
 
+/* Popover list */
 .popover ul {
   padding-left: 18px;
   margin: 0;
   list-style-type: disc;
-  text-align: left;  /* LEFT ALIGN */
 }
 
 .popover ul li {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
