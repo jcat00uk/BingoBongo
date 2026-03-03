@@ -739,24 +739,20 @@ if (layoutSelect.value === '2x5') {
         td.style.textAlign='center';
         td.style.verticalAlign='middle';
 
-      // Dynamic font for table cells
-let cellFontSize;
-if(layoutSelect.value==='1x2') cellFontSize=20;
-else if(layoutSelect.value==='2x3') cellFontSize=12;
-else if(layoutSelect.value==='2x5') cellFontSize=14;
-else if(layoutSelect.value==='3x4') cellFontSize=12;
-else if(layoutSelect.value==='4x5') cellFontSize=10;
+        // Dynamic font for table cells
+        if(layoutSelect.value==='1x2') td.style.fontSize='20px';
+        else if(layoutSelect.value==='2x3') td.style.fontSize='12px';
+        else if(layoutSelect.value==='2x5') td.style.fontSize='14px';
+        else if(layoutSelect.value==='3x4') td.style.fontSize='12px';
+        else if(layoutSelect.value==='4x5') td.style.fontSize='10px';
 
-// Reduce font size on mobile
+        // Reduce font size on mobile
 if(window.innerWidth <= 768){
-  if(layoutSelect.value==='3x4') cellFontSize=8;
-  if(layoutSelect.value==='4x5') cellFontSize=6;
+  if(layoutSelect.value==='3x4') cellFontSize=10;
+  if(layoutSelect.value==='4x5') cellFontSize=8;
 }
 
 td.style.fontSize = cellFontSize + 'px';
-
-
-        
 
         tr.appendChild(td);
       }

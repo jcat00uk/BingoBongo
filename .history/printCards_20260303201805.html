@@ -325,69 +325,7 @@ button {
   color: #d4af37;
 }
 
-/* --- MOBILE SPECIFIC --- */
-@media (max-width: 768px) {
-  /* Stack controls vertically */
-  #controls {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
 
-  #controls label {
-    width: 95%;
-    text-align: left; /* keeps label above input */
-    font-size: 18px;
-    margin-bottom: 4px;
-  }
-
-  #controls select,
-  #controls input,
-  button {
-    width: 95%;
-    max-width: 400px;
-    font-size: 16px;
-    padding: 10px 12px;
-    border-radius: 6px;
-  }
-
-  button {
-    font-size: 18px;
-    padding: 12px 16px;
-  }
-
-  /* Adjust preview container for scrolling */
-  #pagePreviewWrapper {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 12px;
-  }
-
-  #pagePreview {
-    display: flex;
-    flex-wrap: nowrap; /* single row for scrolling */
-    gap: 12px;
-    justify-content: flex-start;
-  }
-
-  .pageGrid {
-    width: 95vw;
-    max-width: none;
-    grid-auto-rows: minmax(120px, auto);
-  }
-
-  /* Make card previews readable on small screens */
-  .cardPreview {
-    font-size: 12px;
-  }
-
-  .cardPreview table td {
-    font-size: 12px;
-    padding: 2px;
-  }
-}
  /* styles */
 
 </style>
@@ -440,6 +378,7 @@ button {
   <select id="pageEnd"></select>
 </label>
 
+  <button id="previewBtn" disabled>Preview</button>
   <button id="downloadPDF" disabled>Download PDF</button>
 </div>
 
@@ -505,6 +444,7 @@ window.addEventListener('DOMContentLoaded', () => {
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
   orderSelect.value = 'random';      // default to random
   orderSelect.dispatchEvent(new Event('change'));
+  previewBtn.disabled = false;       // enable preview
   downloadBtn.disabled = false;      // enable download
   renderPreview();                   // render preview immediately
 });
@@ -552,12 +492,24 @@ function updatePageControls() {
   totalPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
 
   if (orderSelect.value === 'sequential') {
+    // Sequential: show range inputs
     rangeLabel.style.display = 'inline-block';
     pagesLabel.style.display = 'none';
 
-    populateSequentialSelects();
+    // Update max values
+    pageStartInput.max = totalPages;
+    pageEndInput.max = totalPages;
+
+    // Clamp current values
+    if (parseInt(pageStartInput.value) > totalPages) pageStartInput.value = totalPages;
+    if (parseInt(pageEndInput.value) > totalPages) pageEndInput.value = totalPages;
+
+    // Default to full range if empty
+    if (!pageStartInput.value) pageStartInput.value = 1;
+    if (!pageEndInput.value) pageEndInput.value = totalPages;
 
   } else if (orderSelect.value === 'random') {
+    // Random: show number of pages dropdown
     rangeLabel.style.display = 'none';
     pagesLabel.style.display = 'inline-block';
     populatePageSelect();
@@ -583,8 +535,6 @@ function populateSequentialSelects() {
   const cardsPerPage = cardCols * cardRows;
   const maxPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
 
-  if (!pageStartInput || !pageEndInput) return;
-
   // Clear existing options
   pageStartInput.innerHTML = '';
   pageEndInput.innerHTML = '';
@@ -603,7 +553,7 @@ function populateSequentialSelects() {
 
   // Default selection
   pageStartInput.value = 1;
-  pageEndInput.value = 1;
+  pageEndInput.value = maxPages;
 }
 
 function populatePageSelect() {
@@ -649,6 +599,7 @@ orderSelect.addEventListener('change', () => {
     populatePageSelect(); // 👈 builds dropdown
   }
 
+  previewBtn.disabled = false;
   downloadBtn.disabled = false;
 });
 
@@ -739,24 +690,12 @@ if (layoutSelect.value === '2x5') {
         td.style.textAlign='center';
         td.style.verticalAlign='middle';
 
-      // Dynamic font for table cells
-let cellFontSize;
-if(layoutSelect.value==='1x2') cellFontSize=20;
-else if(layoutSelect.value==='2x3') cellFontSize=12;
-else if(layoutSelect.value==='2x5') cellFontSize=14;
-else if(layoutSelect.value==='3x4') cellFontSize=12;
-else if(layoutSelect.value==='4x5') cellFontSize=10;
-
-// Reduce font size on mobile
-if(window.innerWidth <= 768){
-  if(layoutSelect.value==='3x4') cellFontSize=8;
-  if(layoutSelect.value==='4x5') cellFontSize=6;
-}
-
-td.style.fontSize = cellFontSize + 'px';
-
-
-        
+        // Dynamic font for table cells
+        if(layoutSelect.value==='1x2') td.style.fontSize='20px';
+        else if(layoutSelect.value==='2x3') td.style.fontSize='12px';
+        else if(layoutSelect.value==='2x5') td.style.fontSize='14px';
+        else if(layoutSelect.value==='3x4') td.style.fontSize='12px';
+        else if(layoutSelect.value==='4x5') td.style.fontSize='10px';
 
         tr.appendChild(td);
       }
@@ -785,25 +724,24 @@ downloadBtn.addEventListener('click', () => {
   const padding = 5;
 
   const cardsPerPage = cardCols * cardRows;
+  const cardWidth = (pageWidth - (cardCols + 1) * padding) / cardCols;
+  const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
 
-  // Determine start and end pages based on order type
-  let startPage = 1;
-  let endPage = Math.ceil(finalCardOrder.length / cardsPerPage);
+  let startPage = 1,
+      endPage = Math.ceil(finalCardOrder.length / cardsPerPage);
+if (orderSelect.value === 'sequential') {
+  // Sequential: show range selects
+  rangeLabel.style.display = 'inline-block';
+  pagesLabel.style.display = 'none';
 
-  if(orderSelect.value === 'sequential') {
-    startPage = parseInt(pageStartInput.value) || 1;
-    endPage = parseInt(pageEndInput.value) || endPage;
-  } else if(orderSelect.value === 'random') {
-    endPage = parseInt(numPagesInput.value) || 1;
-  }
+  // Populate dropdowns
+  populateSequentialSelects();
+}
 
   let cardsPrinted = (startPage - 1) * cardsPerPage;
 
   for (let p = startPage; p <= endPage; p++) {
     let x = padding, y = padding;
-
-    const pageDiv = document.createElement('div'); // optional, for preview use only
-    pageDiv.className = 'pageGrid';
 
     for (let i = 0; i < cardsPerPage; i++) {
       const card = finalCardOrder[cardsPrinted];
@@ -814,22 +752,35 @@ downloadBtn.addEventListener('click', () => {
       // Draw card background
       pdf.setFillColor(...style.bg);
       pdf.setDrawColor(...style.cardBorder);
-      pdf.rect(x, y, (pageWidth - (cardCols + 1) * padding) / cardCols, (pageHeight - (cardRows + 1) * padding) / cardRows, 'FD');
+      pdf.rect(x, y, cardWidth, cardHeight, 'FD');
 
-      // Draw card code
+      // --- Draw card code (first-row header) ---
       pdf.setFont(undefined, 'bold');
       pdf.setFontSize(layoutSelect.value === '1x2' ? 18 :
                       layoutSelect.value === '2x3' ? 14 :
                       layoutSelect.value === '2x5' ? 14 :
                       layoutSelect.value === '3x4' ? 12 : 10);
-      pdf.setTextColor(...style.text);
-      pdf.text(card.code, x + ((pageWidth - (cardCols + 1) * padding) / cardCols)/2, y + 6, {align:'center'});
 
-      // Draw table cells
+      let headerColor = [...style.text]; // default
+      // Override header color based on preview styles
+      switch(styleSelect.value){
+        case 'christmas': headerColor = [179,0,0]; break;
+        case 'easter': headerColor = [122,75,148]; break;
+        case 'neon': headerColor = [158,158,158]; break;
+        case 'halloween': headerColor = [178,102,255]; break;
+        case 'retro': headerColor = [196,122,44]; break;
+        case 'gold': headerColor = [140,109,31]; break;
+        case 'kids': headerColor = [255,111,145]; break;
+        case 'minimal': headerColor = [68,68,68]; break;
+        case 'casino': headerColor = [212,175,55]; break;
+      }
+
+      pdf.setTextColor(...headerColor);
+      pdf.text(card.code, x + cardWidth / 2, y + 6, {align:'center'});
+
+      // --- Draw table cells ---
       const rows = card.numbers.length;
       const colsInCard = card.numbers[0].length;
-      const cardWidth = (pageWidth - (cardCols + 1) * padding) / cardCols;
-      const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
       const tableTop = y + 10;
       const tableHeight = cardHeight - 12;
       const cellWidth = cardWidth / colsInCard;
@@ -841,10 +792,12 @@ downloadBtn.addEventListener('click', () => {
           const cellX = x + c * cellWidth;
           const cellY = tableTop + r * cellHeight;
 
+          // Cell border
           pdf.setDrawColor(...style.grid);
           pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
-          if(num !== null){
+          // Number text
+          if (num !== null) {
             pdf.setTextColor(...style.text);
             pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
                             layoutSelect.value === '2x3' ? 12 :
@@ -861,16 +814,21 @@ downloadBtn.addEventListener('click', () => {
       cardsPrinted++;
     }
 
-    if(p < endPage) pdf.addPage();
+    if (p < endPage) pdf.addPage();
   }
 
   pdf.save('bingo_cards.pdf');
 });
 
-
+previewBtn.addEventListener('click', renderPreview);
+window.addEventListener('DOMContentLoaded', () => {
+  styleSelect.value = 'plain';
+});
 
 styleSelect.addEventListener('change', () => {
-    renderPreview(); // re-render the cards preview in memory
+  if (!previewBtn.disabled) {
+    renderPreview();
+  }
 });
 
 layoutSelect.addEventListener('change', () => {

@@ -440,6 +440,7 @@ button {
   <select id="pageEnd"></select>
 </label>
 
+  <button id="previewBtn" disabled>Preview</button>
   <button id="downloadPDF" disabled>Download PDF</button>
 </div>
 
@@ -505,6 +506,7 @@ window.addEventListener('DOMContentLoaded', () => {
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
   orderSelect.value = 'random';      // default to random
   orderSelect.dispatchEvent(new Event('change'));
+  previewBtn.disabled = false;       // enable preview
   downloadBtn.disabled = false;      // enable download
   renderPreview();                   // render preview immediately
 });
@@ -649,6 +651,7 @@ orderSelect.addEventListener('change', () => {
     populatePageSelect(); // 👈 builds dropdown
   }
 
+  previewBtn.disabled = false;
   downloadBtn.disabled = false;
 });
 
@@ -739,24 +742,12 @@ if (layoutSelect.value === '2x5') {
         td.style.textAlign='center';
         td.style.verticalAlign='middle';
 
-      // Dynamic font for table cells
-let cellFontSize;
-if(layoutSelect.value==='1x2') cellFontSize=20;
-else if(layoutSelect.value==='2x3') cellFontSize=12;
-else if(layoutSelect.value==='2x5') cellFontSize=14;
-else if(layoutSelect.value==='3x4') cellFontSize=12;
-else if(layoutSelect.value==='4x5') cellFontSize=10;
-
-// Reduce font size on mobile
-if(window.innerWidth <= 768){
-  if(layoutSelect.value==='3x4') cellFontSize=8;
-  if(layoutSelect.value==='4x5') cellFontSize=6;
-}
-
-td.style.fontSize = cellFontSize + 'px';
-
-
-        
+        // Dynamic font for table cells
+        if(layoutSelect.value==='1x2') td.style.fontSize='20px';
+        else if(layoutSelect.value==='2x3') td.style.fontSize='12px';
+        else if(layoutSelect.value==='2x5') td.style.fontSize='14px';
+        else if(layoutSelect.value==='3x4') td.style.fontSize='12px';
+        else if(layoutSelect.value==='4x5') td.style.fontSize='10px';
 
         tr.appendChild(td);
       }
@@ -867,10 +858,15 @@ downloadBtn.addEventListener('click', () => {
   pdf.save('bingo_cards.pdf');
 });
 
-
+previewBtn.addEventListener('click', renderPreview);
+window.addEventListener('DOMContentLoaded', () => {
+  styleSelect.value = 'plain';
+});
 
 styleSelect.addEventListener('change', () => {
-    renderPreview(); // re-render the cards preview in memory
+  if (!previewBtn.disabled) {
+    renderPreview();
+  }
 });
 
 layoutSelect.addEventListener('change', () => {
