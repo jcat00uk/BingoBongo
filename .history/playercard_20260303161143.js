@@ -223,7 +223,7 @@ function pickRandomCards(count){
     ...tempSelection.filter(code => !allCodes.includes(code)),
     ...selected
   ];
-searchInput.value = '';
+
   populateCardList(searchInput.value);
 
   selected.forEach(code=>{
@@ -234,7 +234,6 @@ searchInput.value = '';
       setTimeout(()=>label.classList.remove('flash'), 600);
     }
   });
-  
 }
 
 quickPickButtons.forEach(btn=>{
