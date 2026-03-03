@@ -156,8 +156,6 @@ checkbox.addEventListener('change', () => {
       populateCardList(searchInput.value); // re-render AFTER glow
     }, 300);
   }
-    // Clear the search box
-  searchInput.value = '';
 });
 
     const span = document.createElement('span');
@@ -197,15 +195,6 @@ checkbox.addEventListener('change', () => {
     cardList.appendChild(label);
   });
 }
-
-searchInput.addEventListener('input', () => {
-  // Remove anything that is not a digit
-  searchInput.value = searchInput.value.replace(/\D/g, '');
-  
-  // Then do your normal search
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => populateCardList(searchInput.value), 150);
-});
 
 // ========================
 // QUICK PICK RANDOM CARDS

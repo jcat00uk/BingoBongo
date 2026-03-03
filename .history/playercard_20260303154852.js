@@ -141,23 +141,17 @@ checkbox.addEventListener('change', () => {
 
     // temporary green glow
     label.classList.add('flash-green');
-    setTimeout(() => {
-      label.classList.remove('flash-green');
-      populateCardList(searchInput.value); // re-render AFTER glow
-    }, 300);
+    setTimeout(() => label.classList.remove('flash-green'), 600);
 
   } else {
     tempSelection = tempSelection.filter(x => x !== code);
 
     // temporary red glow
     label.classList.add('flash-red');
-    setTimeout(() => {
-      label.classList.remove('flash-red');
-      populateCardList(searchInput.value); // re-render AFTER glow
-    }, 300);
+    setTimeout(() => label.classList.remove('flash-red'), 600);
   }
-    // Clear the search box
-  searchInput.value = '';
+
+  populateCardList(searchInput.value);
 });
 
     const span = document.createElement('span');
@@ -197,15 +191,6 @@ checkbox.addEventListener('change', () => {
     cardList.appendChild(label);
   });
 }
-
-searchInput.addEventListener('input', () => {
-  // Remove anything that is not a digit
-  searchInput.value = searchInput.value.replace(/\D/g, '');
-  
-  // Then do your normal search
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => populateCardList(searchInput.value), 150);
-});
 
 // ========================
 // QUICK PICK RANDOM CARDS

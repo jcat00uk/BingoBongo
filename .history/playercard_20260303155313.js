@@ -198,15 +198,6 @@ checkbox.addEventListener('change', () => {
   });
 }
 
-searchInput.addEventListener('input', () => {
-  // Remove anything that is not a digit
-  searchInput.value = searchInput.value.replace(/\D/g, '');
-  
-  // Then do your normal search
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => populateCardList(searchInput.value), 150);
-});
-
 // ========================
 // QUICK PICK RANDOM CARDS
 // ========================

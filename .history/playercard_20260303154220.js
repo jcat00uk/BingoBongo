@@ -127,38 +127,20 @@ function populateCardList(filter='') {
     checkbox.checked = tempSelection.includes(c.code);
     checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
 
-checkbox.addEventListener('change', () => {
-  const code = c.code;
-  const label = checkbox.parentElement; // the label element
-
-  if (checkbox.checked) {
-    if (tempSelection.length >= maxSelection) {
-      checkbox.checked = false;
-      alert(`You can select up to ${maxSelection} cards`);
-      return;
-    }
-    if (!tempSelection.includes(code)) tempSelection.push(code);
-
-    // temporary green glow
-    label.classList.add('flash-green');
-    setTimeout(() => {
-      label.classList.remove('flash-green');
-      populateCardList(searchInput.value); // re-render AFTER glow
-    }, 300);
-
-  } else {
-    tempSelection = tempSelection.filter(x => x !== code);
-
-    // temporary red glow
-    label.classList.add('flash-red');
-    setTimeout(() => {
-      label.classList.remove('flash-red');
-      populateCardList(searchInput.value); // re-render AFTER glow
-    }, 300);
-  }
-    // Clear the search box
-  searchInput.value = '';
-});
+    checkbox.addEventListener('change', () => {
+      const code = c.code;
+      if (checkbox.checked) {
+        if (tempSelection.length >= maxSelection) {
+          checkbox.checked = false;
+          alert(`You can select up to ${maxSelection} cards`);
+          return;
+        }
+        if (!tempSelection.includes(code)) tempSelection.push(code);
+      } else {
+        tempSelection = tempSelection.filter(x => x !== code);
+      }
+      populateCardList(searchInput.value);
+    });
 
     const span = document.createElement('span');
     span.textContent = c.code;
@@ -197,15 +179,6 @@ checkbox.addEventListener('change', () => {
     cardList.appendChild(label);
   });
 }
-
-searchInput.addEventListener('input', () => {
-  // Remove anything that is not a digit
-  searchInput.value = searchInput.value.replace(/\D/g, '');
-  
-  // Then do your normal search
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => populateCardList(searchInput.value), 150);
-});
 
 // ========================
 // QUICK PICK RANDOM CARDS
