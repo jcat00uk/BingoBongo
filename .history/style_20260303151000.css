@@ -488,6 +488,7 @@ body.night-mode .modal-card-item {
   border-bottom: 1px solid #aaa;
 }
 
+/* Add this to your style.css */
 /* Select = green glow */
 .glow-select {
   box-shadow: 0 0 12px 4px limegreen;

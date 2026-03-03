@@ -890,7 +890,7 @@ function handleModalCheckboxChange(code, checked) {
     // Update selection
     if (checked) modalSelections.add(code);
     else modalSelections.delete(code);
-   if (cardSearchBox) cardSearchBox.value = '';
+
     renderModalCardList(); // re-render AFTER animation
 
     updateAutoCheckToggle();

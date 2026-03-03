@@ -488,16 +488,11 @@ body.night-mode .modal-card-item {
   border-bottom: 1px solid #aaa;
 }
 
-/* Select = green glow */
-.glow-select {
-  box-shadow: 0 0 12px 4px limegreen;
-  transition: box-shadow 0.4s ease-in-out;
-}
-
-/* Deselect = red glow */
-.glow-deselect {
-  box-shadow: 0 0 12px 4px red;
-  transition: box-shadow 0.4s ease-in-out;
+/* Add this to your style.css */
+.modal-card-item.glow {
+  box-shadow: 0 0 8px 2px rgba(255, 215, 0, 0.8); /* gold glow */
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: scale(1.05); /* slight pop */
 }
 
 #modalCardList {

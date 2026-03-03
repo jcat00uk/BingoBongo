@@ -879,22 +879,22 @@ function closeSelectCardsModal() {
 }
 
 function handleModalCheckboxChange(code, checked) {
+  if (checked) modalSelections.add(code);
+  else modalSelections.delete(code);
+
+  // ✅ Clear the search box whenever a checkbox is clicked
+  if (cardSearchBox) cardSearchBox.value = '';
+
+  renderModalCardList(); // rebuild the modal list first
+
+  // Add glow to the updated card item
   const cardDiv = document.querySelector(`.modal-card-item input[data-code="${code}"]`)?.parentElement;
-  if (!cardDiv) return;
+  if (cardDiv) {
+    cardDiv.classList.add('glow');
+    setTimeout(() => cardDiv.classList.remove('glow'), 400);
+  }
 
-  // Apply glow BEFORE updating pinned/unpinned state
-  cardDiv.classList.add(checked ? 'glow-select' : 'glow-deselect');
-
-  // Wait for animation to finish (400ms here), then update state and re-render
-  setTimeout(() => {
-    // Update selection
-    if (checked) modalSelections.add(code);
-    else modalSelections.delete(code);
-   if (cardSearchBox) cardSearchBox.value = '';
-    renderModalCardList(); // re-render AFTER animation
-
-    updateAutoCheckToggle();
-  }, 400); // duration of glow animation in ms
+  updateAutoCheckToggle();
 }
 
 function renderModalCardList() {
