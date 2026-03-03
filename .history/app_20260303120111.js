@@ -935,64 +935,6 @@ function renderModalCardList() {
   });
 }
 
-// Dynamically adjust font size to fit inside its container
-function scaleBingoCall() {
-  const callText = document.getElementById('bingoCallText');
-  const wrapper = callText.parentElement;
-  let fontSize = parseFloat(window.getComputedStyle(callText).fontSize);
-
-  callText.style.fontSize = `${fontSize}px`; // reset to current
-
-  while (callText.scrollWidth > wrapper.clientWidth && fontSize > 8) {
-    fontSize -= 1;
-    callText.style.fontSize = `${fontSize}px`;
-  }
-}
-
-// Call whenever bingo call changes
-function updateBingoCallTextScaled(number) {
-  const callText = document.getElementById('bingoCallText');
-  callText.textContent = bingoCalls[number] || '';
-  scaleBingoCall();
-}
-
-const scrollContainer = document.getElementById('calledNumbersContainerWrapper');
-
-let isDragging = false;
-let startX = 0;
-let scrollLeft = 0;
-
-// --- Desktop Drag ---
-scrollContainer.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  startX = e.pageX - scrollContainer.offsetLeft;
-  scrollLeft = scrollContainer.scrollLeft;
-});
-scrollContainer.addEventListener('mouseleave', () => isDragging = false);
-scrollContainer.addEventListener('mouseup', () => isDragging = false);
-scrollContainer.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  e.preventDefault();
-  const x = e.pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX) * 2; // scroll speed multiplier
-  scrollContainer.scrollLeft = scrollLeft - walk;
-});
-
-// --- Mobile Drag ---
-scrollContainer.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-  scrollLeft = scrollContainer.scrollLeft;
-});
-scrollContainer.addEventListener('touchend', () => isDragging = false);
-scrollContainer.addEventListener('touchcancel', () => isDragging = false);
-scrollContainer.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX) * 2; // same scroll speed multiplier
-  scrollContainer.scrollLeft = scrollLeft - walk;
-});
-
 
 // ===============================
 // STATE MANAGEMENT
@@ -1168,6 +1110,21 @@ function positionPopover() {
   }
 }
 
+function resizeGameContainer() {
+    const container = document.getElementById('gameContainer');
+    const wrapper = document.querySelector('.game-wrapper');
+    
+    // Original designed width & height of gameContainer
+    const baseWidth = 540; 
+    const baseHeight = container.offsetHeight; // actual content height
+    
+    // Compute scale to fit viewport
+    const scaleX = wrapper.clientWidth / baseWidth;
+    const scaleY = wrapper.clientHeight / baseHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // do not scale up
+    
+    container.style.setProperty('--scale', scale);
+}
 
 
 infoBtn.addEventListener('click', (e) => {
@@ -1225,3 +1182,7 @@ window.addEventListener('keydown', (e) => {
             break;
     }
 });
+
+// Run on load & resize
+window.addEventListener('load', resizeGameContainer);
+window.addEventListener('resize', resizeGameContainer);

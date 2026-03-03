@@ -956,42 +956,20 @@ function updateBingoCallTextScaled(number) {
   scaleBingoCall();
 }
 
-const scrollContainer = document.getElementById('calledNumbersContainerWrapper');
+// Dynamically resize text to fit container width
+function fitBingoCallText() {
+  const textEl = document.getElementById('bingoCallText');
+  const container = textEl.parentElement; // top row wrapper
 
-let isDragging = false;
-let startX = 0;
-let scrollLeft = 0;
+  let fontSize = 48; // starting font size in px
+  textEl.style.fontSize = fontSize + 'px';
 
-// --- Desktop Drag ---
-scrollContainer.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  startX = e.pageX - scrollContainer.offsetLeft;
-  scrollLeft = scrollContainer.scrollLeft;
-});
-scrollContainer.addEventListener('mouseleave', () => isDragging = false);
-scrollContainer.addEventListener('mouseup', () => isDragging = false);
-scrollContainer.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  e.preventDefault();
-  const x = e.pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX) * 2; // scroll speed multiplier
-  scrollContainer.scrollLeft = scrollLeft - walk;
-});
+  while (textEl.scrollWidth > container.clientWidth - 10 && fontSize > 8) {
+    fontSize -= 1;
+    textEl.style.fontSize = fontSize + 'px';
+  }
+}
 
-// --- Mobile Drag ---
-scrollContainer.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  startX = e.touches[0].pageX - scrollContainer.offsetLeft;
-  scrollLeft = scrollContainer.scrollLeft;
-});
-scrollContainer.addEventListener('touchend', () => isDragging = false);
-scrollContainer.addEventListener('touchcancel', () => isDragging = false);
-scrollContainer.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-  const walk = (x - startX) * 2; // same scroll speed multiplier
-  scrollContainer.scrollLeft = scrollLeft - walk;
-});
 
 
 // ===============================

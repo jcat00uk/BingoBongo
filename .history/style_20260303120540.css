@@ -8,7 +8,7 @@ body {
 
 h2 {
   text-align: left;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 
@@ -19,20 +19,23 @@ h2 {
 /* Header row aligned to bingo grid */
 /* Container for header and bingo call */
 .header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* title left, call text right */
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* keep left-aligned */
+    gap: 10px; /* optional spacing */
 }
 
 /* Bingo title aligned with grid */
-/* Title remains normal */
 .title-text {
-  font-size: 2rem;       /* your desired size */
-  line-height: 1.2;      /* optional, controls spacing */
-  margin: 0;
-  flex-shrink: 0;        /* never shrink */
+    flex-shrink: 0; /* prevent shrinking */
+    min-width: 150px; /* optional: reserve space so it never moves */
+    font-size: 2rem; /* bigger size */
+    font-weight: bold; /* optional: make it bold */
+    text-align: left; /* keep left-aligned */
+    margin: 10px 0; /* optional spacing above/below */
+
 }
+
 
 /* ===============================
    BINGO CALL TEXT (UK LINGO)
@@ -41,28 +44,31 @@ h2 {
 
 
 
-/* Bingo call text scales with wrapper */
 #bingoCallText {
-  flex-grow: 1;           /* take available space */
-  flex-shrink: 1;         /* shrink if needed */
-  max-height: 100%;       /* cannot exceed parent flex height */
-  display: flex;
-  flex-direction: column; /* allow 2 lines */
-  justify-content: center; /* vertically center if less than max */
+
   overflow: hidden;
- 
-  line-height: 1.1;       /* tight line spacing to fit 2 lines */
+  display: flex;
+  align-items: center;
+  justify-content: right;
   text-align: right;
-  word-break: break-word; /* wrap if needed */
-  color: red;
+ color: red;  
+ 
 }
 
+/*
+/* Yellow textbox for bingo call */
+.call-text-box {
+    flex-grow: 1; /* takes the remaining space */
+    text-align: left; /* or center if you want */
+}
 
-
-
+/* Optional: bigger on desktop */
+@media (min-width: 768px) {
   .call-text-box {
-    font-size: 1.4rem;          /* even smaller on tiny screens */
+    font-size: 2rem;
+    min-width: 160px;
   }
+}
 
 
 
@@ -72,7 +78,7 @@ h2 {
 /* Responsive adjustment for small screens */
 @media (max-width: 600px) {
   .call-text-box {
-    font-size: 1.2rem;          /* shrink font on small devices */
+    font-size: 1.4rem;          /* shrink font on small devices */
   }
 }
 
@@ -165,17 +171,11 @@ h2 {
   width: 100%;
   max-width: 540px;
   margin: 0 auto 6px auto;
-    border-top: 1px solid #ccc;
+  overflow-x: auto;
+  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 4px 0;
   background-color: #eee;
-  overflow-x: hidden; /* hide scrollbar */
-  cursor: grab;       /* show grab cursor */
-  -webkit-user-select: none; /* prevent text selection while dragging */
-  user-select: none;
-}
-#calledNumbersContainerWrapper:active {
-  cursor: grabbing;
 }
 
 #calledNumbersContainer {

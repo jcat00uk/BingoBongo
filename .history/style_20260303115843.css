@@ -8,7 +8,7 @@ body {
 
 h2 {
   text-align: left;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 
@@ -19,20 +19,23 @@ h2 {
 /* Header row aligned to bingo grid */
 /* Container for header and bingo call */
 .header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* title left, call text right */
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* keep left-aligned */
+    gap: 10px; /* optional spacing */
 }
 
 /* Bingo title aligned with grid */
-/* Title remains normal */
 .title-text {
-  font-size: 2rem;       /* your desired size */
-  line-height: 1.2;      /* optional, controls spacing */
-  margin: 0;
-  flex-shrink: 0;        /* never shrink */
+    flex-shrink: 0; /* prevent shrinking */
+    min-width: 150px; /* optional: reserve space so it never moves */
+    font-size: 2rem; /* bigger size */
+    font-weight: bold; /* optional: make it bold */
+    text-align: left; /* keep left-aligned */
+    margin: 10px 0; /* optional spacing above/below */
+
 }
+
 
 /* ===============================
    BINGO CALL TEXT (UK LINGO)
@@ -41,28 +44,31 @@ h2 {
 
 
 
-/* Bingo call text scales with wrapper */
 #bingoCallText {
-  flex-grow: 1;           /* take available space */
-  flex-shrink: 1;         /* shrink if needed */
-  max-height: 100%;       /* cannot exceed parent flex height */
-  display: flex;
-  flex-direction: column; /* allow 2 lines */
-  justify-content: center; /* vertically center if less than max */
+  height: 50px;
   overflow: hidden;
- 
-  line-height: 1.1;       /* tight line spacing to fit 2 lines */
+  display: flex;
+  align-items: center;
+  justify-content: right;
   text-align: right;
-  word-break: break-word; /* wrap if needed */
-  color: red;
+ color: red;  
+ 
 }
 
+/*
+/* Yellow textbox for bingo call */
+.call-text-box {
+    flex-grow: 1; /* takes the remaining space */
+    text-align: left; /* or center if you want */
+}
 
-
-
+/* Optional: bigger on desktop */
+@media (min-width: 768px) {
   .call-text-box {
-    font-size: 1.4rem;          /* even smaller on tiny screens */
+    font-size: 2rem;
+    min-width: 160px;
   }
+}
 
 
 
@@ -72,7 +78,7 @@ h2 {
 /* Responsive adjustment for small screens */
 @media (max-width: 600px) {
   .call-text-box {
-    font-size: 1.2rem;          /* shrink font on small devices */
+    font-size: 1.4rem;          /* shrink font on small devices */
   }
 }
 
@@ -165,17 +171,11 @@ h2 {
   width: 100%;
   max-width: 540px;
   margin: 0 auto 6px auto;
-    border-top: 1px solid #ccc;
+  overflow-x: auto;
+  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 4px 0;
   background-color: #eee;
-  overflow-x: hidden; /* hide scrollbar */
-  cursor: grab;       /* show grab cursor */
-  -webkit-user-select: none; /* prevent text selection while dragging */
-  user-select: none;
-}
-#calledNumbersContainerWrapper:active {
-  cursor: grabbing;
 }
 
 #calledNumbersContainer {
@@ -210,22 +210,16 @@ h2 {
 #bingoGrid {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
+  grid-auto-rows: 1fr;
   gap: 6px;
-  margin: 0 auto;
-  max-width: 540px;
+  width: 100%; /* scale with container */
 }
 
 .grid-cell {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* always square */
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #000;
-  font-weight: bold;
-  font-size: 18px;
-  background-color: #eee;
-  border-radius: 50%;
-  transition: background 0.3s, transform 0.3s;
 }
 
 
@@ -720,12 +714,30 @@ body.night-mode .modal-header {
 /* ===========================
    WRAPPER TO ALIGN EVERYTHING
 =========================== */
-#gameContainer {
-  max-width: 540px;      /* match your bingoGrid max-width */
-  width: 100%;
-  margin: 0 auto;
+/* Make the wrapper fill viewport */
+.game-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
   box-sizing: border-box;
-  padding: 0 6px;        /* small horizontal padding for mobile */
+  padding: 10px; /* optional padding around */
+}
+
+
+/* Scale the gameContainer proportionally to fit viewport */
+#gameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  /* Base size you designed for */
+  width: 540px;  /* original max-width */
+  
+  /* Scale factor based on viewport */
+  transform-origin: top center; /* scale from top so buttons stay visible */
+  transform: scale(var(--scale, 1));
 }
 
 /* Make top-section, bingoGrid, called numbers strip, and buttons follow container width */

@@ -50,7 +50,7 @@ h2 {
   flex-direction: column; /* allow 2 lines */
   justify-content: center; /* vertically center if less than max */
   overflow: hidden;
- 
+  font-size: clamp(0.8rem, 1.5vw, 1rem); /* responsive */
   line-height: 1.1;       /* tight line spacing to fit 2 lines */
   text-align: right;
   word-break: break-word; /* wrap if needed */
@@ -61,7 +61,7 @@ h2 {
 
 
   .call-text-box {
-    font-size: 1.4rem;          /* even smaller on tiny screens */
+    font-size: 1.6rem;          /* even smaller on tiny screens */
   }
 
 
