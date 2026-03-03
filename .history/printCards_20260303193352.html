@@ -368,9 +368,9 @@ button {
     </select>
   </label>
 
- <label id="pagesLabel" style="display:none;">Number of Pages:
-  <select id="numPages"></select>
-</label>
+  <label id="pagesLabel" style="display:none;">Number of Pages:
+    <input type="number" id="numPages" min="1" style="width:60px;">
+  </label>
 
   <label id="rangeLabel" style="display:none;">
     Page Range: <input type="number" id="pageStart" placeholder="Start" min="1" style="width:50px;"> - 
@@ -454,82 +454,34 @@ layoutSelect.addEventListener('change', () => {
 
   [cardCols, cardRows] = layoutSelect.value.split('x').map(Number);
 
-  const cardsObj = window.cards;
-  const cardsPerPage = cardCols * cardRows;
-  totalPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
-
-  if (orderSelect.value === 'sequential') {
-    // Show range, hide random pages
-    rangeLabel.style.display = 'inline-block';
-    pagesLabel.style.display = 'none';
-
-    // Update max values
-    pageStartInput.max = totalPages;
-    pageEndInput.max = totalPages;
-
-    // Clamp current values
-    if (parseInt(pageStartInput.value) > totalPages) pageStartInput.value = totalPages;
-    if (parseInt(pageEndInput.value) > totalPages) pageEndInput.value = totalPages;
-
-    // Default to full range if empty
-    if (!pageStartInput.value) pageStartInput.value = 1;
-    if (!pageEndInput.value) pageEndInput.value = totalPages;
-
-  } else if (orderSelect.value === 'random') {
-    // Random pages
-    rangeLabel.style.display = 'none';
-    pagesLabel.style.display = 'inline-block';
-    populatePageSelect(); // rebuild dropdown
+  // Always render preview if order is set
+  if (orderSelect.value) {
+    renderPreview();
   }
-
-  renderPreview();
 });
-
-function populatePageSelect() {
-  const cardsObj = window.cards;
-  const cardsPerPage = cardCols * cardRows;
-  const maxPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
-
-  numPagesInput.innerHTML = '';
-
-  for (let i = 1; i <= maxPages; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = i;
-    numPagesInput.appendChild(option);
-  }
-
-  // Default to 1 (user can change)
-  numPagesInput.value = 1;
-}
 
 // --- ORDER CHANGE ---
 orderSelect.addEventListener('change', () => {
   const cardsObj = window.cards;
-  const cardsPerPage = cardCols * cardRows;
-  totalPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
+  const cardsPerPage = cardCols*cardRows;
+  totalPages = Math.ceil(Object.keys(cardsObj).length/cardsPerPage);
 
-  if(orderSelect.value === 'sequential') {
-
-    rangeLabel.style.display = 'inline-block';
-    pagesLabel.style.display = 'none';
-
-    pageStartInput.value = 1;
-    pageEndInput.value = totalPages;
-    pageStartInput.max = totalPages;
-    pageEndInput.max = totalPages;
-
-  } 
-  else if(orderSelect.value === 'random') {
-
-    pagesLabel.style.display = 'inline-block';
-    rangeLabel.style.display = 'none';
-
-    populatePageSelect(); // 👈 builds dropdown
+  if(orderSelect.value==='sequential'){
+    rangeLabel.style.display='inline-block';
+    pagesLabel.style.display='none';
+    pageStartInput.value=1;
+    pageEndInput.value=totalPages;
+    pageStartInput.max=totalPages;
+    pageEndInput.max=totalPages;
+  } else if(orderSelect.value==='random'){
+    pagesLabel.style.display='inline-block';
+    rangeLabel.style.display='none';
+    numPagesInput.value=1;
+    numPagesInput.max=totalPages;
   }
 
-  previewBtn.disabled = false;
-  downloadBtn.disabled = false;
+  previewBtn.disabled=false;
+  downloadBtn.disabled=false;
 });
 
 // --- VALIDATE PAGE INPUTS ---
@@ -759,10 +711,6 @@ styleSelect.addEventListener('change', () => {
 });
 
 layoutSelect.addEventListener('change', () => {
-  if (orderSelect.value === 'random') {
-  populatePageSelect();
-}
-
   if (!previewBtn.disabled) {
     renderPreview();
   }

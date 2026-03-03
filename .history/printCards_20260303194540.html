@@ -459,27 +459,24 @@ layoutSelect.addEventListener('change', () => {
   totalPages = Math.ceil(Object.keys(cardsObj).length / cardsPerPage);
 
   if (orderSelect.value === 'sequential') {
-    // Show range, hide random pages
-    rangeLabel.style.display = 'inline-block';
-    pagesLabel.style.display = 'none';
 
     // Update max values
     pageStartInput.max = totalPages;
     pageEndInput.max = totalPages;
 
-    // Clamp current values
-    if (parseInt(pageStartInput.value) > totalPages) pageStartInput.value = totalPages;
-    if (parseInt(pageEndInput.value) > totalPages) pageEndInput.value = totalPages;
+    // Clamp existing values if now too large
+    if (parseInt(pageStartInput.value) > totalPages) {
+      pageStartInput.value = totalPages;
+    }
 
-    // Default to full range if empty
-    if (!pageStartInput.value) pageStartInput.value = 1;
-    if (!pageEndInput.value) pageEndInput.value = totalPages;
+    if (parseInt(pageEndInput.value) > totalPages) {
+      pageEndInput.value = totalPages;
+    }
 
-  } else if (orderSelect.value === 'random') {
-    // Random pages
-    rangeLabel.style.display = 'none';
-    pagesLabel.style.display = 'inline-block';
-    populatePageSelect(); // rebuild dropdown
+  } 
+  else if (orderSelect.value === 'random') {
+
+    populatePageSelect(); // already built earlier
   }
 
   renderPreview();
