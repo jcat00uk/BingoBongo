@@ -498,3 +498,6 @@ button.info-icon {
   transform: scale(0.98);
 }
 
+#cardList label:active .preview-btn {
+  background-color: initial;  /* override pressed state for button */
+}

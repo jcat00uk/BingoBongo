@@ -479,22 +479,3 @@ button.info-icon {
 .card-preview {
   margin-left: 36px; /* align with checkbox + code */
 }
-
-/* Hover effect */
-#cardList label:not(.disabled):hover {
-  background-color: #ada5a5;   /* change to whatever colour you want */
-  cursor: pointer;
-}
-
-/* Pressed (mouse down / tap) */
-#cardList label:not(.disabled):active {
-  background-color: #006b05;   /* pressed colour */
-  transform: scale(0.98);
-}
-
-/* Pressing a selected card (about to deselect) */
-#cardList label.selected:not(.disabled):active {
-  background-color: #b71c1c;  /* deselect colour (red-ish example) */
-  transform: scale(0.98);
-}
-

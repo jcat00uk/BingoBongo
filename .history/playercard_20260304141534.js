@@ -1,7 +1,6 @@
 let selectedCards = [];
 const maxSelection = 3;
 let tempSelection = []; // holds random picks or manual ticks before confirm
-let currentlyOpenPreview = null;
 
 const newGameBtn = document.getElementById('newGameBtn');
 const endGameBtn = document.getElementById('endGameBtn');
@@ -168,32 +167,11 @@ function populateCardList(filter = '') {
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-infoBtn.addEventListener('click', () => {
-
-  // If another preview is open and it's not this one
-  if (currentlyOpenPreview && currentlyOpenPreview !== c.code) {
-    previewState[currentlyOpenPreview] = false;
-  }
-  infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
-infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
-
-  // Toggle current preview
-  const isOpening = currentlyOpenPreview !== c.code;
-
-  // Close all previews first
-  Object.keys(previewState).forEach(key => previewState[key] = false);
-
-  if (isOpening) {
-    previewState[c.code] = true;
-    currentlyOpenPreview = c.code;
-  } else {
-    currentlyOpenPreview = null;
-  }
-
-  // Re-render to update UI
-  populateCardList(searchInput.value);
-});
-
+    infoBtn.addEventListener('click', () => {
+      previewState[c.code] = !previewState[c.code];
+      previewTable.style.display = previewState[c.code] ? 'table' : 'none';
+      infoBtn.classList.toggle('active', previewState[c.code]);
+    });
 
     // Checkbox change
     checkbox.addEventListener('change', () => {

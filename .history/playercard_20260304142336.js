@@ -168,14 +168,13 @@ function populateCardList(filter = '') {
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-infoBtn.addEventListener('click', () => {
+infoBtn.addEventListener('click', (e) => {
+  e.stopPropagation(); // Prevent the label :active style
 
   // If another preview is open and it's not this one
   if (currentlyOpenPreview && currentlyOpenPreview !== c.code) {
     previewState[currentlyOpenPreview] = false;
   }
-  infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
-infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
 
   // Toggle current preview
   const isOpening = currentlyOpenPreview !== c.code;
@@ -193,7 +192,6 @@ infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: fa
   // Re-render to update UI
   populateCardList(searchInput.value);
 });
-
 
     // Checkbox change
     checkbox.addEventListener('change', () => {

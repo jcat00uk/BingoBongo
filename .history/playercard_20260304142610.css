@@ -498,3 +498,14 @@ button.info-icon {
   transform: scale(0.98);
 }
 
+#cardList label:active .preview-btn {
+  background-color: initial;  /* override pressed state for button */
+}
+
+#cardList label .preview-btn {
+  pointer-events: auto;  /* make sure the button is clickable */
+}
+
+#cardList label:active {
+  background-color: #006b05; /* pressed color */
+}

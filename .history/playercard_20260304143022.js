@@ -168,13 +168,14 @@ function populateCardList(filter = '') {
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-infoBtn.addEventListener('click', () => {
+infoBtn.addEventListener('click', ()=>{
+  previewState[c.code] = !previewState[c.code];
+  previewTable.style.display = previewState[c.code] ? 'table' : 'none';
+  infoBtn.classList.toggle('active', previewState[c.code]);
+});
 
-  // If another preview is open and it's not this one
-  if (currentlyOpenPreview && currentlyOpenPreview !== c.code) {
-    previewState[currentlyOpenPreview] = false;
-  }
-  infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+// Prevent label :active style from triggering when pressing the preview button
+infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
 infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
 
   // Toggle current preview

@@ -174,8 +174,6 @@ infoBtn.addEventListener('click', () => {
   if (currentlyOpenPreview && currentlyOpenPreview !== c.code) {
     previewState[currentlyOpenPreview] = false;
   }
-  infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
-infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
 
   // Toggle current preview
   const isOpening = currentlyOpenPreview !== c.code;
@@ -194,7 +192,8 @@ infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: fa
   populateCardList(searchInput.value);
 });
 
-
+infoBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+infoBtn.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
     // Checkbox change
     checkbox.addEventListener('change', () => {
       const code = c.code;
