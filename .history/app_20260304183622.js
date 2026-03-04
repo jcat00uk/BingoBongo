@@ -34,7 +34,6 @@ let firstFullHouseNumber = null;    // Number that caused the FIRST FULL HOUSE
 // Elements associated with the game controls
 
 let lastReadBingoCall = ""; // Tracks last read text for bingoCallText
-let searchTimeout = null; // used for debouncing search input
 
 
 // ===============================
@@ -903,8 +902,8 @@ cardSearchBox.addEventListener('input', () => {
   cardSearchBox.value = cardSearchBox.value.replace(/\D/g, '');
   
   // Then do your normal search
-clearTimeout(searchTimeout);
-searchTimeout = setTimeout(() => renderModalCardList(), 150);
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => populateCardList(cardSearchBox.value), 150);
 });
 
 function renderModalCardList() {
@@ -957,15 +956,12 @@ if (cardSearchBox && cardSearchBox.value.trim() !== '') {
 // Cleasr search button
 const clearCardSearch = document.getElementById('clearCardSearch');
 
+
+
 clearCardSearch.addEventListener('click', () => {
   cardSearchBox.value = '';
-  renderModalCardList();
-  cardSearchBox.focus();
-});
-
-// Reset “stuck” color on mobile
-clearCardSearch.addEventListener('touchend', () => {
-  clearCardSearch.style.color = '#888';
+  clearCardSearch.style.display = 'none';
+  renderModalCardList(); // show all cards again
 });
 
 }
@@ -1148,10 +1144,6 @@ nextNumberBtn.onclick = () => {
   clearCardSelection(); 
   checkCardContainer.innerHTML = ''; // Clear previous card
   nextNumber();
-      // ✅ Mobile vibration
-    if (navigator.vibrate) {
-        navigator.vibrate(100); // vibrate for 100ms
-    }
 };
 undoNumberBtn.onclick = undoNumber;
 endGameBtn.onclick = endGame;

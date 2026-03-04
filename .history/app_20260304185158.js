@@ -903,8 +903,8 @@ cardSearchBox.addEventListener('input', () => {
   cardSearchBox.value = cardSearchBox.value.replace(/\D/g, '');
   
   // Then do your normal search
-clearTimeout(searchTimeout);
-searchTimeout = setTimeout(() => renderModalCardList(), 150);
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => populateCardList(cardSearchBox.value), 150);
 });
 
 function renderModalCardList() {
@@ -1148,10 +1148,6 @@ nextNumberBtn.onclick = () => {
   clearCardSelection(); 
   checkCardContainer.innerHTML = ''; // Clear previous card
   nextNumber();
-      // ✅ Mobile vibration
-    if (navigator.vibrate) {
-        navigator.vibrate(100); // vibrate for 100ms
-    }
 };
 undoNumberBtn.onclick = undoNumber;
 endGameBtn.onclick = endGame;

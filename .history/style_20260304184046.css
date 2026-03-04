@@ -1077,26 +1077,6 @@ body.night-mode .modal-header {
   margin-bottom: 6px;
 }
 
-/* Adjust clear search button */
-#clearCardSearch {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 16px;
-  color: #888;
-  user-select: none;
-  transition: color 0.2s, transform 0.1s;
-  touch-action: manipulation; /* helps mobile taps */
-}
-
 #clearCardSearch:hover {
   color: red;
-  transform: translateY(-50%) scale(1.2);
-}
-
-#clearCardSearch:active {
-  color: red; /* ensure tap shows red */
-  transform: translateY(-50%) scale(1.2); /* keep scale while pressing */
 }

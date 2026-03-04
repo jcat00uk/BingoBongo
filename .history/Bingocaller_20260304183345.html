@@ -107,10 +107,19 @@
       </div>
        
 
-
-<div id="cardSearchWrapper" style="position: relative; display: inline-block; width: 200px;" >
-  <input type="text" id="cardSearchBox" placeholder="Search cards…" style="width: 100%; padding-right: 28px; height: 28px; font-size: 14px;" inputmode="numeric" pattern="\d* " maxlength="3">
-  <span id="clearCardSearch">×</span>
+<div id="cardSearchWrapper" style="position: relative; display: inline-block; width: 200px;">
+  <input type="text" id="cardSearchBox" placeholder="Search cards…" style="width: 100%; padding-right: 24px;" inputmode="numeric" pattern="\d* " maxlength="3">
+  <span id="clearCardSearch" style="
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-weight: bold;
+    color: #888;
+    font-size: 14px;
+    display: none;
+  ">✕</span>
 </div>
       </div>
     <div id="modalCardList" class="modal-card-list"></div>

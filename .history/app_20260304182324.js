@@ -34,7 +34,6 @@ let firstFullHouseNumber = null;    // Number that caused the FIRST FULL HOUSE
 // Elements associated with the game controls
 
 let lastReadBingoCall = ""; // Tracks last read text for bingoCallText
-let searchTimeout = null; // used for debouncing search input
 
 
 // ===============================
@@ -903,8 +902,8 @@ cardSearchBox.addEventListener('input', () => {
   cardSearchBox.value = cardSearchBox.value.replace(/\D/g, '');
   
   // Then do your normal search
-clearTimeout(searchTimeout);
-searchTimeout = setTimeout(() => renderModalCardList(), 150);
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => populateCardList(cardSearchBox.value), 150);
 });
 
 function renderModalCardList() {
@@ -947,27 +946,11 @@ if (cardSearchBox && cardSearchBox.value.trim() !== '') {
     if (selectedCardsInDOM.length > 0) {
         const lastSelected = selectedCardsInDOM[selectedCardsInDOM.length - 1];
         
-        // Calculate scrollTop so the last selected card appears at the top of the container
-        const scrollTop = lastSelected.offsetTop - modalCardList.offsetTop;
-        modalCardList.scrollTo({ top: scrollTop, behavior: 'smooth' });
+        // Scroll so the last selected card is at the top of the modal
+        modalCardList.scrollTo({ top: lastSelected.offsetTop, behavior: 'smooth' });
     }
 }
-
-
-// Cleasr search button
-const clearCardSearch = document.getElementById('clearCardSearch');
-
-clearCardSearch.addEventListener('click', () => {
-  cardSearchBox.value = '';
-  renderModalCardList();
-  cardSearchBox.focus();
-});
-
-// Reset “stuck” color on mobile
-clearCardSearch.addEventListener('touchend', () => {
-  clearCardSearch.style.color = '#888';
-});
-
+  
 }
 function handleModalCardClick(code) {
   const isSelected = modalSelections.has(code);
@@ -1148,10 +1131,6 @@ nextNumberBtn.onclick = () => {
   clearCardSelection(); 
   checkCardContainer.innerHTML = ''; // Clear previous card
   nextNumber();
-      // ✅ Mobile vibration
-    if (navigator.vibrate) {
-        navigator.vibrate(100); // vibrate for 100ms
-    }
 };
 undoNumberBtn.onclick = undoNumber;
 endGameBtn.onclick = endGame;

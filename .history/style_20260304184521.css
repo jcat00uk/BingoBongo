@@ -1078,6 +1078,10 @@ body.night-mode .modal-header {
 }
 
 /* Adjust clear search button */
+#clearCardSearch:hover {
+  color: red;
+}
+
 #clearCardSearch {
   position: absolute;
   right: 6px;
@@ -1088,15 +1092,9 @@ body.night-mode .modal-header {
   color: #888;
   user-select: none;
   transition: color 0.2s, transform 0.1s;
-  touch-action: manipulation; /* helps mobile taps */
 }
 
 #clearCardSearch:hover {
   color: red;
   transform: translateY(-50%) scale(1.2);
-}
-
-#clearCardSearch:active {
-  color: red; /* ensure tap shows red */
-  transform: translateY(-50%) scale(1.2); /* keep scale while pressing */
 }

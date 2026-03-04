@@ -1148,10 +1148,6 @@ nextNumberBtn.onclick = () => {
   clearCardSelection(); 
   checkCardContainer.innerHTML = ''; // Clear previous card
   nextNumber();
-      // ✅ Mobile vibration
-    if (navigator.vibrate) {
-        navigator.vibrate(100); // vibrate for 100ms
-    }
 };
 undoNumberBtn.onclick = undoNumber;
 endGameBtn.onclick = endGame;
