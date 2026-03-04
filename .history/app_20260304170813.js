@@ -907,40 +907,37 @@ cardSearchBox.addEventListener('input', () => {
 });
 
 function renderModalCardList() {
-  if (!modalCardList) return;
-  modalCardList.innerHTML = '';
-  const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
-  const allCardCodes = Object.keys(cards || {});
+    if (!modalCardList) return;
+    modalCardList.innerHTML = '';
 
-  // Split into selected (pinned) and others
-  const pinned = allCardCodes.filter(code => modalSelections.has(code));
-  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
+    const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
+    const allCardCodes = Object.keys(cards || {});
 
-  const buildDiv = (code) => {
-    const div = document.createElement('div');
-    div.className = 'modal-card-item';
-    div.dataset.code = code;
-    div.textContent = code;
-    div.onclick = () => handleModalCardClick(code);
+    // Selected cards first
+    const selectedCards = allCardCodes.filter(code => modalSelections.has(code));
+    selectedCards.forEach(code => {
+        const div = document.createElement('div');
+        div.className = 'modal-card-item selected';
+        div.dataset.code = code;
+        div.textContent = code;
+        div.onclick = () => handleModalCardClick(code);
+        modalCardList.appendChild(div);
+    });
 
-    // ✅ Add selected class if this code is in modalSelections
-    if (modalSelections.has(code)) div.classList.add('selected');
-
-    return div;
-  };
-
-  // Render selected first
-  pinned.forEach(code => modalCardList.appendChild(buildDiv(code)));
-
-  if (pinned.length && others.length) {
-    const divider = document.createElement('div');
-    divider.style.borderBottom = '1px solid #aaa';
-    divider.style.margin = '4px 0';
-    modalCardList.appendChild(divider);
-  }
-
-  others.forEach(code => modalCardList.appendChild(buildDiv(code)));
+    // Other cards filtered by search
+    const otherCards = allCardCodes.filter(
+        code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm)
+    );
+    otherCards.forEach(code => {
+        const div = document.createElement('div');
+        div.className = 'modal-card-item';
+        div.dataset.code = code;
+        div.textContent = code;
+        div.onclick = () => handleModalCardClick(code);
+        modalCardList.appendChild(div);
+    });
 }
+
 function handleModalCardClick(code) {
   const isSelected = modalSelections.has(code);
 
@@ -1255,27 +1252,4 @@ window.addEventListener('keydown', (e) => {
             endGameBtn.click();
             break;
     }
-});
-
-// Handle modal card clicks
-const modalList = document.getElementById('modalCardList');
-
-modalList.addEventListener('click', e => {
-  const card = e.target.closest('.modal-card-item');
-  if (!card) return; // clicked outside a card
-
-  if (!card.classList.contains('selected')) {
-    // Select card
-    card.classList.remove('deselected');
-    card.classList.add('selected', 'flash-select');
-    setTimeout(() => card.classList.remove('flash-select'), 400);
-  } else {
-    // Deselect card
-    card.classList.remove('selected');
-    card.classList.add('flash-deselect');
-    setTimeout(() => {
-      card.classList.remove('flash-deselect');
-      card.classList.add('deselected'); // optional, keeps a visual deselected state
-    }, 400);
-  }
 });

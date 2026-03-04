@@ -909,60 +909,55 @@ cardSearchBox.addEventListener('input', () => {
 function renderModalCardList() {
   if (!modalCardList) return;
   modalCardList.innerHTML = '';
+
   const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
   const allCardCodes = Object.keys(cards || {});
 
-  // Split into selected (pinned) and others
-  const pinned = allCardCodes.filter(code => modalSelections.has(code));
-  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
+  allCardCodes.forEach(code => {
+    if (!code.toLowerCase().includes(searchTerm)) return;
 
-  const buildDiv = (code) => {
     const div = document.createElement('div');
     div.className = 'modal-card-item';
-    div.dataset.code = code;
+    if (modalSelections.has(code)) div.classList.add('selected');
+
     div.textContent = code;
     div.onclick = () => handleModalCardClick(code);
 
-    // ✅ Add selected class if this code is in modalSelections
-    if (modalSelections.has(code)) div.classList.add('selected');
-
-    return div;
-  };
-
-  // Render selected first
-  pinned.forEach(code => modalCardList.appendChild(buildDiv(code)));
-
-  if (pinned.length && others.length) {
-    const divider = document.createElement('div');
-    divider.style.borderBottom = '1px solid #aaa';
-    divider.style.margin = '4px 0';
-    modalCardList.appendChild(divider);
-  }
-
-  others.forEach(code => modalCardList.appendChild(buildDiv(code)));
+    modalCardList.appendChild(div);
+  });
 }
+
 function handleModalCardClick(code) {
   const isSelected = modalSelections.has(code);
+  const cardDiv = [...modalCardList.children].find(d => d.textContent === code);
+  if (!cardDiv) return;
 
-  // Toggle selection immediately
-  if (isSelected) modalSelections.delete(code);
-  else modalSelections.add(code);
+  if (isSelected) {
+    // Remove from selection
+    modalSelections.delete(code);
 
-  // Find the div element in the DOM (if it exists)
-  const div = document.querySelector(`.modal-card-item[data-code="${code}"]`);
-  if (!div) return;
+    // Trigger red flash
+    cardDiv.classList.remove('flash-deselect'); // reset
+    void cardDiv.offsetWidth; // force reflow
+    cardDiv.classList.add('flash-deselect');
+  } else {
+    // Add to selection
+    modalSelections.add(code);
 
-  // Apply flash animation
-  div.classList.add(isSelected ? 'flash-deselect' : 'flash-select');
+    // Trigger green flash
+    cardDiv.classList.remove('flash-select'); // reset
+    void cardDiv.offsetWidth; // force reflow
+    cardDiv.classList.add('flash-select');
+  }
 
-  // Remove flash class after animation (400ms)
-  setTimeout(() => {
-    div.classList.remove('flash-select', 'flash-deselect');
-    renderModalCardList(); // Re-render AFTER flash so selected cards move to top
-  }, 400);
-
-  // Clear the search box
+  // Clear search box
   if (cardSearchBox) cardSearchBox.value = '';
+
+  updateAutoCheckToggle();
+  saveGameState();
+
+  // Re-render modal so selected class is applied properly
+  renderModalCardList();
 }
 
 
@@ -1255,27 +1250,4 @@ window.addEventListener('keydown', (e) => {
             endGameBtn.click();
             break;
     }
-});
-
-// Handle modal card clicks
-const modalList = document.getElementById('modalCardList');
-
-modalList.addEventListener('click', e => {
-  const card = e.target.closest('.modal-card-item');
-  if (!card) return; // clicked outside a card
-
-  if (!card.classList.contains('selected')) {
-    // Select card
-    card.classList.remove('deselected');
-    card.classList.add('selected', 'flash-select');
-    setTimeout(() => card.classList.remove('flash-select'), 400);
-  } else {
-    // Deselect card
-    card.classList.remove('selected');
-    card.classList.add('flash-deselect');
-    setTimeout(() => {
-      card.classList.remove('flash-deselect');
-      card.classList.add('deselected'); // optional, keeps a visual deselected state
-    }, 400);
-  }
 });

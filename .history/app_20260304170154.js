@@ -912,57 +912,59 @@ function renderModalCardList() {
   const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
   const allCardCodes = Object.keys(cards || {});
 
-  // Split into selected (pinned) and others
   const pinned = allCardCodes.filter(code => modalSelections.has(code));
-  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
-
-  const buildDiv = (code) => {
+  pinned.forEach(code => {
     const div = document.createElement('div');
-    div.className = 'modal-card-item';
-    div.dataset.code = code;
+    div.className = 'modal-card-item selected'; // persist selected
     div.textContent = code;
-    div.onclick = () => handleModalCardClick(code);
+    div.style.textAlign = 'center';
+    div.onclick = () => handleModalCardClick(code, div);
+    modalCardList.appendChild(div);
+  });
 
-    // ✅ Add selected class if this code is in modalSelections
-    if (modalSelections.has(code)) div.classList.add('selected');
-
-    return div;
-  };
-
-  // Render selected first
-  pinned.forEach(code => modalCardList.appendChild(buildDiv(code)));
-
-  if (pinned.length && others.length) {
+  if (pinned.length) {
     const divider = document.createElement('div');
     divider.style.borderBottom = '1px solid #aaa';
     divider.style.margin = '4px 0';
     modalCardList.appendChild(divider);
   }
 
-  others.forEach(code => modalCardList.appendChild(buildDiv(code)));
+  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
+  others.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'modal-card-item';
+    div.textContent = code;
+    div.style.textAlign = 'center';
+    div.onclick = () => handleModalCardClick(code, div);
+    modalCardList.appendChild(div);
+  });
 }
+
 function handleModalCardClick(code) {
-  const isSelected = modalSelections.has(code);
+    const div = document.querySelector(`.modal-card-item[data-code="${code}"]`);
+    if (!div) return;
 
-  // Toggle selection immediately
-  if (isSelected) modalSelections.delete(code);
-  else modalSelections.add(code);
+    const isSelected = modalSelections.has(code);
 
-  // Find the div element in the DOM (if it exists)
-  const div = document.querySelector(`.modal-card-item[data-code="${code}"]`);
-  if (!div) return;
+    // Toggle selection in the set
+    if (isSelected) {
+        modalSelections.delete(code);
+        div.classList.remove('selected');
+        div.classList.add('flash-deselect'); // temporary flash
+        setTimeout(() => div.classList.remove('flash-deselect'), 400);
+    } else {
+        modalSelections.add(code);
+        div.classList.add('selected');
+        div.classList.add('flash-select'); // temporary flash
+        setTimeout(() => div.classList.remove('flash-select'), 400);
+    }
 
-  // Apply flash animation
-  div.classList.add(isSelected ? 'flash-deselect' : 'flash-select');
+    // Clear search box
+    if (cardSearchBox) cardSearchBox.value = '';
 
-  // Remove flash class after animation (400ms)
-  setTimeout(() => {
-    div.classList.remove('flash-select', 'flash-deselect');
-    renderModalCardList(); // Re-render AFTER flash so selected cards move to top
-  }, 400);
-
-  // Clear the search box
-  if (cardSearchBox) cardSearchBox.value = '';
+    // Optional: re-render the list so selected cards move to top
+    renderModalCardList();
+    updateAutoCheckToggle();
 }
 
 
@@ -1255,27 +1257,4 @@ window.addEventListener('keydown', (e) => {
             endGameBtn.click();
             break;
     }
-});
-
-// Handle modal card clicks
-const modalList = document.getElementById('modalCardList');
-
-modalList.addEventListener('click', e => {
-  const card = e.target.closest('.modal-card-item');
-  if (!card) return; // clicked outside a card
-
-  if (!card.classList.contains('selected')) {
-    // Select card
-    card.classList.remove('deselected');
-    card.classList.add('selected', 'flash-select');
-    setTimeout(() => card.classList.remove('flash-select'), 400);
-  } else {
-    // Deselect card
-    card.classList.remove('selected');
-    card.classList.add('flash-deselect');
-    setTimeout(() => {
-      card.classList.remove('flash-deselect');
-      card.classList.add('deselected'); // optional, keeps a visual deselected state
-    }, 400);
-  }
 });

@@ -963,6 +963,36 @@ function handleModalCardClick(code) {
 
   // Clear the search box
   if (cardSearchBox) cardSearchBox.value = '';
+
+  const wasSelected = modalSelections.has(code);
+
+  // Add/remove from selection
+  if (wasSelected) modalSelections.delete(code);
+  else modalSelections.add(code);
+
+  // Find the div in DOM
+  const div = modalCardList.querySelector(`.modal-card-item[data-code="${code}"]`);
+  if (!div) return;
+
+  // Flash effect
+  div.classList.add(wasSelected ? 'flash-deselect' : 'flash-select');
+
+  // Clear search box
+  if (cardSearchBox) cardSearchBox.value = '';
+
+  setTimeout(() => {
+    div.classList.remove('flash-select', 'flash-deselect');
+
+    // Keep permanent selected class
+    if (modalSelections.has(code)) div.classList.add('selected');
+    else div.classList.remove('selected');
+
+    // Re-render list so selected cards move to top
+    renderModalCardList();
+
+    // Update auto-check toggle if needed
+    updateAutoCheckToggle();
+  }, 400); // Duration matches CSS animation
 }
 
 
@@ -1255,27 +1285,4 @@ window.addEventListener('keydown', (e) => {
             endGameBtn.click();
             break;
     }
-});
-
-// Handle modal card clicks
-const modalList = document.getElementById('modalCardList');
-
-modalList.addEventListener('click', e => {
-  const card = e.target.closest('.modal-card-item');
-  if (!card) return; // clicked outside a card
-
-  if (!card.classList.contains('selected')) {
-    // Select card
-    card.classList.remove('deselected');
-    card.classList.add('selected', 'flash-select');
-    setTimeout(() => card.classList.remove('flash-select'), 400);
-  } else {
-    // Deselect card
-    card.classList.remove('selected');
-    card.classList.add('flash-deselect');
-    setTimeout(() => {
-      card.classList.remove('flash-deselect');
-      card.classList.add('deselected'); // optional, keeps a visual deselected state
-    }, 400);
-  }
 });

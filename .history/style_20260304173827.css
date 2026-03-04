@@ -473,25 +473,40 @@ body.night-mode #cardSearchBox {
   margin: 2px 0;
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
 }
 
 /* Permanent selected state */
 .modal-card-item.selected {
-  background-color: #4caf50 !important; /* ensure always green */
-  color: #000000 !important;
-  font-weight: bold;
+  background-color: limegreen;
+  color: black;
 }
 
-/* Permanent deselected state */
-.modal-card-item.deselected {
-  background-color: #f44336 !important; /* red */
-  color: #fff !important;
+.modal-card-list-item.deselected {
+  background-color: #f44336; /* red */
+  color: white;
 }
 
-/* Flash animations override temporarily, then remove class */
-.modal-card-item.flash-deselect {
-  animation: flashRed 0.4s forwards;   /* ends on red */
+.modal-card-list-item-selected {
+  background-color: #4caf50; /* green */
+  color: white;
+}
+
+.modal-card-item:hover {
+  background-color: #eee;
+}
+
+/* Flash animations */
+.flash-select {
+  background-color: #a5d6a7 !important; /* lighter green flash */
+  color: white !important;
+}
+.flash-deselect {
+  background-color: #ef9a9a !important; /* red flash */
+  color: white !important;
+}
+
+.modal-card-item.flash-select {
+  animation: flashGreen 0.4s;
 }
 
 .modal-card-item.flash-deselect {
@@ -499,27 +514,30 @@ body.night-mode #cardSearchBox {
 }
 
 @keyframes flashGreen {
-  0%   { background-color: #b0ffb0; }
-  50%  { background-color: limegreen; }
-  100% { background-color: #4caf50; } /* ends on permanent green */
+  0% { background-color: #b0ffb0; }
+  50% { background-color: limegreen; }
+  100% { background-color: limegreen; }
 }
 
 @keyframes flashRed {
-  0%   { background-color: #ffb0b0; }
-  50%  { background-color: red; }
-  100% { background-color: #f44336; } /* ends on permanent red */
+  0% { background-color: #ffb0b0; }
+  50% { background-color: red; }
+  100% { background-color: #f0f0f0; }
 }
-
-.modal-card-item:hover {
-  background-color: #9e9999;
-}
-
-
 
 .flash-deselect {
   animation: flashRed 0.4s ease;
 }
 
+/* Selected state */
+.modal-card-item.selected {
+  background-color: #4caf50; /* green */
+  color: #fff;
+}
+
+.modal-card-item.deselected {
+  background-color: #f44336; /* red flash when deselected */
+}
 
 body.night-mode .modal-card-item {
   background-color: #333;

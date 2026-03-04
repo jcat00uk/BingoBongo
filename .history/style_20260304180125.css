@@ -473,14 +473,12 @@ body.night-mode #cardSearchBox {
   margin: 2px 0;
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
 }
 
 /* Permanent selected state */
 .modal-card-item.selected {
   background-color: #4caf50 !important; /* ensure always green */
-  color: #000000 !important;
-  font-weight: bold;
+  color: #b9b9b9 !important;
 }
 
 /* Permanent deselected state */

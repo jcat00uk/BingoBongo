@@ -473,14 +473,12 @@ body.night-mode #cardSearchBox {
   margin: 2px 0;
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
 }
 
 /* Permanent selected state */
 .modal-card-item.selected {
   background-color: #4caf50 !important; /* ensure always green */
-  color: #000000 !important;
-  font-weight: bold;
+  color: #fff !important;
 }
 
 /* Permanent deselected state */
@@ -490,8 +488,8 @@ body.night-mode #cardSearchBox {
 }
 
 /* Flash animations override temporarily, then remove class */
-.modal-card-item.flash-deselect {
-  animation: flashRed 0.4s forwards;   /* ends on red */
+.modal-card-item.flash-select {
+  animation: flashGreen 0.4s;
 }
 
 .modal-card-item.flash-deselect {

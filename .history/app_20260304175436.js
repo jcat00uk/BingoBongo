@@ -196,6 +196,33 @@ autoCheckToggle.addEventListener('change', updateWinTextDisplay);
     // Function to handle clearing or showing the winText based on the toggle's checked or disabled state
 
 
+const cards = document.querySelectorAll('.modal-card-item');
+
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    
+    if (!card.classList.contains('selected')) {
+      // Selecting card
+      card.classList.remove('deselected');      // remove red if present
+      card.classList.add('selected', 'flash-select');
+
+      // Remove flash after animation
+      setTimeout(() => card.classList.remove('flash-select'), 400);
+
+    } else {
+      // Deselecting card
+      card.classList.remove('selected');        // remove green
+      card.classList.add('flash-deselect');
+
+      // After flash, apply permanent red
+      setTimeout(() => {
+        card.classList.remove('flash-deselect');
+        card.classList.add('deselected');
+      }, 400);
+    }
+  });
+});
+
 function updateWinTextDisplay() {
     if (!winText) return;
     winText.textContent = autoCheckToggle?.checked ? winTextOutput : '';
@@ -1255,27 +1282,4 @@ window.addEventListener('keydown', (e) => {
             endGameBtn.click();
             break;
     }
-});
-
-// Handle modal card clicks
-const modalList = document.getElementById('modalCardList');
-
-modalList.addEventListener('click', e => {
-  const card = e.target.closest('.modal-card-item');
-  if (!card) return; // clicked outside a card
-
-  if (!card.classList.contains('selected')) {
-    // Select card
-    card.classList.remove('deselected');
-    card.classList.add('selected', 'flash-select');
-    setTimeout(() => card.classList.remove('flash-select'), 400);
-  } else {
-    // Deselect card
-    card.classList.remove('selected');
-    card.classList.add('flash-deselect');
-    setTimeout(() => {
-      card.classList.remove('flash-deselect');
-      card.classList.add('deselected'); // optional, keeps a visual deselected state
-    }, 400);
-  }
 });

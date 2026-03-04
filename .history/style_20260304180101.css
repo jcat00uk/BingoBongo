@@ -405,7 +405,7 @@ body.night-mode .modal {
   max-width: 360px;   /* shrink width */
   width: auto;        /* only as wide as needed */
   min-width: 220px;   /* optional: prevent too narrow on mobile */
-  background-color: #fff;
+  background-color: #9e9e9e;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -415,7 +415,7 @@ body.night-mode .modal {
 
 body.night-mode .modal-content {
   background-color: #222;
-  color: #eee;
+  color: #7e7e7e;
 }
 
 .modal-top-buttons {
@@ -429,7 +429,7 @@ body.night-mode .modal-content {
   font-size: 12px;
   border-radius: 8px;
   background-color: #555;
-  color: #fff;
+  color: #575353;
   border: none;
   cursor: pointer;
 }
@@ -452,7 +452,7 @@ body.night-mode .modal-content {
 
 body.night-mode #cardSearchBox {
   background-color: #333;
-  color: #eee;
+  color: #9c9c9c;
   border: 1px solid #555;
 }
 
@@ -473,20 +473,18 @@ body.night-mode #cardSearchBox {
   margin: 2px 0;
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
 }
 
 /* Permanent selected state */
 .modal-card-item.selected {
   background-color: #4caf50 !important; /* ensure always green */
-  color: #000000 !important;
-  font-weight: bold;
+  color: #b9b9b9 !important;
 }
 
 /* Permanent deselected state */
 .modal-card-item.deselected {
   background-color: #f44336 !important; /* red */
-  color: #fff !important;
+  color: #c9c9c9 !important;
 }
 
 /* Flash animations override temporarily, then remove class */

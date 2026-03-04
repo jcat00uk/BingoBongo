@@ -468,58 +468,29 @@ body.night-mode #cardSearchBox {
 }
 
 .modal-card-item {
+  display: flex;
+  justify-content: center;   /* center the card code */
+  align-items: center;
+  padding: 10px 15px;
+  margin: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 8px 12px;
-  margin: 2px 0;
-  text-align: center;
-  transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
-}
-
-/* Permanent selected state */
-.modal-card-item.selected {
-  background-color: #4caf50 !important; /* ensure always green */
-  color: #000000 !important;
+  user-select: none;
+  background-color: #222;  /* unselected color */
+  color: #fff;
   font-weight: bold;
+  transition: background-color 0.3s;
 }
 
-/* Permanent deselected state */
+.modal-card-item.selected {
+  background-color: #4caf50; /* green for selected */
+  color: #fff;
+}
+
 .modal-card-item.deselected {
-  background-color: #f44336 !important; /* red */
-  color: #fff !important;
+  background-color: #f44336; /* red for deselected click animation */
+  color: #fff;
 }
-
-/* Flash animations override temporarily, then remove class */
-.modal-card-item.flash-deselect {
-  animation: flashRed 0.4s forwards;   /* ends on red */
-}
-
-.modal-card-item.flash-deselect {
-  animation: flashRed 0.4s;
-}
-
-@keyframes flashGreen {
-  0%   { background-color: #b0ffb0; }
-  50%  { background-color: limegreen; }
-  100% { background-color: #4caf50; } /* ends on permanent green */
-}
-
-@keyframes flashRed {
-  0%   { background-color: #ffb0b0; }
-  50%  { background-color: red; }
-  100% { background-color: #f44336; } /* ends on permanent red */
-}
-
-.modal-card-item:hover {
-  background-color: #9e9999;
-}
-
-
-
-.flash-deselect {
-  animation: flashRed 0.4s ease;
-}
-
 
 body.night-mode .modal-card-item {
   background-color: #333;
