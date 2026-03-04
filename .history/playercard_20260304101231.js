@@ -56,13 +56,12 @@ function loadState() {
 // NEW GAME
 // ========================
 newGameBtn.onclick = () => {
-  cardSelectionWrapper.style.display = 'flex';
-  newGameBtn.disabled = true;
-  endGameBtn.disabled = false;
-  tempSelection = [];
-  populateCardList();
+  cardSelectionWrapper.style.display = 'flex';  // show overlay
+  tempSelection = [];                            // clear temporary selections
+  populateCardList();                            // render all cards
+  newGameBtn.disabled = true;                    // disable new game
+  endGameBtn.disabled = false;                   // enable end game
 };
-
 // ========================
 // END GAME
 // ========================
@@ -91,21 +90,39 @@ function positionPopover() {
 }
 
 // ========================
-// POPULATE CARD LIST
+// CARD SELECTION LOGIC
 // ========================
-let previewState = {}; // store which cards are previewed
 
-function populateCardList(filter='') {
+// Temporary storage for selections before confirming
+let tempSelection = []; 
+const maxSelection = 3;
+
+const cardSelectionWrapper = document.getElementById('cardSelectionWrapper');
+const cardList = document.getElementById('cardList');
+const searchInput = document.getElementById('searchInput');
+const quickPickButtons = document.querySelectorAll('.quick-pick-btn[data-count]');
+const confirmSelectionBtn = document.getElementById('confirmSelectionBtn');
+
+let previewState = {}; // store which cards are being previewed
+let searchTimeout;
+
+// ------------------------
+// Populate the card list
+// ------------------------
+function populateCardList(filter = '') {
   cardList.innerHTML = '';
 
-  const filteredCards = Object.values(cards)
-    .filter(c => c.code.toLowerCase().includes(filter.toLowerCase()));
+  // Filter cards by search input
+  const filteredCards = Object.values(cards).filter(c =>
+    c.code.toLowerCase().includes(filter.toLowerCase())
+  );
 
-  const sortedCards = filteredCards.sort((a,b)=>{
+  // Sort: selected cards first
+  const sortedCards = filteredCards.sort((a, b) => {
     const aSelected = tempSelection.includes(a.code);
     const bSelected = tempSelection.includes(b.code);
-    if(aSelected && !bSelected) return -1;
-    if(!aSelected && bSelected) return 1;
+    if (aSelected && !bSelected) return -1;
+    if (!aSelected && bSelected) return 1;
     return 0;
   });
 
@@ -116,70 +133,99 @@ function populateCardList(filter='') {
     const label = document.createElement('label');
     label.style.display = 'flex';
     label.style.flexDirection = 'column';
+    label.style.border = tempSelection.includes(c.code) ? '2px solid limegreen' : '1px solid #555';
+    label.style.borderRadius = '6px';
+    label.style.padding = '6px';
+    label.style.marginBottom = '6px';
+    label.style.backgroundColor = reachedMax && !tempSelection.includes(c.code) ? '#444' : '#333';
+    label.style.color = '#eee';
 
+    // Top row: checkbox, code, preview button
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.alignItems = 'center';
-    topRow.style.justifyContent = 'space-between';
-    topRow.style.gap = '6px';
+    topRow.style.gap = '8px';
 
+    // BIG CHECKBOX
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = id;
     checkbox.checked = tempSelection.includes(c.code);
     checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
+    checkbox.style.transform = 'scale(1.5)'; // big mobile-friendly tickbox
+    checkbox.style.cursor = checkbox.disabled ? 'not-allowed' : 'pointer';
 
+    // On change: select/deselect
     checkbox.addEventListener('change', () => {
-      const code = c.code;
-
       if (checkbox.checked) {
         if (tempSelection.length >= maxSelection) {
           checkbox.checked = false;
           alert(`You can select up to ${maxSelection} cards`);
           return;
         }
-        if (!tempSelection.includes(code)) tempSelection.push(code);
+        tempSelection.push(c.code);
+
+        // flash green animation
         label.classList.add('flash-green');
-        setTimeout(()=> {
-          label.classList.remove('flash-green');
-          populateCardList(searchInput.value);
-        }, 200);
+        setTimeout(() => label.classList.remove('flash-green'), 200);
+
       } else {
-        tempSelection = tempSelection.filter(x => x !== code);
+        tempSelection = tempSelection.filter(x => x !== c.code);
+
+        // flash red animation
         label.classList.add('flash-red');
-        setTimeout(()=>{
-          label.classList.remove('flash-red');
-          populateCardList(searchInput.value);
-        },200);
+        setTimeout(() => label.classList.remove('flash-red'), 200);
       }
-      searchInput.value = ''; // clear search box
+
+      // Clear search box after selection
+      searchInput.value = '';
+
+      // Re-render list to stick selected at top
+      populateCardList(searchInput.value);
     });
 
+    // Card code
     const span = document.createElement('span');
     span.textContent = c.code;
+    span.style.flex = '1';
 
+    // Preview button
     const infoBtn = document.createElement('button');
-    infoBtn.textContent = 'ℹ️';
+    infoBtn.textContent = '👁️';
     infoBtn.className = 'preview-btn';
-    if(previewState[c.code]) infoBtn.classList.add('active');
+    infoBtn.style.background = '#444';
+    infoBtn.style.color = '#eee';
+    infoBtn.style.border = '1px solid #555';
+    infoBtn.style.borderRadius = '6px';
+    infoBtn.style.padding = '4px 6px';
+    infoBtn.style.cursor = 'pointer';
 
+    // Mini preview table
     const previewTable = document.createElement('table');
     previewTable.className = 'card-preview';
-    c.numbers.forEach(row=>{
+    previewTable.style.display = previewState[c.code] ? 'table' : 'none';
+    previewTable.style.marginTop = '6px';
+    previewTable.style.borderCollapse = 'collapse';
+
+    c.numbers.forEach(row => {
       const tr = document.createElement('tr');
-      row.forEach(n=>{
+      row.forEach(n => {
         const td = document.createElement('td');
-        if(n!==null) td.textContent = n;
+        td.textContent = n !== null ? n : '';
+        td.style.border = '1px solid #555';
+        td.style.padding = '4px';
+        td.style.textAlign = 'center';
+        td.style.width = '28px';
+        td.style.height = '28px';
         tr.appendChild(td);
       });
       previewTable.appendChild(tr);
     });
-    previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-    infoBtn.addEventListener('click', ()=>{
+    // Preview toggle
+    infoBtn.addEventListener('click', () => {
       previewState[c.code] = !previewState[c.code];
       previewTable.style.display = previewState[c.code] ? 'table' : 'none';
-      infoBtn.classList.toggle('active', previewState[c.code]);
     });
 
     topRow.appendChild(checkbox);
@@ -192,6 +238,50 @@ function populateCardList(filter='') {
     cardList.appendChild(label);
   });
 }
+
+// ------------------------
+// Search input handling
+// ------------------------
+searchInput.addEventListener('input', () => {
+  searchInput.value = searchInput.value.replace(/\D/g, ''); // digits only
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => populateCardList(searchInput.value), 150);
+});
+
+// ------------------------
+// Quick pick random cards
+// ------------------------
+function pickRandomCards(count) {
+  const allCodes = Object.keys(cards);
+  const selected = [];
+
+  while (selected.length < count && selected.length < allCodes.length) {
+    const rand = allCodes[Math.floor(Math.random() * allCodes.length)];
+    if (!tempSelection.includes(rand)) selected.push(rand);
+  }
+
+  tempSelection = [...tempSelection, ...selected];
+  searchInput.value = '';
+  populateCardList();
+
+  // Flash newly picked cards
+  selected.forEach(code => {
+    const checkbox = document.getElementById('chk_' + code);
+    if (checkbox) {
+      const label = checkbox.parentElement;
+      label.classList.add('flash-green');
+      setTimeout(() => label.classList.remove('flash-green'), 600);
+    }
+  });
+}
+
+quickPickButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const count = parseInt(btn.dataset.count);
+    pickRandomCards(count);
+  });
+});
+
 searchInput.addEventListener('input', () => {
   // Remove anything that is not a digit
   searchInput.value = searchInput.value.replace(/\D/g, '');
