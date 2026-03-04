@@ -67,8 +67,7 @@ body {
   color: #eee;
   padding: 4px 6px;
   border-radius: 4px;
-  transition: background-color 0.2s, opacity 0.2s;
-  border-bottom: 1px solid #555;
+  transition: background-color 0.3s;
 }
 
 #cardList label:hover {
@@ -416,61 +415,34 @@ button.info-icon {
 #selectedCardsContainer{ width: 50%; box-sizing: border-box; }
 
 /* Search input + clear button wrapper */
+/* Wrapper for search input + clear button */
 .search-wrapper {
-  display: flex;
+  position: relative;
   width: 90%;
   max-width: 400px;
   margin: 6px auto;
-  gap: 6px;
 }
 
 #searchInput {
-  flex: 1;
-  padding: 8px;
+  width: 100%;
+  padding: 8px 32px 8px 8px; /* extra right padding for button */
   border-radius: 4px;
   border: 1px solid #777;
   background-color: #555;
   color: #eee;
+  box-sizing: border-box;
 }
 
+/* Clear button positioned inside input on the right */
 #clearSearchBtn {
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #777;
-  background-color: #444;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
   color: #eee;
   cursor: pointer;
-}
-
-
-/* Disabled cards (once max reached) */
-#cardList label.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Line between cards */
-#cardList label + label {
-  border-top: 2px solid #555;
-}
-
-/* Align checkbox + card ID */
-#cardList label .top-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-
-
-#cardList label.selected {
-  border: 2px solid #41b60a;  /* highlight border */
-  background-color: #185c07;
-  padding: 4px 6px;
-}
-
-/* Disabled (cannot select more cards) */
-#cardList label.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  font-size: 16px;
+  padding: 0 6px;
 }

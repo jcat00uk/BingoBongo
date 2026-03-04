@@ -67,8 +67,7 @@ body {
   color: #eee;
   padding: 4px 6px;
   border-radius: 4px;
-  transition: background-color 0.2s, opacity 0.2s;
-  border-bottom: 1px solid #555;
+  transition: background-color 0.3s;
 }
 
 #cardList label:hover {
@@ -442,6 +441,12 @@ button.info-icon {
   cursor: pointer;
 }
 
+/* Selected card highlight */
+#cardList label.selected {
+  border: 2px solid #ff6666;  /* highlight border */
+  background-color: #2a2a2a;
+  padding: 6px;
+}
 
 /* Disabled cards (once max reached) */
 #cardList label.disabled {
@@ -451,7 +456,7 @@ button.info-icon {
 
 /* Line between cards */
 #cardList label + label {
-  border-top: 2px solid #555;
+  border-top: 1px solid #555;
 }
 
 /* Align checkbox + card ID */
@@ -461,12 +466,11 @@ button.info-icon {
   gap: 6px;
 }
 
-
-
+/* Selected card row */
 #cardList label.selected {
-  border: 2px solid #41b60a;  /* highlight border */
-  background-color: #185c07;
-  padding: 4px 6px;
+  background-color: #2a2a2a; /* slightly darker background */
+  border-left: 4px solid #ff6666; /* colored line to indicate selection */
+  padding-left: 2px; /* adjust for the border */
 }
 
 /* Disabled (cannot select more cards) */

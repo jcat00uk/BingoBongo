@@ -95,18 +95,17 @@ function positionPopover() {
 // ========================
 let previewState = {}; // store which cards are previewed
 
-function populateCardList(filter = '') {
+function populateCardList(filter='') {
   cardList.innerHTML = '';
 
   const filteredCards = Object.values(cards)
     .filter(c => c.code.toLowerCase().includes(filter.toLowerCase()));
 
-  // Sort: selected cards first
-  const sortedCards = filteredCards.sort((a, b) => {
+  const sortedCards = filteredCards.sort((a,b)=>{
     const aSelected = tempSelection.includes(a.code);
     const bSelected = tempSelection.includes(b.code);
-    if (aSelected && !bSelected) return -1;
-    if (!aSelected && bSelected) return 1;
+    if(aSelected && !bSelected) return -1;
+    if(!aSelected && bSelected) return 1;
     return 0;
   });
 
@@ -117,23 +116,16 @@ function populateCardList(filter = '') {
     const label = document.createElement('label');
     label.style.display = 'flex';
     label.style.flexDirection = 'column';
-    label.style.borderBottom = '1px solid #555';  // line between cards
-    label.style.padding = '4px 0';
-    label.classList.toggle('selected', tempSelection.includes(c.code));
-    label.classList.toggle('disabled', reachedMax && !tempSelection.includes(c.code));
+    label.style.width = '100%';
+    label.style.boxSizing = 'border-box';
 
-    // Top row container
+    // Top row: checkbox, code, preview
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.alignItems = 'center';
     topRow.style.justifyContent = 'space-between';
     topRow.style.gap = '6px';
-
-    // Left group: checkbox + card code
-    const leftGroup = document.createElement('div');
-    leftGroup.style.display = 'flex';
-    leftGroup.style.alignItems = 'center';
-    leftGroup.style.gap = '6px';
+    topRow.style.width = '100%';
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -141,58 +133,119 @@ function populateCardList(filter = '') {
     checkbox.checked = tempSelection.includes(c.code);
     checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
 
+    // Flex sizing
+    checkbox.style.flex = '0 0 auto';  // natural size
+    checkbox.style.marginRight = '6px';
+
     const span = document.createElement('span');
     span.textContent = c.code;
+    span.style.flex = '1 1 auto';       // stretches
+    span.style.overflow = 'hidden';
+    span.style.textOverflow = 'ellipsis';
+    span.style.whiteSpace = 'nowrap';
 
-    leftGroup.appendChild(checkbox);
-    leftGroup.appendChild(span);
-
-    // Preview button (far right)
     const infoBtn = document.createElement('button');
     infoBtn.textContent = 'ℹ️';
     infoBtn.className = 'preview-btn';
-    if (previewState[c.code]) infoBtn.classList.add('active');
+    infoBtn.style.flex = '0 0 auto';   // keeps natural size
+    infoBtn.style.marginLeft = '6px';
+    if(previewState[c.code]) infoBtn.classList.add('active');
 
-    // Preview table
+    // Card preview
     const previewTable = document.createElement('table');
     previewTable.className = 'card-preview';
-    c.numbers.forEach(row => {
+    c.numbers.forEach(row=>{
       const tr = document.createElement('tr');
-      row.forEach(n => {
+      row.forEach(n=>{
         const td = document.createElement('td');
-        if (n !== null) td.textContent = n;
+        if(n!==null) td.textContent = n;
         tr.appendChild(td);
       });
       previewTable.appendChild(tr);
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-    infoBtn.addEventListener('click', () => {
+    infoBtn.addEventListener('click', ()=>{
       previewState[c.code] = !previewState[c.code];
       previewTable.style.display = previewState[c.code] ? 'table' : 'none';
       infoBtn.classList.toggle('active', previewState[c.code]);
     });
 
-    // Checkbox change
     checkbox.addEventListener('change', () => {
       const code = c.code;
       if (checkbox.checked) {
+        if (tempSelection.length >= maxSelection) {
+          checkbox.checked = false;
+          alert(`You can select up to ${maxSelection} cards`);
+          return;
+        }
         if (!tempSelection.includes(code)) tempSelection.push(code);
       } else {
         tempSelection = tempSelection.filter(x => x !== code);
       }
-      searchInput.value = '';
-      populateCardList(searchInput.value); // refresh to move selected to top
+      searchInput.value = ''; // clear search box
+      populateCardList(searchInput.value);
     });
 
-    // Append left group and preview button
-    topRow.appendChild(leftGroup);
+    topRow.appendChild(checkbox);
+    topRow.appendChild(span);
     topRow.appendChild(infoBtn);
 
     label.appendChild(topRow);
     label.appendChild(previewTable);
 
     cardList.appendChild(label);
+
+    // Add a top-row container for checkbox + card ID
+const topRow = document.createElement('div');
+topRow.className = 'top-row';
+
+// Checkbox
+const checkbox = document.createElement('input');
+checkbox.type = 'checkbox';
+checkbox.id = id;
+checkbox.checked = tempSelection.includes(c.code);
+checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
+
+// Label for card code
+const span = document.createElement('span');
+span.textContent = c.code;
+
+// Append checkbox and span to top row
+topRow.appendChild(checkbox);
+topRow.appendChild(span);
+
+// Card preview button
+const infoBtn = document.createElement('button');
+infoBtn.textContent = 'ℹ️';
+infoBtn.className = 'preview-btn';
+if(previewState[c.code]) infoBtn.classList.add('active');
+topRow.appendChild(infoBtn);
+
+// Append topRow to label
+label.appendChild(topRow);
+
+// Preview table
+const previewTable = document.createElement('table');
+previewTable.className = 'card-preview';
+c.numbers.forEach(row=>{
+  const tr = document.createElement('tr');
+  row.forEach(n=>{
+    const td = document.createElement('td');
+    if(n!==null) td.textContent = n;
+    tr.appendChild(td);
+  });
+  previewTable.appendChild(tr);
+});
+previewTable.style.display = previewState[c.code] ? 'table' : 'none';
+label.appendChild(previewTable);
+
+// Add selected/disabled classes
+if(tempSelection.includes(c.code)) label.classList.add('selected');
+if(reachedMax && !tempSelection.includes(c.code)) label.classList.add('disabled');
+
+// Append to cardList
+cardList.appendChild(label);
   });
 }
 searchInput.addEventListener('input', () => {

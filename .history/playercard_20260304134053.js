@@ -95,18 +95,17 @@ function positionPopover() {
 // ========================
 let previewState = {}; // store which cards are previewed
 
-function populateCardList(filter = '') {
+function populateCardList(filter='') {
   cardList.innerHTML = '';
 
   const filteredCards = Object.values(cards)
     .filter(c => c.code.toLowerCase().includes(filter.toLowerCase()));
 
-  // Sort: selected cards first
-  const sortedCards = filteredCards.sort((a, b) => {
+  const sortedCards = filteredCards.sort((a,b)=>{
     const aSelected = tempSelection.includes(a.code);
     const bSelected = tempSelection.includes(b.code);
-    if (aSelected && !bSelected) return -1;
-    if (!aSelected && bSelected) return 1;
+    if(aSelected && !bSelected) return -1;
+    if(!aSelected && bSelected) return 1;
     return 0;
   });
 
@@ -117,23 +116,18 @@ function populateCardList(filter = '') {
     const label = document.createElement('label');
     label.style.display = 'flex';
     label.style.flexDirection = 'column';
-    label.style.borderBottom = '1px solid #555';  // line between cards
-    label.style.padding = '4px 0';
-    label.classList.toggle('selected', tempSelection.includes(c.code));
-    label.classList.toggle('disabled', reachedMax && !tempSelection.includes(c.code));
+    label.style.width = '100%';
+    label.style.boxSizing = 'border-box';
+    
 
-    // Top row container
+    // Top row: checkbox, code, preview
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.alignItems = 'center';
     topRow.style.justifyContent = 'space-between';
     topRow.style.gap = '6px';
-
-    // Left group: checkbox + card code
-    const leftGroup = document.createElement('div');
-    leftGroup.style.display = 'flex';
-    leftGroup.style.alignItems = 'center';
-    leftGroup.style.gap = '6px';
+    topRow.style.width = '100%';
+    
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -141,58 +135,98 @@ function populateCardList(filter = '') {
     checkbox.checked = tempSelection.includes(c.code);
     checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
 
+    // Flex sizing
+    checkbox.style.flex = '0 0 auto';  // natural size
+    checkbox.style.marginRight = '6px';
+
+    /* mark selected */
+if(tempSelection.includes(c.code)){
+  label.classList.add('selected');
+} else {
+  label.classList.remove('selected');
+}
+
+/* mark disabled if maxSelection reached and not selected */
+if(tempSelection.length >= maxSelection && !tempSelection.includes(c.code)){
+  label.classList.add('disabled');
+  checkbox.disabled = true;
+} else {
+  label.classList.remove('disabled');
+  checkbox.disabled = false;
+}
     const span = document.createElement('span');
     span.textContent = c.code;
+    span.style.flex = '1 1 auto';       // stretches
+    span.style.overflow = 'hidden';
+    span.style.textOverflow = 'ellipsis';
+    span.style.whiteSpace = 'nowrap';
+    topRow.style.flexDirection = 'row'; // ensure horizontal layout
+span.style.order = 1;               // card ID next to checkbox
+checkbox.style.order = 0;
 
-    leftGroup.appendChild(checkbox);
-    leftGroup.appendChild(span);
-
-    // Preview button (far right)
     const infoBtn = document.createElement('button');
     infoBtn.textContent = 'ℹ️';
     infoBtn.className = 'preview-btn';
-    if (previewState[c.code]) infoBtn.classList.add('active');
+    infoBtn.style.flex = '0 0 auto';   // keeps natural size
+    infoBtn.style.marginLeft = '6px';
+    if(previewState[c.code]) infoBtn.classList.add('active');
 
-    // Preview table
+    // Card preview
     const previewTable = document.createElement('table');
     previewTable.className = 'card-preview';
-    c.numbers.forEach(row => {
+    c.numbers.forEach(row=>{
       const tr = document.createElement('tr');
-      row.forEach(n => {
+      row.forEach(n=>{
         const td = document.createElement('td');
-        if (n !== null) td.textContent = n;
+        if(n!==null) td.textContent = n;
         tr.appendChild(td);
       });
       previewTable.appendChild(tr);
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-    infoBtn.addEventListener('click', () => {
+    infoBtn.addEventListener('click', ()=>{
       previewState[c.code] = !previewState[c.code];
       previewTable.style.display = previewState[c.code] ? 'table' : 'none';
       infoBtn.classList.toggle('active', previewState[c.code]);
     });
 
-    // Checkbox change
-    checkbox.addEventListener('change', () => {
-      const code = c.code;
-      if (checkbox.checked) {
-        if (!tempSelection.includes(code)) tempSelection.push(code);
-      } else {
-        tempSelection = tempSelection.filter(x => x !== code);
-      }
-      searchInput.value = '';
-      populateCardList(searchInput.value); // refresh to move selected to top
-    });
+function handleCardSelect(e){
+  e.preventDefault(); // prevents double-tap zoom
+  const code = c.code;
 
-    // Append left group and preview button
-    topRow.appendChild(leftGroup);
+  if(tempSelection.includes(code)){
+    // deselect
+    tempSelection = tempSelection.filter(x=>x!==code);
+  } else {
+    if(tempSelection.length >= maxSelection){
+      alert(`You can select up to ${maxSelection} cards`);
+      return;
+    }
+    tempSelection.push(code);
+  }
+
+  // re-render the list (selected cards move to top)
+  populateCardList(searchInput.value);
+
+  // clear search box
+  searchInput.value = '';
+}
+
+// Listen for click and touchstart
+checkbox.addEventListener('click', handleCardSelect);
+checkbox.addEventListener('touchstart', handleCardSelect, {passive:false});
+
+    topRow.appendChild(checkbox);
+    topRow.appendChild(span);
     topRow.appendChild(infoBtn);
 
     label.appendChild(topRow);
     label.appendChild(previewTable);
 
     cardList.appendChild(label);
+
+    
   });
 }
 searchInput.addEventListener('input', () => {
