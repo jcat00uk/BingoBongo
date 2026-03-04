@@ -139,17 +139,13 @@ function populateCardList(filter = '') {
     label.classList.toggle('disabled', reachedMax && !tempSelection.includes(c.code));
     label.style.flexGrow = '1'; // label fills remaining space
 
-  const checkbox = document.createElement('input');
-checkbox.type = 'checkbox';
-checkbox.checked = tempSelection.includes(c.code);
-checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
-checkbox.style.display = 'none'; // hide the actual checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = tempSelection.includes(c.code);
+    checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
 
     const span = document.createElement('span');
     span.textContent = c.code;
-span.style.flexGrow = '1';      // take all remaining space
-span.style.textAlign = 'center'; // center text
-span.style.userSelect = 'none';  // optional: prevent accidental text selection
 
     // Append checkbox + span to label
     label.appendChild(checkbox);
@@ -172,7 +168,6 @@ span.style.userSelect = 'none';  // optional: prevent accidental text selection
     const rowDiv = document.createElement('div');
     rowDiv.className = 'card-row';
 
-    
     // Append in order: preview button → label (fills row)
     rowDiv.appendChild(infoBtn);
     rowDiv.appendChild(label);

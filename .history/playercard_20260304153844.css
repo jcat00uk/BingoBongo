@@ -519,38 +519,25 @@ button.info-icon {
 /* ====================== */
 /* Card row styling - fixes staggered preview buttons */
 /* ====================== */
-/* Card row container */
 .card-row {
   display: flex;
-  align-items: center;
-  gap: 8px;              /* space between label and button */
-  width: 100%;
+  align-items: flex-start;        /* align top of checkbox/code with button */
+  justify-content: space-between; /* label left, preview right */
+  gap: 12px;                      /* gap between left and right groups */
+  width: auto;                     /* shrink to fit content */
+  max-width: 100%;                 /* prevent overflow */
   box-sizing: border-box;
 }
 
-/* Left group: checkbox + code */
-.card-row .left-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
-/* Ensure label doesn't stretch the row */
+
 .card-row label {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  flex-grow: 1;           /* <-- label fills remaining space */
-  padding: 4px 6px;       /* clickable padding */
-  border-radius: 4px;
-  border: 1px solid transparent;
-  transition: background-color 0.2s;
 }
 
-.card-row label:hover {
-  background-color: #444;
-}
 .card-row label.selected {
   background-color: #333; /* make selected obvious */
   font-weight: bold;
@@ -561,7 +548,7 @@ button.info-icon {
   cursor: not-allowed;
 }
 
-/* Preview button stays small, left of checkbox */
+/* Preview button stays far right */
 .preview-btn {
   flex-shrink: 0;
   width: 32px;
@@ -582,13 +569,4 @@ button.info-icon {
 /* Stop hover/active on label affecting button */
 .preview-btn:active {
   transform: none;
-}
-
-/* Card preview sits below row, aligned to left group */
-.card-preview {
-  display: none;             /* or table when active */
-  margin: 4px 0 8px 0;      /* small gap below row */
-  border-collapse: collapse;
-  width: auto;               /* natural width */
-  max-width: 100%;           /* prevent horizontal scroll */
 }

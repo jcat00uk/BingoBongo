@@ -523,8 +523,9 @@ button.info-icon {
 .card-row {
   display: flex;
   align-items: center;
-  gap: 8px;              /* space between label and button */
-  width: 100%;
+  gap: 6px;           /* small space between preview, checkbox, ID */
+  width: auto;         /* let it shrink to content */
+  max-width: 100%;     /* never exceed parent width */
   box-sizing: border-box;
 }
 
@@ -539,18 +540,11 @@ button.info-icon {
 .card-row label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  flex-grow: 1;           /* <-- label fills remaining space */
-  padding: 4px 6px;       /* clickable padding */
-  border-radius: 4px;
-  border: 1px solid transparent;
-  transition: background-color 0.2s;
+  gap: 4px;            /* small gap between checkbox + code */
+  margin: 0;
+  padding: 0;
 }
 
-.card-row label:hover {
-  background-color: #444;
-}
 .card-row label.selected {
   background-color: #333; /* make selected obvious */
   font-weight: bold;

@@ -114,68 +114,34 @@ function populateCardList(filter = '') {
   const reachedMax = tempSelection.length >= maxSelection;
 
   sortedCards.forEach(c => {
-    // === Preview button left ===
-    const infoBtn = document.createElement('button');
-    infoBtn.textContent = 'ℹ️';
-    infoBtn.className = 'preview-btn';
-    if (previewState[c.code]) infoBtn.classList.add('active');
+    const id = 'chk_' + c.code;
 
-    infoBtn.addEventListener('mousedown', e => e.stopPropagation());
-    infoBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: false });
-    infoBtn.addEventListener('click', () => {
-      Object.keys(previewState).forEach(key => previewState[key] = false);
-      if (currentlyOpenPreview !== c.code) {
-        previewState[c.code] = true;
-        currentlyOpenPreview = c.code;
-      } else {
-        currentlyOpenPreview = null;
-      }
-      populateCardList(searchInput.value); // refresh UI
-    });
-
-    // === Label with checkbox + code ===
+    // === LABEL with checkbox + card code only ===
     const label = document.createElement('label');
     label.classList.toggle('selected', tempSelection.includes(c.code));
     label.classList.toggle('disabled', reachedMax && !tempSelection.includes(c.code));
-    label.style.flexGrow = '1'; // label fills remaining space
 
-  const checkbox = document.createElement('input');
-checkbox.type = 'checkbox';
-checkbox.checked = tempSelection.includes(c.code);
-checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
-checkbox.style.display = 'none'; // hide the actual checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = id;
+    checkbox.checked = tempSelection.includes(c.code);
+    checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
 
     const span = document.createElement('span');
     span.textContent = c.code;
-span.style.flexGrow = '1';      // take all remaining space
-span.style.textAlign = 'center'; // center text
-span.style.userSelect = 'none';  // optional: prevent accidental text selection
 
-    // Append checkbox + span to label
     label.appendChild(checkbox);
     label.appendChild(span);
 
-    // Checkbox change
-    checkbox.addEventListener('change', () => {
-      const code = c.code;
-      if (checkbox.checked) {
-        if (!tempSelection.includes(code)) tempSelection.push(code);
-      } else {
-        tempSelection = tempSelection.filter(x => x !== code);
-      }
-      searchInput.value = '';
-      populateCardList(searchInput.value);
-      cardList.scrollTop = 0;
-    });
+    // === Preview button outside label ===
+    const infoBtn = document.createElement('button');
+    infoBtn.textContent = 'ℹ️';
+    infoBtn.className = 'preview-btn';
+    if(previewState[c.code]) infoBtn.classList.add('active');
 
-    // === Card row container ===
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'card-row';
-
-    
-    // Append in order: preview button → label (fills row)
-    rowDiv.appendChild(infoBtn);
-    rowDiv.appendChild(label);
+    // Stop propagation so label active styles don't trigger
+    infoBtn.addEventListener('mousedown', e => e.stopPropagation());
+    infoBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: false });
 
     // === Preview table ===
     const previewTable = document.createElement('table');
@@ -191,7 +157,37 @@ span.style.userSelect = 'none';  // optional: prevent accidental text selection
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-    // Append row + preview table
+    // === Preview button toggle: only one open at a time ===
+    infoBtn.addEventListener('click', () => {
+      Object.keys(previewState).forEach(key => previewState[key] = false);
+      if (currentlyOpenPreview !== c.code) {
+        previewState[c.code] = true;
+        currentlyOpenPreview = c.code;
+      } else {
+        currentlyOpenPreview = null;
+      }
+      populateCardList(searchInput.value); // refresh UI
+    });
+
+    // === Checkbox change ===
+    checkbox.addEventListener('change', () => {
+      const code = c.code;
+      if (checkbox.checked) {
+        if (!tempSelection.includes(code)) tempSelection.push(code);
+      } else {
+        tempSelection = tempSelection.filter(x => x !== code);
+      }
+      searchInput.value = '';
+      populateCardList(searchInput.value); // refresh and snap selected to top
+      cardList.scrollTop = 0;
+    });
+
+    // === Card row container ===
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'card-row';
+    rowDiv.appendChild(label);
+    rowDiv.appendChild(infoBtn);
+
     cardList.appendChild(rowDiv);
     cardList.appendChild(previewTable);
   });

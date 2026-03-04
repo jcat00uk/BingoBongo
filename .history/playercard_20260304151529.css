@@ -252,14 +252,13 @@ body {
 
 /* Card preview mini-table */
 .card-preview {
-  margin: 0;
+  margin: 4px 0 6px 0;
   border-collapse: collapse;
- width: auto;                /* allow natural width */
-  max-width: calc(100% - 100px); /* subtract checkbox + code width */
+  width: 100%;
+  max-width: 240px;
   background-color: #222;
   border-radius: 6px;
   overflow: hidden;
-   overflow-x: hidden;         /* prevent any internal overflow */
   display: none; /* hidden by default */
   max-width: 100vw;  /* prevent overflow on mobile */
 }
@@ -494,6 +493,10 @@ button.info-icon {
   cursor: not-allowed;
 }
 
+/* Card preview table spacing */
+.card-preview {
+  margin-left: 36px; /* align with checkbox + code */
+}
 
 /* Hover effect */
 #cardList label:not(.disabled):hover {
@@ -516,41 +519,25 @@ button.info-icon {
 /* ====================== */
 /* Card row styling */
 /* ====================== */
-/* ====================== */
-/* Card row styling - fixes staggered preview buttons */
-/* ====================== */
-/* Card row container */
 .card-row {
   display: flex;
   align-items: center;
-  gap: 8px;              /* space between label and button */
-  width: 100%;
-  box-sizing: border-box;
+  justify-content: space-between; /* label left, preview right */
+  padding: 4px 6px;
+  border-bottom: 1px solid #555;
+    gap: 6px;
+  width: 100%; /* fill the cardList width */
 }
 
-/* Left group: checkbox + code */
-.card-row .left-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
-/* Ensure label doesn't stretch the row */
+
 .card-row label {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  flex-grow: 1;           /* <-- label fills remaining space */
-  padding: 4px 6px;       /* clickable padding */
-  border-radius: 4px;
-  border: 1px solid transparent;
-  transition: background-color 0.2s;
 }
 
-.card-row label:hover {
-  background-color: #444;
-}
 .card-row label.selected {
   background-color: #333; /* make selected obvious */
   font-weight: bold;
@@ -561,7 +548,7 @@ button.info-icon {
   cursor: not-allowed;
 }
 
-/* Preview button stays small, left of checkbox */
+/* Preview button stays far right */
 .preview-btn {
   flex-shrink: 0;
   width: 32px;
@@ -582,13 +569,4 @@ button.info-icon {
 /* Stop hover/active on label affecting button */
 .preview-btn:active {
   transform: none;
-}
-
-/* Card preview sits below row, aligned to left group */
-.card-preview {
-  display: none;             /* or table when active */
-  margin: 4px 0 8px 0;      /* small gap below row */
-  border-collapse: collapse;
-  width: auto;               /* natural width */
-  max-width: 100%;           /* prevent horizontal scroll */
 }
