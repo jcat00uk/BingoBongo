@@ -1,0 +1,1334 @@
+
+
+// ===============================
+// BINGO APP SCRIPT
+// ===============================
+
+// Array to store remaining numbers and called numbers
+let numbers = [];
+let calledNumbers = [];
+let gameActive = false; // Indicates whether the game is active or not
+let callingLock = false; // Prevents multiple calls at once
+let soundEnabled = true; // Controls whether the sound is enabled
+let ttsEnabled = true; // Controls whether Text-to-Speech is enabled
+
+let winAnimationTimeout = null; // Tracks current animation timer
+
+let selectedCards = []; // Stores selected cards
+let modalSelections = new Set(); // Manages card selection in the modal
+
+let firstLineCalled = false; // Flag to check if the first line has been called
+let firstFullHouseCalled = false; // Flag to check if the first full house has been called
+
+let lastLineCards = new Set(); // Set of cards with last line win
+let lastFullHouseCards = new Set(); // Set of cards with last full house win
+
+let isUndoing = false; //Undo button is pressed
+
+// 🔑 These store WHEN the first wins happened
+// (the exact number that completed the win)
+// Needed so undo knows if we crossed back before the win
+let firstLineNumber = null;         // Number that caused the FIRST LINE
+let firstFullHouseNumber = null;    // Number that caused the FIRST FULL HOUSE
+
+// Elements associated with the game controls
+
+let lastReadBingoCall = ""; // Tracks last read text for bingoCallText
+let searchTimeout = null; // used for debouncing search input
+
+
+// ===============================
+// ELEMENTS
+// ===============================
+
+const startGameBtn = document.getElementById('startGameBtn');
+const endGameBtn = document.getElementById('endGameBtn');
+const nextNumberBtn = document.getElementById('nextNumberBtn');
+const undoNumberBtn = document.getElementById('undoNumberBtn');
+const toggleSoundBtn = document.getElementById('toggleSoundBtn');
+const toggleTTSBtn = document.getElementById('toggleTTSBtn');
+const toggleNightModeBtn = document.getElementById('toggleNightModeBtn');
+const calledNumbersContainer = document.getElementById('calledNumbersContainer');
+const bingoGrid = document.getElementById('bingoGrid');
+const checkCardContainer = document.getElementById('checkCardContainer');
+const cardSelect = document.getElementById('cardSelect');
+
+const bigLastNumber = document.getElementById('bigLastNumber');
+// Modal related elements for card selection
+const selectCardsModal = document.getElementById('selectCardsModal');
+const modalCardList = document.getElementById('modalCardList');
+const selectAllCardsBtn = document.getElementById('selectAllCardsBtn');
+const clearAllCardsBtn = document.getElementById('clearAllCardsBtn');
+const confirmCardsBtn = document.getElementById('confirmCardsBtn');
+//const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
+const cardSearchBox = document.getElementById('cardSearchBox');
+const selectCardsBtn = document.getElementById('selectCardsBtn');
+const winText = document.getElementById('winText'); // DOM element
+let winTextOutput = ''; // String that stores current output
+
+// Animation for when someone wins
+const winAnimation = document.getElementById('winAnimation');
+
+// 1-90 mapping for Bingo grid cells
+const cells = {}; // 1–90 mapping
+
+//Bingo Lingo
+const bingoCallText = document.getElementById('bingoCallText');
+
+// Modal Number of cards selected display
+const cardList = document.getElementById('modalCardList');
+const selectedCountEl = document.getElementById('selectedCount');
+const totalCards = Object.keys(window.cards).length;
+
+// ===============================
+// UK BINGO LINGO (1–90)
+// ===============================
+const bingoCalls = {
+  1: "Kelly's Eye",
+  2: "One Little Duck",
+  3: "Cup of Tea",
+  4: "Knock at the Door",
+  5: "Man Alive",
+  6: "Half a Dozen",
+  7: "Lucky Seven",
+  8: "Garden Gate",
+  9: "Doctor's Orders",
+  10: "Boris's Den",
+
+  11: "Legs Eleven",
+  12: "One Dozen",
+  13: "Unlucky for Some",
+  14: "Valentine's Day",
+  15: "Young and Keen",
+  16: "Sweet Sixteen",
+  17: "Dancing Queen",
+  18: "Coming of Age",
+  19: "Goodbye Teens",
+  20: "One Score",
+
+  21: "Key of the Door",
+  22: "Two Little Ducks",
+  23: "Thee and Me",
+  24: "Two Dozen",
+  25: "Duck and Dive",
+  26: "Pick and Mix",
+  27: "Gateway to Heaven",
+  28: "Overweight",
+  29: "Rise and Shine",
+  30: "Dirty Gertie",
+
+  31: "Get Up and Run",
+  32: "Buckle My Shoe",
+  33: "All the Threes",
+  34: "Ask for More",
+  35: "Jump and Jive",
+  36: "Three Dozen",
+  37: "More Than Eleven",
+  38: "Christmas Cake",
+  39: "Steps",
+
+  40: "Naughty Forty",
+  41: "Time for Fun",
+  42: "Winnie the Pooh",
+  43: "Down on Your Knees",
+  44: "Droopy Drawers",
+  45: "Halfway There",
+  46: "Up to Tricks",
+  47: "Four and Seven",
+  48: "Four Dozen",
+  49: "PC",
+
+  50: "Half a Century",
+  51: "Tweak of the Thumb",
+  52: "Danny La Rue",
+  53: "Stuck in the Tree",
+  54: "Clean the Floor",
+  55: "Snakes Alive",
+  56: "Was She Worth It",
+  57: "Heinz Varieties",
+  58: "Make Them Wait",
+  59: "Brighton Line",
+
+  60: "Five Dozen",
+  61: "Baker's Bun",
+  62: "Turn on the Screw",
+  63: "Tickle Me",
+  64: "Red Raw",
+  65: "Old Age Pension",
+  66: "Clickety Click",
+  67: "Made in Heaven",
+  68: "Saving Grace",
+  69: "Either Way Up",
+
+  70: "Lucky Seven-Zero",
+  71: "Bang on the Drum",
+  72: "Six Dozen",
+  73: "Queen Bee",
+  74: "Candy Store",
+  75: "Strive and Strive",
+  76: "Trombones",
+  77: "Sunset Strip",
+  78: "Heaven's Gate",
+  79: "One More Time",
+
+  80: "Eight and Blank",
+  81: "Stop and Run",
+  82: "Straight on Through",
+  83: "Time for Tea",
+  84: "Seven Dozen",
+  85: "Staying Alive",
+  86: "Between the Sticks",
+  87: "Torquay in Devon",
+  88: "Two Fat Ladies",
+  89: "Nearly There",
+
+  90: "Top of the Shop"
+};
+
+// ===============================
+// SOUND
+// ===============================
+// Audio object for the "ding" sound when a number is called
+const dingAudio = new Audio('ding.mp3');
+
+undoNumberBtn.disabled = true; // Disable the undo button initially
+
+autoCheckToggle.onchange = () => {
+  localStorage.setItem('bingobongo_autoCheck', autoCheckToggle.checked); // Save auto-check toggle state in localStorage
+};
+// Event listener to monitor changes on the autoCheckToggle
+autoCheckToggle.addEventListener('change', updateWinTextDisplay);
+
+    // Function to handle clearing or showing the winText based on the toggle's checked or disabled state
+
+
+function updateWinTextDisplay() {
+    if (!winText) return;
+    winText.textContent = autoCheckToggle?.checked ? winTextOutput : '';
+}
+
+
+
+
+
+
+function playSound() {
+  if (!soundEnabled) return; // If sound is disabled, do nothing
+  dingAudio.currentTime = 0; // Restart the audio from the beginning
+  dingAudio.play().catch(() => {}); // Play the sound
+}
+
+// Function to speak the number using Text-to-Speech (TTS) if enabled
+function speakNumber(num) {
+  if (!ttsEnabled || !('speechSynthesis' in window)) return; // Check if TTS is enabled and supported
+  window.speechSynthesis.cancel(); // Cancel any ongoing speech
+  setTimeout(() => {
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(num.toString())); // Speak the number
+  }, 50); // Delay to prevent interruption
+}
+
+
+
+
+// ===============================
+// BINGO GRID
+// ===============================
+
+// Function to initialize the Bingo grid
+function initBingoGrid() {
+  bingoGrid.innerHTML = ''; // Clear the grid before re-building it
+  for (let row = 0; row < 11; row++) { // Loop through rows
+    for (let col = 0; col < 9; col++) { // Loop through columns
+      const cell = document.createElement('div');
+      cell.className = 'grid-cell'; // Assign class to style the grid cell
+      let num = null;
+
+      // Assign numbers to cells based on row and column
+      if (col === 0 && row >= 1 && row <= 9) num = row;
+      else if (col >= 1 && col <= 7 && row <= 9) num = col * 10 + row;
+      else if (col === 8) num = 80 + row;
+
+      if (num && num <= 90) { // Ensure the number is valid
+        cell.textContent = num; // Display the number
+        cell.id = `cell-${num}`; // Set a unique id for each cell
+        cells[num] = cell; // Store the cell in the 'cells' object for later reference
+      }
+      bingoGrid.appendChild(cell); // Append the cell to the grid
+    }
+  }
+}
+
+// Function to mark a called number in the Bingo grid
+function markCalledNumber(num) {
+  if (!cells[num]) return;
+  if (window.lastCalledCell) window.lastCalledCell.classList.remove('lastCalled', 'highlight');
+  cells[num].classList.add('called', 'lastCalled', 'highlight');
+  window.lastCalledCell = cells[num];
+  setTimeout(() => cells[num]?.classList.remove('highlight'), 800);
+}
+
+// Function to undo the marking of a called number
+function undoCalledNumber(num) {
+  if (cells[num]) cells[num].classList.remove('called', 'lastCalled'); // Remove the 'called' and 'lastCalled' classes
+}
+
+// Function to clear all markings from the Bingo grid
+function clearBingoGrid() {
+  Object.values(cells).forEach(cell => cell.classList.remove('called', 'lastCalled')); // Remove 'called' and 'lastCalled' from all cells
+  window.lastCalledCell = null; // Reset the last called cell
+}
+
+// ===============================
+// GAME UI
+// ===============================
+
+// Function to update the remaining numbers display
+function updateRemaining() {
+  document.getElementById('remainingCount').textContent = numbers.length; // Display the remaining numbers
+}
+
+// Function to update the called numbers display
+function updateCalledNumbersDisplay() {
+  calledNumbersContainer.innerHTML = ''; // Clear the display
+  calledNumbers.forEach((num, i) => {
+    const span = document.createElement('span');
+    span.textContent = num;
+    if (i === calledNumbers.length - 1) span.id = 'lastNumber'; // Highlight the last number
+    calledNumbersContainer.appendChild(span); // Append the span with the called number
+  });
+  const wrapper = document.getElementById('calledNumbersContainerWrapper');
+  wrapper.scrollLeft = wrapper.scrollWidth; // Scroll to the end of the called numbers list
+}
+
+// Function to update the display of the last called number
+function updateBigLastNumber() {
+  const last = calledNumbers.at(-1) ?? '–'; // Get the last called number or display '–' if none
+  bigLastNumber.textContent = last; // Display the last called number
+
+  if (last !== '–') {
+    bigLastNumber.classList.remove('new-call'); // Remove the 'new-call' class
+    void bigLastNumber.offsetWidth; // Trigger a reflow
+    bigLastNumber.classList.add('new-call'); // Add the 'new-call' class to trigger animation
+  }
+    // 🔥 keep bingo call text perfectly in sync
+  updateBingoCallTextScaled(last);
+}
+
+
+
+// Function to update the glow effect on the buttons based on the game state
+function updateButtonGlows() {
+  if (!gameActive) startGameBtn.classList.add('enabled-glow'); // Add glow to start button if game is inactive
+  else startGameBtn.classList.remove('enabled-glow'); // Remove glow if game is active
+
+  if (gameActive && numbers.length) nextNumberBtn.classList.add('enabled-glow'); // Add glow to next number button if game is active and numbers remain
+  else nextNumberBtn.classList.remove('enabled-glow'); // Remove glow if no numbers remain
+}
+
+// ===============================
+// HELPER FUNCTIONS
+// ===============================
+
+// Update the enabled/disabled state of all main control buttons
+function updateControlButtons() {
+  // Start button is disabled when game is active
+  startGameBtn.disabled = gameActive;
+
+  // Next number is disabled if game not active or no numbers left
+  nextNumberBtn.disabled = !gameActive || numbers.length === 0;
+
+// Undo is disabled if game not active or no numbers have been called
+undoNumberBtn.disabled = !gameActive || calledNumbers.length === 0 || numbers.length === 0;
+
+  // End button only enabled when game is active
+  endGameBtn.disabled = !gameActive;
+
+  // Select cards button disabled when game is active
+  selectCardsBtn.disabled = gameActive;
+
+  // Card dropdown only active during game
+  cardSelect.disabled = !gameActive;
+
+  
+}
+
+// ===============================
+// BINGO CALL TEXT UPDATE
+// ===============================
+function updateBingoCallText() {
+  if (!bingoCallText) return;
+
+  const lastNumber = calledNumbers.at(-1);
+
+  if (!lastNumber) {
+    bingoCallText.textContent = '';
+    bingoCallText.classList.remove('animate');
+    lastReadBingoCall = ""; // reset TTS flag
+    return;
+  }
+
+  const callText = bingoCalls[lastNumber] || '';
+  bingoCallText.textContent = callText;
+
+  // Reset the "already read" flag whenever text changes
+  if (callText !== lastReadBingoCall) {
+    lastReadBingoCall = ""; // allow TTS to read this new text
+  }
+
+  // Restart animation every time
+  bingoCallText.classList.remove('animate');
+  void bingoCallText.offsetWidth; // force reflow
+  bingoCallText.classList.add('animate');
+}
+
+bingoCallText.addEventListener("click", () => {
+  const text = bingoCallText.textContent.trim();
+  if (!ttsEnabled) return;
+  if (!text) return;
+
+  // Only speak if it hasn't been read yet
+  if (text !== lastReadBingoCall) {
+    if ('speechSynthesis' in window) {
+      const utter = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utter);
+      lastReadBingoCall = text; // mark as read
+    }
+  }
+});
+
+// Returns 'FULL HOUSE', 'LINE', or null
+function getCardWinStatus(card) {
+    if (checkFullHouse(card)) return 'FULL HOUSE';
+    if (checkLine(card)) return 'LINE';
+    return null;
+}
+
+// Displays a card and updates its result text
+function renderCardResult(card) {
+    const status = getCardWinStatus(card);
+    const span = showCard(card);
+    showCardResult(status ? status + '!' : 'No win yet', span);
+    return status;
+}
+
+// Updates winTextOutput based on current first wins
+function updateWinText() {
+    if (firstFullHouseCalled) {
+        const [code] = lastFullHouseCards;
+        winTextOutput = `Bingobongo, FULL HOUSE, ${code}`;
+    } else if (firstLineCalled) {
+        const [code] = lastLineCards;
+        winTextOutput = `Bingobongo, LINE, ${code}`;
+    } else {
+        winTextOutput = 'No Win';
+    }
+    updateWinTextDisplay()
+}
+
+// Finds the first card that has a win of a given type
+function findFirstWin(type) { // type: 'LINE' | 'FULL HOUSE'
+    for (const code of selectedCards) {
+        const card = cards[code];
+        if (!card) continue;
+        if ((type === 'LINE' && checkLine(card)) || (type === 'FULL HOUSE' && checkFullHouse(card))) {
+            return { code, card };
+        }
+    }
+    return null;
+}
+
+// Undo win if the undone number caused the first win
+function undoWinCheck(type, undoneNumber) {
+    if (type === 'LINE' && firstLineCalled && undoneNumber === firstLineNumber) {
+        firstLineCalled = false;
+        firstLineNumber = null;
+        lastLineCards.clear();
+    }
+    if (type === 'FULL HOUSE' && firstFullHouseCalled && undoneNumber === firstFullHouseNumber) {
+        firstFullHouseCalled = false;
+        firstFullHouseNumber = null;
+        lastFullHouseCards.clear();
+    }
+}
+
+
+
+// ===============================
+// GAME LOGIC
+// ===============================
+
+// Function to start a new game
+function startGame() {
+  numbers = Array.from({ length: 90 }, (_, i) => i + 1); // Initialize numbers from 1 to 90
+  calledNumbers = []; // Clear called numbers
+  gameActive = true; // Set game to active
+  firstLineCalled = false; // Reset first line flag
+  firstFullHouseCalled = false; // Reset first full house flag
+  updateControlButtons();
+  updateRemaining(); // Update remaining numbers count
+  updateCalledNumbersDisplay(); // Update called numbers display
+  updateBigLastNumber(); // Update the last called number
+ 
+  clearBingoGrid(); // Clear the Bingo grid
+
+  if (!selectedCards.length) {
+    selectedCards = Object.keys(cards || {}); // Default to all cards if none selected
+    modalSelections = new Set(selectedCards); // Set the selected cards
+  }
+  
+
+
+  updateAutoCheckToggle(); // Update auto-check toggle state
+
+
+  saveGameState(); // Save game state to localStorage
+  updateButtonGlows(); // Update button glow states
+  //
+winTextOutput = 'No Win';
+updateWinTextDisplay()
+}
+
+// Function to call the next random number
+function nextNumber() {
+  if (!gameActive || callingLock || !numbers.length) return; // Prevent multiple calls if the game is inactive or no numbers remain
+  callingLock = true; // Lock the calling process to prevent multiple calls
+
+  const idx = Math.floor(Math.random() * numbers.length); // Get a random index
+  const num = numbers.splice(idx, 1)[0]; // Remove the number from the list
+  calledNumbers.push(num); // Add the number to the called numbers list
+
+  // Speak the number before performing any other actions
+  speakNumber(num);
+  markCalledNumber(num); // Mark the number on the Bingo grid
+  playSound(); // Play sound for the called number
+
+// ✅ Immediately check for LINE/FULL HOUSE
+recalcFirstWins();
+
+  updateRemaining(); // Update the remaining numbers count
+  updateCalledNumbersDisplay(); // Update the called numbers display
+  updateBigLastNumber(); // Update the last called number
+
+  
+  
+  // Disable next number button if all numbers have been called
+// Update buttons safely
+updateControlButtons();
+
+
+// Only update win text IF auto-check is ON
+updateWinTextDisplay()
+
+callingLock = false;
+saveGameState();
+}
+
+// Function to undo the last number called
+// Undo last number
+function undoNumber() {
+    if (!calledNumbers.length || !gameActive) return;
+    if (!confirm('Undo the last number called?')) return;
+
+    const undoneNumber = calledNumbers.pop();
+    numbers.push(undoneNumber);
+    //numbers.sort((a, b) => a - b);
+
+    // Rebuild grid
+    clearBingoGrid();
+    calledNumbers.forEach(markCalledNumber);
+
+    // Undo timeline checks
+    undoWinCheck('LINE', undoneNumber);
+    undoWinCheck('FULL HOUSE', undoneNumber);
+
+    updateWinText();
+
+    // Remove card display if no wins
+    checkCardContainer.innerHTML = '';
+
+    updateRemaining();
+    updateCalledNumbersDisplay();
+    updateBigLastNumber();
+  
+    saveGameState();
+}
+// Function to end the game
+function endGame() {
+  if (!confirm('End the game?')) return; // Confirm if the user wants to end the game
+  calledNumbers = []; // Clear called numbers
+  numbers = []; // Clear remaining numbers
+  updateCalledNumbersDisplay(); // Update called numbers display
+  updateBigLastNumber(); // Update last called number
+  clearBingoGrid(); // Clear the Bingo grid
+  gameActive = false; // Set game to inactive
+
+  firstLineCalled = false; // Reset first line called flag
+  firstFullHouseCalled = false; // Reset first full house called flag
+
+  startGameBtn.disabled = false; // Enable the start button
+  nextNumberBtn.disabled = true; // Disable the next number button
+  endGameBtn.disabled = true; // Disable the end game button
+
+  selectCardsBtn.disabled = false; // Enable the card select button
+  undoNumberBtn.disabled = true; // Disable the undo button
+  cardSelect.disabled = true; // Disable card selection dropdown
+  cardSelect.value = ''; // Clear card selection
+ 
+
+  numbers = []; // Clear numbers array
+  updateRemaining(); // Update remaining count to 0
+
+  modalSelections.clear(); // Clear modal selections
+  selectedCards = []; // Clear selected cards
+  populateCardSelect(); // Repopulate the card select dropdown
+  checkCardContainer.innerHTML = ''; // Clear the card check container
+
+updateAutoCheckToggle();
+winTextOutput = '';
+winText.textContent = '';
+firstLineCalled = false;
+firstFullHouseCalled = false;
+lastLineCards.clear();
+lastFullHouseCards.clear();
+  updateButtonGlows(); // Update button glows
+  saveGameState(); // Save the game state to localStorage
+}
+
+
+
+// ===============================
+// CARD CHECK
+// ===============================
+
+// Function to display a card and its results
+function showCard(card, clearExisting = true) {
+  if (clearExisting) checkCardContainer.innerHTML = ''; // Clear the container before adding new cards
+  const last = calledNumbers.at(-1); // Get the last called number
+
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.code = card.code; // Store the card code in the dataset
+  const header = document.createElement('div');
+  header.className = 'card-header';
+  const h4 = document.createElement('h4');
+  h4.textContent = card.code;
+
+  const resultSpan = document.createElement('span');
+  resultSpan.className = 'card-result';
+  header.appendChild(h4);
+  header.appendChild(resultSpan);
+  div.appendChild(header);
+
+  const table = document.createElement('table');
+  card.numbers.forEach(row => {
+    const tr = document.createElement('tr');
+    row.forEach(n => {
+      const td = document.createElement('td');
+      if (n !== null) {
+        td.textContent = n;
+         if (calledNumbers.includes(n)) td.classList.add('called'); // Mark called numbers
+        if (n === last) td.classList.add('lastCalled'); // Mark the last called number
+    }
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  div.appendChild(table);
+  checkCardContainer.appendChild(div);
+
+  // Smoothly scroll the card into view
+  div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  return resultSpan; // Return the result span for later updates
+}
+
+
+
+
+
+function showCardResult(resultText, element) {
+  element.textContent = resultText;
+   if (resultText === 'LINE!') element.style.color = 'orange'; // Style the text based on the result
+  else if (resultText === 'FULL HOUSE!') element.style.color = 'limegreen';
+  else element.style.color = 'yellow';
+
+  showWinAnimation(resultText); // Trigger the win animation
+
+  // Use setTimeout to delay win state speech to after number is spoken
+if (ttsEnabled && 'speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(resultText);
+    utter.rate = 0.9; // slightly slower, clearer speech
+    setTimeout(() => {
+        window.speechSynthesis.speak(utter);
+    }, 600); // small delay so number is spoken first
+}
+}
+
+
+
+function checkLine(card) {
+  return card.numbers.some(row => row.filter(n => n !== null).every(n => calledNumbers.includes(n))); // Check if all numbers in a row are called
+}
+
+function checkFullHouse(card) {
+  return card.numbers.flat().filter(n => n !== null).every(n => calledNumbers.includes(n)); // Check if all numbers on the card are called
+}
+
+function checkSelectedCard() {
+  const code = cardSelect.value;
+
+
+  let resultText = 'No win yet';
+  if (checkFullHouse(card)) resultText = 'FULL HOUSE!';
+  else if (checkLine(card)) resultText = 'LINE!';
+
+    if (!code || !cards?.[code]) return alert('Please select a valid card');
+  const card = cards[code];
+  const resultSpan = showCard(card);
+
+  showCardResult(resultText, resultSpan);
+}
+
+// ===============================
+// AUTO CHECK
+// ===============================
+
+// Function to update the auto-check toggle state
+function updateAutoCheckToggle() {
+  if (!selectedCards.length || selectedCards.length === Object.keys(cards).length) {
+    autoCheckToggle.disabled = true; // Disable toggle if all cards are selected
+    autoCheckToggle.checked = false; // Set it to unchecked
+    winText.textContent = '';
+  } else {
+    autoCheckToggle.disabled = false;
+    updateCalledNumbersDisplay()
+    const saved = localStorage.getItem('bingobongo_autoCheck');
+    if (saved !== null) autoCheckToggle.checked = saved === 'true'; // Restore saved state
+  }
+}
+
+
+
+
+
+// Function to check all selected cards for wins
+
+
+// After undoing, you need to recalculate which wins have already occurred.
+// Only triggers a win once per type per game (unless undone)
+function recalcFirstWins() {
+  const autoCheckActive = autoCheckToggle.checked;
+
+  if (!firstFullHouseCalled) {
+    const win = findFirstWin('FULL HOUSE');
+    if (win) {
+      firstFullHouseCalled = true;
+      firstFullHouseNumber = calledNumbers.at(-1);
+      lastFullHouseCards.add(win.code);
+      if (autoCheckActive) {
+        const resultSpan = showCard(win.card, false);
+        showCardResult(`Bingobongo, FULL HOUSE, ${win.code}`, resultSpan);
+      }
+    }
+  }
+
+  if (!firstLineCalled && !firstFullHouseCalled) {
+    const win = findFirstWin('LINE');
+    if (win) {
+      firstLineCalled = true;
+      firstLineNumber = calledNumbers.at(-1);
+      lastLineCards.add(win.code);
+      if (autoCheckActive) {
+        const resultSpan = showCard(win.card, false);
+        showCardResult(`Bingobongo, LINE, ${win.code}`, resultSpan);
+      }
+    }
+  }
+
+  updateWinText();
+  saveGameState();
+}
+
+
+
+
+// ===============================
+// WIN ANIMATION
+// ===============================
+
+// Function to display the win animation
+function showWinAnimation(text, duration = 9000) {
+  if (!winAnimation) return;
+
+  // Update text every time
+  winAnimation.textContent = text;
+
+  // Restart CSS animation unconditionally
+  winAnimation.classList.remove('show');
+  void winAnimation.offsetWidth; // Force reflow
+  winAnimation.classList.add('show');
+
+  // Cancel previous timer
+  clearTimeout(winAnimationTimeout);
+
+  // Ensure animation hides after duration
+  winAnimation.style.display = 'block';
+  winAnimationTimeout = setTimeout(() => {
+    winAnimation.style.display = 'none';
+    winAnimationTimeout = null;
+  }, duration);
+}
+
+
+
+// ===============================
+// CARD SELECT / MODAL LOGIC
+// ===============================
+
+// Function to populate the card select dropdown
+function populateCardSelect() {
+  cardSelect.innerHTML = '<option value="">Select card…</option>'; // Add default option
+
+  const list = selectedCards.length ? selectedCards : Object.keys(cards || {}); // Use selected cards or all cards
+
+  list
+    .slice() // Clone to avoid modifying the original
+    .sort((a, b) => {
+      const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+      const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
+      return numA - numB; // Sort numerically by card code
+    })
+    .forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = code;
+      cardSelect.appendChild(opt);
+    });
+   
+}
+
+// Function to update the count of selected cards in the modal
+function updateSelectedCount() {
+  const selected = document.querySelectorAll('.modal-card-item.selected').length;
+  selectedCountEl.textContent = `${selected} of ${totalCards}`;
+}
+
+
+function clearCardSelection() {
+  cardSelect.value = ''; // Clear the card selection
+}
+
+
+// Function to adjust the width of the card select dropdown to fit the longest option
+
+/*function openSelectCardsModal() {
+  if (!selectCardsModal) return;
+  selectCardsModal.style.display = 'flex';
+  renderModalCardList();
+} */
+
+
+function adjustCardSelectWidth() {
+  const select = document.getElementById('cardSelect');
+  if (!select) return;
+  
+  const tmp = document.createElement('span');
+  tmp.style.visibility = 'hidden';
+  tmp.style.position = 'absolute';
+  tmp.style.fontSize = window.getComputedStyle(select).fontSize;
+  tmp.style.fontFamily = window.getComputedStyle(select).fontFamily;
+  tmp.textContent = select.options[select.selectedIndex]?.text || '';
+  document.body.appendChild(tmp);
+   select.style.width = `${tmp.offsetWidth + 24}px`; // Adjust width based on longest option text
+  tmp.remove(); // Remove the temporary element
+}
+
+// Function to adjust the width of each card item in the modal
+function adjustModalCardItemWidth() {
+  if (!modalCardList) return;
+
+  modalCardList.querySelectorAll('.modal-card-item').forEach(div => {
+    const label = div.querySelector('label');
+    if (!label) return;
+
+    // Create temporary span to measure text
+    const tmp = document.createElement('span');
+    tmp.style.visibility = 'hidden';
+    tmp.style.position = 'absolute';
+    tmp.style.fontSize = window.getComputedStyle(label).fontSize;
+    tmp.style.fontFamily = window.getComputedStyle(label).fontFamily;
+    tmp.textContent = label.textContent;
+    document.body.appendChild(tmp);
+
+    div.style.width = `${tmp.offsetWidth + 40}px`; // 40px for checkbox + padding
+    tmp.remove();
+  });
+}
+
+
+
+
+
+function openSelectCardsModal() {
+  console.log("openSelectCardsModal called"); // for debugging
+  if (!selectCardsModal) {
+    console.error("selectCardsModal element not found!");
+    return;
+  }
+  selectCardsModal.style.display = 'flex';
+  selectCardsModal.style.position = 'fixed'; // ensure fixed on mobile
+  selectCardsModal.style.top = '0';
+  selectCardsModal.style.left = '0';
+  selectCardsModal.style.width = '100%';
+  selectCardsModal.style.height = '100vh';
+  selectCardsModal.style.justifyContent = 'center';
+  selectCardsModal.style.alignItems = 'center';
+  selectCardsModal.style.zIndex = '1000';
+  renderModalCardList();
+  updateSelectedCount();
+}
+
+function closeSelectCardsModal() {
+  if (!selectCardsModal) return;
+  selectCardsModal.style.display = 'none';
+  updateAutoCheckToggle(); // add this
+}
+
+function handleModalCheckboxChange(code, checked) {
+  const cardDiv = document.querySelector(`.modal-card-item input[data-code="${code}"]`)?.parentElement;
+  if (!cardDiv) return;
+
+  // Apply glow BEFORE updating pinned/unpinned state
+  cardDiv.classList.add(checked ? 'glow-select' : 'glow-deselect');
+
+  // Wait for animation to finish (400ms here), then update state and re-render
+  setTimeout(() => {
+    // Update selection
+    if (checked) modalSelections.add(code);
+    else modalSelections.delete(code);
+   if (cardSearchBox) cardSearchBox.value = '';
+    renderModalCardList(); // re-render AFTER animation
+    updateSelectedCount();
+
+    updateAutoCheckToggle();
+  }, 400); // duration of glow animation in ms
+}
+
+cardSearchBox.addEventListener('input', () => {
+  // Remove anything that is not a digit
+  cardSearchBox.value = cardSearchBox.value.replace(/\D/g, '');
+  
+  // Then do your normal search
+clearTimeout(searchTimeout);
+searchTimeout = setTimeout(() => renderModalCardList(), 150);
+});
+
+function renderModalCardList() {
+  if (!modalCardList) return;
+  modalCardList.innerHTML = '';
+  const searchTerm = cardSearchBox?.value?.toLowerCase() || '';
+  const allCardCodes = Object.keys(cards || {});
+
+  // Split into selected (pinned) and others
+  const pinned = allCardCodes.filter(code => modalSelections.has(code));
+  const others = allCardCodes.filter(code => !modalSelections.has(code) && code.toLowerCase().includes(searchTerm));
+
+  const buildDiv = (code) => {
+    const div = document.createElement('div');
+    div.className = 'modal-card-item';
+    div.dataset.code = code;
+    div.textContent = code;
+    div.onclick = () => handleModalCardClick(code);
+
+    // ✅ Add selected class if this code is in modalSelections
+    if (modalSelections.has(code)) div.classList.add('selected');
+
+    return div;
+  };
+
+  // Render selected first
+  pinned.forEach(code => modalCardList.appendChild(buildDiv(code)));
+
+  if (pinned.length && others.length) {
+    const divider = document.createElement('div');
+    divider.style.borderBottom = '1px solid #aaa';
+    divider.style.margin = '4px 0';
+    modalCardList.appendChild(divider);
+  }
+
+  others.forEach(code => modalCardList.appendChild(buildDiv(code)));
+// Only scroll if the search box has text and there are selected cards
+if (cardSearchBox && cardSearchBox.value.trim() !== '') {
+    const selectedCardsInDOM = modalCardList.querySelectorAll('.modal-card-item.selected');
+    if (selectedCardsInDOM.length > 0) {
+        const lastSelected = selectedCardsInDOM[selectedCardsInDOM.length - 1];
+        
+        // Calculate scrollTop so the last selected card appears at the top of the container
+        const scrollTop = lastSelected.offsetTop - modalCardList.offsetTop;
+        modalCardList.scrollTo({ top: scrollTop, behavior: 'smooth' });
+    }
+}
+
+
+// Cleasr search button
+const clearCardSearch = document.getElementById('clearCardSearch');
+
+clearCardSearch.addEventListener('click', () => {
+  cardSearchBox.value = '';
+  renderModalCardList();
+  cardSearchBox.focus();
+});
+
+// Reset “stuck” color on mobile
+clearCardSearch.addEventListener('touchend', () => {
+  clearCardSearch.style.color = '#888';
+});
+updateSelectedCount();
+
+}
+function handleModalCardClick(code) {
+  const isSelected = modalSelections.has(code);
+
+  // Toggle selection immediately
+  if (isSelected) modalSelections.delete(code);
+  else modalSelections.add(code);
+
+  // Find the div element in the DOM (if it exists)
+  const div = document.querySelector(`.modal-card-item[data-code="${code}"]`);
+  if (!div) return;
+
+  // Apply flash animation
+  div.classList.add(isSelected ? 'flash-deselect' : 'flash-select');
+
+  // Remove flash class after animation (400ms)
+  setTimeout(() => {
+    div.classList.remove('flash-select', 'flash-deselect');
+    renderModalCardList(); // Re-render AFTER flash so selected cards move to top
+  }, 400);
+
+  // Clear the search box
+  if (cardSearchBox) cardSearchBox.value = '';
+}
+
+
+// Dynamically adjust font size to fit inside its container
+function scaleBingoCall() {
+  const callText = document.getElementById('bingoCallText');
+  const wrapper = callText.parentElement;
+  let fontSize = parseFloat(window.getComputedStyle(callText).fontSize);
+
+  callText.style.fontSize = `${fontSize}px`; // reset to current
+
+  while (callText.scrollWidth > wrapper.clientWidth && fontSize > 8) {
+    fontSize -= 1;
+    callText.style.fontSize = `${fontSize}px`;
+  }
+}
+
+// Call whenever bingo call changes
+function updateBingoCallTextScaled(number) {
+  const callText = document.getElementById('bingoCallText');
+  callText.textContent = bingoCalls[number] || '';
+  scaleBingoCall();
+}
+
+const scrollContainer = document.getElementById('calledNumbersContainerWrapper');
+
+let isDragging = false;
+let startX = 0;
+let scrollLeft = 0;
+
+// --- Desktop Drag ---
+scrollContainer.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.pageX - scrollContainer.offsetLeft;
+  scrollLeft = scrollContainer.scrollLeft;
+});
+scrollContainer.addEventListener('mouseleave', () => isDragging = false);
+scrollContainer.addEventListener('mouseup', () => isDragging = false);
+scrollContainer.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault();
+  const x = e.pageX - scrollContainer.offsetLeft;
+  const walk = (x - startX) * 2; // scroll speed multiplier
+  scrollContainer.scrollLeft = scrollLeft - walk;
+});
+
+// --- Mobile Drag ---
+scrollContainer.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].pageX - scrollContainer.offsetLeft;
+  scrollLeft = scrollContainer.scrollLeft;
+});
+scrollContainer.addEventListener('touchend', () => isDragging = false);
+scrollContainer.addEventListener('touchcancel', () => isDragging = false);
+scrollContainer.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const x = e.touches[0].pageX - scrollContainer.offsetLeft;
+  const walk = (x - startX) * 2; // same scroll speed multiplier
+  scrollContainer.scrollLeft = scrollLeft - walk;
+});
+
+
+// ===============================
+// STATE MANAGEMENT
+// ===============================
+// Function to save the game state to localStorage
+function saveGameState() {
+  localStorage.setItem('bingobongo_state', JSON.stringify({
+    numbers,
+    calledNumbers,
+    gameActive,
+    soundEnabled,
+    ttsEnabled,
+    nightMode: document.body.classList.contains('night-mode'),
+    selectedCards,
+    firstLineCalled,
+    firstFullHouseCalled,
+    winTextOutput,          // ✅ save this
+    lastLineCards: Array.from(lastLineCards),
+    lastFullHouseCards: Array.from(lastFullHouseCards),
+    selectCardsBtnDisabled: selectCardsBtn?.disabled ?? false,
+    cardSelectDisabled: cardSelect?.disabled ?? false
+  }));
+}
+// Function to load the game state from localStorage
+function loadGameState() {
+  const state = JSON.parse(localStorage.getItem('bingobongo_state') || '{}');
+
+  // Check if it's the first visit (no state in localStorage)
+  const isFirstVisit = !localStorage.getItem('firstVisit');
+  
+  // Set night mode as default on first visit
+  if (isFirstVisit) {
+    document.body.classList.add('night-mode');
+    localStorage.setItem('firstVisit', 'false');  // Mark that first visit has occurred
+    // Also set nightMode in localStorage to persist it for future visits
+    localStorage.setItem('bingobongo_state', JSON.stringify({
+      nightMode: true,
+      ...state // keep existing state values
+    }));
+  }
+
+  // Load saved game state
+  numbers = state.numbers || [];
+  calledNumbers = state.calledNumbers || [];
+  gameActive = !!state.gameActive;
+
+  soundEnabled = state.soundEnabled !== undefined ? state.soundEnabled : true;
+  ttsEnabled = state.ttsEnabled !== undefined ? state.ttsEnabled : true;
+  selectedCards = state.selectedCards || [];
+
+  firstLineCalled = state.firstLineCalled || false;
+  firstFullHouseCalled = state.firstFullHouseCalled || false;
+  lastLineCards = new Set(state.lastLineCards || []);
+  lastFullHouseCards = new Set(state.lastFullHouseCards || []);
+  winTextOutput = state.winTextOutput || 'No Win';
+  updateWinTextDisplay()
+
+  // Load night mode if previously enabled
+  if (state.nightMode || isFirstVisit) {
+    document.body.classList.add('night-mode');
+  }
+
+  // Update the toggle button to reflect night mode status
+  if (toggleNightModeBtn)
+    toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞';
+
+  if (toggleSoundBtn) toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+  if (toggleTTSBtn) toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫';
+
+  clearBingoGrid();
+  calledNumbers.forEach(markCalledNumber);
+
+  modalSelections = new Set(selectedCards);
+  populateCardSelect();
+  updateAutoCheckToggle();
+
+  updateControlButtons();
+  recalcFirstWins(); // recalc LINE/FULL HOUSE based on saved calledNumbers
+  updateWinTextDisplay()
+  updateRemaining();
+  updateCalledNumbersDisplay();
+  updateBigLastNumber();
+
+  
+}
+
+// ===============================
+// EVENT BINDINGS
+// ===============================
+
+// Binding actions for game buttons
+startGameBtn.onclick = startGame;
+nextNumberBtn.onclick = () => {
+  clearCardSelection(); 
+  checkCardContainer.innerHTML = ''; // Clear previous card
+  nextNumber();
+      // ✅ Mobile vibration
+    if (navigator.vibrate) {
+        navigator.vibrate(100); // vibrate for 100ms
+    }
+};
+undoNumberBtn.onclick = undoNumber;
+endGameBtn.onclick = endGame;
+
+window.addEventListener('load', () => {
+  // Initialize sound and TTS toggles
+   if (toggleSoundBtn)
+    toggleSoundBtn.onclick = () => { soundEnabled = !soundEnabled; toggleSoundBtn.textContent = soundEnabled ? '🔊' : '🔇'; saveGameState(); };
+  if (toggleTTSBtn)
+    toggleTTSBtn.onclick = () => { ttsEnabled = !ttsEnabled; toggleTTSBtn.textContent = ttsEnabled ? '🗣️' : '🚫'; saveGameState(); };
+  if (toggleNightModeBtn)
+    toggleNightModeBtn.onclick = () => { document.body.classList.toggle('night-mode'); toggleNightModeBtn.textContent = document.body.classList.contains('night-mode') ? '🌙' : '🌞'; saveGameState(); };
+});
+
+if (selectCardsBtn) selectCardsBtn.onclick = () => {
+    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
+    openSelectCardsModal();
+};
+
+/*
+if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
+    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
+    closeSelectCardsModal();
+    
+};*/
+
+if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
+    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
+    Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
+    renderModalCardList(); 
+    updateSelectedCount();
+    updateAutoCheckToggle(); 
+    saveGameState(); 
+};
+
+if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => { 
+    if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
+    modalSelections.clear(); 
+    renderModalCardList(); 
+    updateSelectedCount();
+    updateAutoCheckToggle(); 
+    saveGameState(); 
+};
+
+if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
+  selectedCards = Array.from(modalSelections);
+  populateCardSelect();
+  closeSelectCardsModal();
+  updateAutoCheckToggle();
+  saveGameState();
+};
+if (cardSearchBox) cardSearchBox.oninput = renderModalCardList;
+
+
+
+if (cardSelect) {
+    cardSelect.onchange = () => {
+        if (isUndoing) return;
+        const code = cardSelect.value;
+        if (!code || !cards?.[code]) return;
+       checkCardContainer.innerHTML = '';
+        const card = cards[code];
+        renderCardResult(card); // ✅ uses new helper
+    };
+}
+
+// Info toggle
+const infoBtn = document.getElementById('infoBtn');
+const infoPopover = document.getElementById('infoPopover');
+
+function positionPopover() {
+  const rect = infoPopover.getBoundingClientRect();
+
+  // If overflowing right side
+  if (rect.right > window.innerWidth) {
+    infoPopover.style.right = "auto";
+    infoPopover.style.left = "0";
+  } else {
+    infoPopover.style.left = "";
+    infoPopover.style.right = "0";
+  }
+}
+
+
+
+infoBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  infoPopover.classList.toggle('show');
+
+  if (infoPopover.classList.contains('show')) {
+    positionPopover();
+  }
+});
+
+// Close if clicking outside
+document.addEventListener('click', (e) => {
+  if (!infoPopover.contains(e.target) && e.target !== infoBtn) {
+    infoPopover.classList.remove('show');
+  }
+});
+
+// Recheck position on resize
+window.addEventListener('resize', () => {
+  if (infoPopover.classList.contains('show')) {
+    positionPopover();
+  }
+});
+
+// ===============================
+// INITIALIZATION
+// ===============================
+// Initialize the game when the window is loaded
+window.addEventListener('load', () => {
+  initBingoGrid();
+  loadGameState();
+  updateButtonGlows();
+  if (window.cards) populateCardSelect();
+  
+});
+
+window.addEventListener('keydown', (e) => {
+    // Prevent shortcuts if modal is open
+    if (selectCardsModal && selectCardsModal.style.display === 'flex') return;
+
+    switch(e.key.toLowerCase()) {
+        case ' ': // Space = next number
+            e.preventDefault(); // prevent scrolling
+            nextNumberBtn.click();
+            break;
+        case 'u': // U = undo
+            undoNumberBtn.click();
+            break;
+        case 's': // S = start game
+            startGameBtn.click();
+            break;
+        case 'e': // E = end game
+            endGameBtn.click();
+            break;
+    }
+});
+
+// Handle modal card clicks
+const modalList = document.getElementById('modalCardList');
+
+modalList.addEventListener('click', e => {
+  const card = e.target.closest('.modal-card-item');
+  if (!card) return; // clicked outside a card
+
+  if (!card.classList.contains('selected')) {
+    // Select card
+    card.classList.remove('deselected');
+    card.classList.add('selected', 'flash-select');
+    setTimeout(() => card.classList.remove('flash-select'), 400);
+  } else {
+    // Deselect card
+    card.classList.remove('selected');
+    card.classList.add('flash-deselect');
+    setTimeout(() => {
+      card.classList.remove('flash-deselect');
+      card.classList.add('deselected'); // optional, keeps a visual deselected state
+    }, 400);
+  }
+});

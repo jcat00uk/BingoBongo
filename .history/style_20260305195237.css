@@ -1134,15 +1134,3 @@ button, .icon-btn, .main-btn, #bingoGrid div, .modal-card-item {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;  /* helps buttons activate instantly on mobile */
 }
-
-button:active, .icon-btn:active, .main-btn:active {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: #d33; /* optional visual feedback */
-}
-
-/* Ensure touch events propagate */
-button, .main-btn, .icon-btn {
-  -webkit-touch-callout: none; /* disables callout menu on long press iOS */
-  touch-action: manipulation;
-}
