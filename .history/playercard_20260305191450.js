@@ -249,8 +249,6 @@ searchInput.value = '';
       setTimeout(()=>label.classList.remove('flash'), 600);
     }
   });
-  cardList.scrollTop = 0;
-  if (navigator.vibrate) navigator.vibrate(15);
   
 }
 

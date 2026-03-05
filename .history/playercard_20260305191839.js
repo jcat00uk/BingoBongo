@@ -250,7 +250,6 @@ searchInput.value = '';
     }
   });
   cardList.scrollTop = 0;
-  if (navigator.vibrate) navigator.vibrate(15);
   
 }
 
