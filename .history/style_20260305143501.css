@@ -746,13 +746,13 @@ button:active {
 }
 
 .modal-title {
-  font-size: 1.6rem;        /* slightly bigger title */
+  font-size: 1.2em;        /* slightly bigger title */
   font-weight: bold;
   margin: 0;               /* remove default h3 margin */
 }
 
 .selected-count {
-  font-size: 1.2rem;        /* smaller than title */
+  font-size: 0.9em;        /* smaller than title */
   color: #666;             /* lighter color */
   margin-top: 4px;         /* spacing under title */
 }
@@ -769,7 +769,6 @@ body.night-mode .modal-header {
   flex-direction: column;
   gap: 4px;
   padding: 6px 12px;
-  user-select: none;
 }
 
 

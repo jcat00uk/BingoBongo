@@ -60,7 +60,7 @@ const modalCardList = document.getElementById('modalCardList');
 const selectAllCardsBtn = document.getElementById('selectAllCardsBtn');
 const clearAllCardsBtn = document.getElementById('clearAllCardsBtn');
 const confirmCardsBtn = document.getElementById('confirmCardsBtn');
-//const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
+const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
 const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 const winText = document.getElementById('winText'); // DOM element
@@ -74,11 +74,6 @@ const cells = {}; // 1–90 mapping
 
 //Bingo Lingo
 const bingoCallText = document.getElementById('bingoCallText');
-
-// Modal Number of cards selected display
-const cardList = document.getElementById('modalCardList');
-const selectedCountEl = document.getElementById('selectedCount');
-const totalCards = Object.keys(window.cards).length;
 
 // ===============================
 // UK BINGO LINGO (1–90)
@@ -804,15 +799,33 @@ function populateCardSelect() {
       opt.textContent = code;
       cardSelect.appendChild(opt);
     });
-   
 }
 
-// Function to update the count of selected cards in the modal
+// Cards selected
+//
+// Get reference to counter
+const selectedCountEl = document.getElementById('selectedCount');
+
+// Total number of cards
+const totalCards = Object.keys(window.cards).length;
+
+// Function to update the counter
 function updateSelectedCount() {
   const selected = document.querySelectorAll('.modal-card-item.selected').length;
   selectedCountEl.textContent = `${selected} of ${totalCards}`;
 }
 
+// Call this whenever a card is selected/deselected
+// Example: inside your click handler for modal-card-item
+document.querySelectorAll('.modal-card-item').forEach(item => {
+  item.addEventListener('click', () => {
+    item.classList.toggle('selected'); // your existing toggle logic
+    updateSelectedCount();             // update counter
+  });
+});
+
+// Also call when modal opens to initialize count
+document.getElementById('selectCardsModal').addEventListener('show', updateSelectedCount);
 
 function clearCardSelection() {
   cardSelect.value = ''; // Clear the card selection
@@ -885,13 +898,11 @@ function openSelectCardsModal() {
   selectCardsModal.style.alignItems = 'center';
   selectCardsModal.style.zIndex = '1000';
   renderModalCardList();
-  updateSelectedCount();
 }
 
 function closeSelectCardsModal() {
   if (!selectCardsModal) return;
   selectCardsModal.style.display = 'none';
-  updateAutoCheckToggle(); // add this
 }
 
 function handleModalCheckboxChange(code, checked) {
@@ -908,7 +919,6 @@ function handleModalCheckboxChange(code, checked) {
     else modalSelections.delete(code);
    if (cardSearchBox) cardSearchBox.value = '';
     renderModalCardList(); // re-render AFTER animation
-    updateSelectedCount();
 
     updateAutoCheckToggle();
   }, 400); // duration of glow animation in ms
@@ -983,7 +993,6 @@ clearCardSearch.addEventListener('click', () => {
 clearCardSearch.addEventListener('touchend', () => {
   clearCardSearch.style.color = '#888';
 });
-updateSelectedCount();
 
 }
 function handleModalCardClick(code) {
@@ -1188,18 +1197,15 @@ if (selectCardsBtn) selectCardsBtn.onclick = () => {
     openSelectCardsModal();
 };
 
-/*
 if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     closeSelectCardsModal();
-    
-};*/
+};
 
 if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1208,7 +1214,6 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     modalSelections.clear(); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1216,7 +1221,7 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
 if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
   selectedCards = Array.from(modalSelections);
   populateCardSelect();
-  //closeSelectCardsModal();
+  closeSelectCardsModal();
   updateAutoCheckToggle();
   saveGameState();
 };

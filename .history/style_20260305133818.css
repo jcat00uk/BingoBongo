@@ -741,20 +741,15 @@ button:active {
 
 
 .modal-header {
-  text-align: center;      /* Center everything inside */
-  margin-bottom: 10px;     /* spacing below header */
-}
-
-.modal-title {
-  font-size: 1.6rem;        /* slightly bigger title */
-  font-weight: bold;
-  margin: 0;               /* remove default h3 margin */
-}
-
-.selected-count {
-  font-size: 1.2rem;        /* smaller than title */
-  color: #666;             /* lighter color */
-  margin-top: 4px;         /* spacing under title */
+  background-color: #fff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #ccc;
 }
 
 body.night-mode .modal-header {
@@ -769,7 +764,6 @@ body.night-mode .modal-header {
   flex-direction: column;
   gap: 4px;
   padding: 6px 12px;
-  user-select: none;
 }
 
 

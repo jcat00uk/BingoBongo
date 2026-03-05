@@ -60,7 +60,7 @@ const modalCardList = document.getElementById('modalCardList');
 const selectAllCardsBtn = document.getElementById('selectAllCardsBtn');
 const clearAllCardsBtn = document.getElementById('clearAllCardsBtn');
 const confirmCardsBtn = document.getElementById('confirmCardsBtn');
-//const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
+const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
 const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 const winText = document.getElementById('winText'); // DOM element
@@ -804,7 +804,7 @@ function populateCardSelect() {
       opt.textContent = code;
       cardSelect.appendChild(opt);
     });
-   
+    updateSelectedCount();
 }
 
 // Function to update the count of selected cards in the modal
@@ -891,7 +891,6 @@ function openSelectCardsModal() {
 function closeSelectCardsModal() {
   if (!selectCardsModal) return;
   selectCardsModal.style.display = 'none';
-  updateAutoCheckToggle(); // add this
 }
 
 function handleModalCheckboxChange(code, checked) {
@@ -908,7 +907,6 @@ function handleModalCheckboxChange(code, checked) {
     else modalSelections.delete(code);
    if (cardSearchBox) cardSearchBox.value = '';
     renderModalCardList(); // re-render AFTER animation
-    updateSelectedCount();
 
     updateAutoCheckToggle();
   }, 400); // duration of glow animation in ms
@@ -983,7 +981,6 @@ clearCardSearch.addEventListener('click', () => {
 clearCardSearch.addEventListener('touchend', () => {
   clearCardSearch.style.color = '#888';
 });
-updateSelectedCount();
 
 }
 function handleModalCardClick(code) {
@@ -1188,18 +1185,15 @@ if (selectCardsBtn) selectCardsBtn.onclick = () => {
     openSelectCardsModal();
 };
 
-/*
 if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     closeSelectCardsModal();
-    
-};*/
+};
 
 if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1208,7 +1202,6 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     modalSelections.clear(); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1216,7 +1209,7 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
 if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
   selectedCards = Array.from(modalSelections);
   populateCardSelect();
-  //closeSelectCardsModal();
+  closeSelectCardsModal();
   updateAutoCheckToggle();
   saveGameState();
 };

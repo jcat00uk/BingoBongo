@@ -60,7 +60,7 @@ const modalCardList = document.getElementById('modalCardList');
 const selectAllCardsBtn = document.getElementById('selectAllCardsBtn');
 const clearAllCardsBtn = document.getElementById('clearAllCardsBtn');
 const confirmCardsBtn = document.getElementById('confirmCardsBtn');
-//const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
+const closeCardsModalBtn = document.getElementById('closeCardsModalBtn');
 const cardSearchBox = document.getElementById('cardSearchBox');
 const selectCardsBtn = document.getElementById('selectCardsBtn');
 const winText = document.getElementById('winText'); // DOM element
@@ -891,7 +891,6 @@ function openSelectCardsModal() {
 function closeSelectCardsModal() {
   if (!selectCardsModal) return;
   selectCardsModal.style.display = 'none';
-  updateAutoCheckToggle(); // add this
 }
 
 function handleModalCheckboxChange(code, checked) {
@@ -1188,18 +1187,15 @@ if (selectCardsBtn) selectCardsBtn.onclick = () => {
     openSelectCardsModal();
 };
 
-/*
 if (closeCardsModalBtn) closeCardsModalBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     closeSelectCardsModal();
-    
-};*/
+};
 
 if (selectAllCardsBtn) selectAllCardsBtn.onclick = () => { 
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     Object.keys(cards || {}).forEach(code => modalSelections.add(code)); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1208,7 +1204,6 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
     if (cardSearchBox) cardSearchBox.value = ''; // Clear search box
     modalSelections.clear(); 
     renderModalCardList(); 
-    updateSelectedCount();
     updateAutoCheckToggle(); 
     saveGameState(); 
 };
@@ -1216,7 +1211,7 @@ if (clearAllCardsBtn) clearAllCardsBtn.onclick = () => {
 if (confirmCardsBtn) confirmCardsBtn.onclick = () => {
   selectedCards = Array.from(modalSelections);
   populateCardSelect();
-  //closeSelectCardsModal();
+  closeSelectCardsModal();
   updateAutoCheckToggle();
   saveGameState();
 };
