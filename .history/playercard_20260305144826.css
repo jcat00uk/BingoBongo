@@ -74,9 +74,7 @@ body {
   user-select: none;            /* prevent text selection */
 }
 
-#cardList label:hover {
-  background-color: #444;
-}
+
 
 /* Confirm button full width */
 #confirmSelectionBtn {
@@ -452,7 +450,11 @@ button.info-icon {
   color: #ff0000;
 }
 
-
+#clearSearchBtn:active,
+#clearSearchBtn:focus {
+  color: #aaa;            /* keep it gray when tapped/focused */
+  background: transparent;
+}
 
 .search-wrapper input {
   flex: 1;
@@ -499,23 +501,21 @@ button.info-icon {
 #cardList label.selected {
   border: 2px solid #41b60a;  /* highlight border */
   background-color: #185c07;
-  color: rgb(0, 0, 0);
   padding: 4px 6px;
-  font-weight: bold;
-  font-size: larger;
-
 }
 
 /* Disabled (cannot select more cards) */
 #cardList label.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #464646;
-   border: 2px solid #b60a0a;  /* highlight border */
 }
 
 
-
+/* Hover effect */
+#cardList label:not(.disabled):hover {
+  background-color: #ada5a5;   /* change to whatever colour you want */
+  cursor: pointer;
+}
 
 /* Pressed (mouse down / tap) */
 #cardList label:not(.disabled):active {

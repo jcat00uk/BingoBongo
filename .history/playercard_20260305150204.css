@@ -499,10 +499,9 @@ button.info-icon {
 #cardList label.selected {
   border: 2px solid #41b60a;  /* highlight border */
   background-color: #185c07;
-  color: rgb(0, 0, 0);
+  color: rgb(27, 27, 27);
   padding: 4px 6px;
   font-weight: bold;
-  font-size: larger;
 
 }
 
