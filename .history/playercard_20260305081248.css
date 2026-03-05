@@ -70,8 +70,6 @@ body {
   border-radius: 4px;
   transition: background-color 0.2s, opacity 0.2s;
   border-bottom: 1px solid #555;
-  touch-action: manipulation;  /* allow tap/hold without scrolling */
-  user-select: none;            /* prevent text selection */
 }
 
 #cardList label:hover {
@@ -444,18 +442,10 @@ button.info-icon {
   font-size: 16px;
   cursor: pointer;
   padding: 4px;
-  outline: none;          /* remove focus outline */
-  -webkit-tap-highlight-color: transparent; /* prevent mobile highlight */
 }
 
 #clearSearchBtn:hover {
-  color: #ff0000;
-}
-
-#clearSearchBtn:active,
-#clearSearchBtn:focus {
-  color: #aaa;            /* keep it gray when tapped/focused */
-  background: transparent;
+  color: #fff;
 }
 
 .search-wrapper input {

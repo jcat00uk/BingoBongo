@@ -167,7 +167,16 @@ span.style.userSelect = 'none';  // optional: prevent accidental text selection
       populateCardList(searchInput.value);
       cardList.scrollTop = 0;
     });
-    
+
+    label.addEventListener('click', (e) => {
+  // prevent double-trigger if checkbox is clicked directly
+  if (e.target === checkbox) return;
+
+  if (checkbox.disabled) return;
+
+  checkbox.checked = !checkbox.checked;
+  checkbox.dispatchEvent(new Event('change'));
+});
 
     // === Card row container ===
     const rowDiv = document.createElement('div');

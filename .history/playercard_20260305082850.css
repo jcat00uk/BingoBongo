@@ -70,6 +70,7 @@ body {
   border-radius: 4px;
   transition: background-color 0.2s, opacity 0.2s;
   border-bottom: 1px solid #555;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.2); /* subtle feedback */
   touch-action: manipulation;  /* allow tap/hold without scrolling */
   user-select: none;            /* prevent text selection */
 }

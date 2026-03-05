@@ -70,8 +70,6 @@ body {
   border-radius: 4px;
   transition: background-color 0.2s, opacity 0.2s;
   border-bottom: 1px solid #555;
-  touch-action: manipulation;  /* allow tap/hold without scrolling */
-  user-select: none;            /* prevent text selection */
 }
 
 #cardList label:hover {

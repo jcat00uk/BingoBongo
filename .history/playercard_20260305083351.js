@@ -124,38 +124,49 @@ function populateCardList(filter = '') {
     infoBtn.addEventListener('touchstart', e => e.stopPropagation(), { passive: false });
     infoBtn.addEventListener('click', () => {
       Object.keys(previewState).forEach(key => previewState[key] = false);
-      if (currentlyOpenPreview !== c.code) {
-        previewState[c.code] = true;
-        currentlyOpenPreview = c.code;
-      } else {
-        currentlyOpenPreview = null;
-      }
+      currentlyOpenPreview = currentlyOpenPreview === c.code ? null : c.code;
+      previewState[c.code] = currentlyOpenPreview === c.code;
       populateCardList(searchInput.value); // refresh UI
     });
 
-    // === Label with checkbox + code ===
+    // === Label with hidden checkbox + code ===
     const label = document.createElement('label');
     label.classList.toggle('selected', tempSelection.includes(c.code));
     label.classList.toggle('disabled', reachedMax && !tempSelection.includes(c.code));
     label.style.flexGrow = '1'; // label fills remaining space
 
-  const checkbox = document.createElement('input');
-checkbox.type = 'checkbox';
-checkbox.checked = tempSelection.includes(c.code);
-checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
-checkbox.style.display = 'none'; // hide the actual checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = tempSelection.includes(c.code);
+    checkbox.disabled = reachedMax && !tempSelection.includes(c.code);
+    checkbox.style.display = 'none'; // hidden
 
     const span = document.createElement('span');
     span.textContent = c.code;
-span.style.flexGrow = '1';      // take all remaining space
-span.style.textAlign = 'center'; // center text
-span.style.userSelect = 'none';  // optional: prevent accidental text selection
+    span.style.flexGrow = '1';
+    span.style.textAlign = 'center';
+    span.style.userSelect = 'none';
 
-    // Append checkbox + span to label
     label.appendChild(checkbox);
     label.appendChild(span);
 
-    // Checkbox change
+    // ===== NEW: mobile-friendly selection =====
+label.addEventListener('pointerdown', (e) => {
+  // ignore if checkbox is disabled
+  if (checkbox.disabled) return;
+
+  // prevent text selection
+  e.preventDefault();
+}, { passive: false });
+
+label.addEventListener('pointerup', (e) => {
+  if (checkbox.disabled) return;
+
+  // toggle checkbox
+  checkbox.checked = !checkbox.checked;
+  checkbox.dispatchEvent(new Event('change'));
+});
+
     checkbox.addEventListener('change', () => {
       const code = c.code;
       if (checkbox.checked) {
@@ -167,14 +178,10 @@ span.style.userSelect = 'none';  // optional: prevent accidental text selection
       populateCardList(searchInput.value);
       cardList.scrollTop = 0;
     });
-    
 
     // === Card row container ===
     const rowDiv = document.createElement('div');
     rowDiv.className = 'card-row';
-
-    
-    // Append in order: preview button → label (fills row)
     rowDiv.appendChild(infoBtn);
     rowDiv.appendChild(label);
 
@@ -192,7 +199,6 @@ span.style.userSelect = 'none';  // optional: prevent accidental text selection
     });
     previewTable.style.display = previewState[c.code] ? 'table' : 'none';
 
-    // Append row + preview table
     cardList.appendChild(rowDiv);
     cardList.appendChild(previewTable);
   });
