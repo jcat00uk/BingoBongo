@@ -219,7 +219,7 @@ const clearSearchBtn = document.getElementById('clearSearchBtn');
 clearSearchBtn.addEventListener('click', () => {
   searchInput.value = '';
   populateCardList(''); // show all cards
-  clearSearchBtn.blur(); // remove focus so X doesn’t stay highlighted
+
 });
 
 // ========================

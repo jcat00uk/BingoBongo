@@ -254,12 +254,16 @@ searchInput.value = '';
   
 }
 
-quickPickButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+quickPickButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
     const count = parseInt(btn.dataset.count);
+
+    // Add temporary "pressed" effect
+    btn.classList.add('pressed');
+    setTimeout(() => btn.classList.remove('pressed'), 150);
+
     pickRandomCards(count);
   });
-  
 });
 
 let searchTimeout;

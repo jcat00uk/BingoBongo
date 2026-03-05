@@ -219,7 +219,7 @@ const clearSearchBtn = document.getElementById('clearSearchBtn');
 clearSearchBtn.addEventListener('click', () => {
   searchInput.value = '';
   populateCardList(''); // show all cards
-  clearSearchBtn.blur(); // remove focus so X doesn’t stay highlighted
+
 });
 
 // ========================
@@ -478,3 +478,44 @@ document.querySelectorAll('#cardList label').forEach(label => {
 // ========================
 window.addEventListener('load', ()=>{ loadState(); });
 
+
+
+/* ========================= */
+/* GLOBAL: BLOCK TEXT SELECTION + MOBILE TAP HIGHLIGHT */
+/* ========================= */
+body, button, div, span, label, table, tr, td, ul, li {
+  -webkit-user-select: none !important;  /* Safari */
+  -moz-user-select: none !important;     /* Firefox */
+  -ms-user-select: none !important;      /* IE/Edge */
+  user-select: none !important;          /* Standard */
+  -webkit-touch-callout: none !important; /* Disable long-press menu on iOS */
+  -webkit-tap-highlight-color: transparent !important; /* Mobile tap highlight */
+  touch-action: manipulation !important;  /* Improve tap responsiveness */
+  outline: none !important;
+}
+
+/* Re-enable selection only for input fields */
+input, textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Specific for your tables and spans inside cards/previews */
+.card td, .card-preview td, #cardList label span {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  touch-action: manipulation !important;
+}
+
+/* Buttons */
+button, .preview-btn, .quick-pick-btn, #confirmSelectionBtn, .info-icon {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  touch-action: manipulation !important;
+}

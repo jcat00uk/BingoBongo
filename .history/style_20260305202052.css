@@ -1171,9 +1171,3 @@ body, button, input, label, span, td, h4, li {
   touch-action: manipulation;
 }
 
-
-button:active:not(:disabled), .icon-btn:active:not(:disabled), .main-btn:active:not(:disabled) {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
-}

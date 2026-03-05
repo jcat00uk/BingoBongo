@@ -648,11 +648,3 @@ button, .preview-btn, .quick-pick-btn, #confirmSelectionBtn{
   -ms-user-select: none !important;
   touch-action: manipulation !important;
 }
-
-
-
-button:active:not(:disabled), .icon-btn:active:not(:disabled), .main-btn:active:not(:disabled) {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
-}

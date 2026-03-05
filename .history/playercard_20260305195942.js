@@ -219,7 +219,7 @@ const clearSearchBtn = document.getElementById('clearSearchBtn');
 clearSearchBtn.addEventListener('click', () => {
   searchInput.value = '';
   populateCardList(''); // show all cards
-  clearSearchBtn.blur(); // remove focus so X doesn’t stay highlighted
+
 });
 
 // ========================
@@ -459,22 +459,17 @@ window.addEventListener('resize', () => {
   }
 });
 
-// Make all buttons fully tap-friendly on mobile
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('touchstart', e => {
-    e.stopPropagation(); // avoid parent interference
-  }, { passive: true });
-});
-
-// Stop long-press context menu on labels
-document.querySelectorAll('#cardList label').forEach(label => {
-  label.addEventListener('touchstart', e => {
-    e.stopPropagation();
-  }, { passive: true });
-});
-
 // ========================
 // INIT
 // ========================
 window.addEventListener('load', ()=>{ loadState(); });
 
+/* Prevent text selection and fix mobile tap behavior */
+body, button, input, label, span, td, h4, li {
+  user-select: none;             /* standard */
+  -webkit-user-select: none;     /* Chrome/Safari */
+  -moz-user-select: none;        /* Firefox */
+  -ms-user-select: none;         /* IE/Edge */
+  -webkit-tap-highlight-color: transparent; /* remove mobile tap highlight */
+  touch-action: manipulation;    /* quick tap without delay */
+}

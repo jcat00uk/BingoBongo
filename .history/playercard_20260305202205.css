@@ -649,9 +649,14 @@ button, .preview-btn, .quick-pick-btn, #confirmSelectionBtn{
   touch-action: manipulation !important;
 }
 
+.quick-pick-btn:active,
+.quick-pick-btn.pressed {
+  background-color: limegreen !important;   /* darker shade for tap */
+  transform: scale(0.97);
+  transition: all 0.1s;
+}
 
-
-button:active:not(:disabled), .icon-btn:active:not(:disabled), .main-btn:active:not(:disabled) {
+button:active, .icon-btn:active, .main-btn:active {
   transform: scale(0.95);
   transition: transform 0.1s;
   background-color: limegreen; /* optional visual feedback */

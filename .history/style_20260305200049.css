@@ -1138,7 +1138,7 @@ button, .icon-btn, .main-btn, #bingoGrid div, .modal-card-item {
 button:active, .icon-btn:active, .main-btn:active {
   transform: scale(0.95);
   transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
+  background-color: #d33; /* optional visual feedback */
 }
 
 /* Ensure touch events propagate */
@@ -1155,25 +1155,4 @@ body, button, input, label, span, td, h4, li {
   -ms-user-select: none;         /* IE/Edge */
   -webkit-tap-highlight-color: transparent; /* remove mobile tap highlight */
   touch-action: manipulation;    /* quick tap without delay */
-}
-
-/* Prevent text selection for the card selection list */
-#cardList, 
-#cardList label, 
-#cardList label span, 
-#cardList .card-row, 
-#cardList .preview-btn {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-
-button:active:not(:disabled), .icon-btn:active:not(:disabled), .main-btn:active:not(:disabled) {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
 }
