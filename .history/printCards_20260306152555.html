@@ -836,7 +836,7 @@ downloadBtn.addEventListener('click', () => {
                     layoutSelect.value === '2x5' ? 14 :
                     layoutSelect.value === '3x4' ? 12 : 10);
 
-    pdf.setTextColor(style.codeText[0], style.codeText[1], style.codeText[2]);
+    pdf.setTextColor(style.text[0], style.text[1], style.text[2]);
 
 pdf.text(card.code,
   x + ((pageWidth - (cardCols + 1) * padding) / cardCols)/2,
@@ -864,7 +864,7 @@ pdf.setDrawColor(...style.grid);
 pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
       if(num !== null){
-        pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);  // must be reset after rect
+        pdf.setTextColor(style.text[0], style.text[1], style.text[2]);  // must be reset after rect
         pdf.setFont(undefined, 'bold');
         pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
                         layoutSelect.value === '2x3' ? 12 :

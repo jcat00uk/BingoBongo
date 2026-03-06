@@ -864,7 +864,7 @@ pdf.setDrawColor(...style.grid);
 pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
       if(num !== null){
-        pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);  // must be reset after rect
+        pdf.setTextColor(style.text[0], style.text[1], style.text[2]);  // must be reset after rect
         pdf.setFont(undefined, 'bold');
         pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
                         layoutSelect.value === '2x3' ? 12 :

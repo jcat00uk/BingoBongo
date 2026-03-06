@@ -466,44 +466,83 @@ const styleSelect = document.getElementById('styleSelect');
 // --- PDF style map ---
 const pdfStyleMap = {
   plain: {
-    bg:[255,255,255], cardBorder:[0,0,0], grid:[0,0,0],
-    codeText:[0,0,0], numText:[0,0,0]
+    bg: [255,255,255],
+    cardBorder: [0,0,0],
+    grid: [0,0,0],
+    text: [0,0,0],
+    radius: 0
   },
+
   christmas: {
-    bg:[255,253,245], cardBorder:[179,0,0], grid:[31,122,31],
-    codeText:[179,0,0], numText:[0,51,0]
+    bg: [255,253,245],
+    cardBorder: [179,0,0],
+    grid: [31,122,31],
+    text: [0,51,0],        // #003300
+    radius: 0
   },
+
   easter: {
-    bg:[255,246,251], cardBorder:[217,167,199], grid:[159,211,199],
-    codeText:[122,75,148], numText:[51,51,51]
+    bg: [255,246,251],
+    cardBorder: [217,167,199],
+    grid: [159,211,199],
+    text: [51,51,51],      // #333
+    radius: 0
   },
+
   neon: {
-    bg:[4,68,105], cardBorder:[0,255,255], grid:[0,255,255],
-    codeText:[158,158,158], numText:[255,255,255]
+    bg: [4,68,105],
+    cardBorder: [0,255,255],
+    grid: [0,255,255],
+    text: [255,255,255],   // #ffffff
+    radius: 0
   },
+
   halloween: {
-    bg:[51,51,51], cardBorder:[255,122,0], grid:[255,122,0],
-    codeText:[178,102,255], numText:[255,255,204]
+    bg: [51,51,51],
+    cardBorder: [255,122,0],
+    grid: [255,122,0],
+    text: [255,255,204],   // #ffffcc
+    radius: 0
   },
+
   retro: {
-    bg:[253,246,227], cardBorder:[107,79,44], grid:[107,79,44],
-    codeText:[196,122,44], numText:[59,42,26]
+    bg: [253,246,227],
+    cardBorder: [107,79,44],
+    grid: [107,79,44],
+    text: [59,42,26],      // #3b2a1a
+    radius: 0
   },
+
   gold: {
-    bg:[255,255,255], cardBorder:[201,162,39], grid:[0,0,0],
-    codeText:[140,109,31], numText:[0,0,0]
+    bg: [255,255,255],
+    cardBorder: [201,162,39],
+    grid: [0,0,0],
+    text: [0,0,0],
+    radius: 0
   },
+
   kids: {
-    bg:[255,255,255], cardBorder:[255,111,145], grid:[110,198,255],
-    codeText:[255,111,145], numText:[51,51,51]
+    bg: [255,255,255],
+    cardBorder: [255,111,145],
+    grid: [110,198,255],
+    text: [51,51,51],      // #333
+    radius: 0
   },
+
   minimal: {
-    bg:[247,247,247], cardBorder:[204,204,204], grid:[221,221,221],
-    codeText:[68,68,68], numText:[34,34,34]
+    bg: [247,247,247],
+    cardBorder: [204,204,204],
+    grid: [221,221,221],
+    text: [34,34,34],      // #222
+    radius: 0
   },
+
   casino: {
-    bg:[22,68,55], cardBorder:[212,175,55], grid:[255,255,255],
-    codeText:[212,175,55], numText:[255,255,204]
+    bg: [22,68,55],
+    cardBorder: [212,175,55],
+    grid: [255,255,255],
+    text: [255,255,204],   // #ffffcc
+    radius: 0
   }
 };
 
@@ -836,7 +875,7 @@ downloadBtn.addEventListener('click', () => {
                     layoutSelect.value === '2x5' ? 14 :
                     layoutSelect.value === '3x4' ? 12 : 10);
 
-    pdf.setTextColor(style.codeText[0], style.codeText[1], style.codeText[2]);
+    pdf.setTextColor(style.text[0], style.text[1], style.text[2]);
 
 pdf.text(card.code,
   x + ((pageWidth - (cardCols + 1) * padding) / cardCols)/2,
@@ -864,7 +903,7 @@ pdf.setDrawColor(...style.grid);
 pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
       if(num !== null){
-        pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);  // must be reset after rect
+        pdf.setTextColor(...style.text);  // must be reset after rect
         pdf.setFont(undefined, 'bold');
         pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
                         layoutSelect.value === '2x3' ? 12 :
