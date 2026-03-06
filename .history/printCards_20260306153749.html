@@ -205,7 +205,7 @@ button {
 }
 
 .style-easter {
-  background: #fff6fb;   /* solid pink instead of gradient */
+  background: linear-gradient(135deg, #fff6fb, #f0fff4);
   border: 2px solid #d9a7c7;
   border-radius: 0px;
 }
@@ -464,24 +464,6 @@ const pageStartInput = document.getElementById('pageStart');
 const pageEndInput = document.getElementById('pageEnd');
 const styleSelect = document.getElementById('styleSelect');
 
-
-// -------------------
-// PDF style map (only layout, colours will be read dynamically)
-// -------------------
-const pdfStyleMap = {
-  plain: { radius: 0 },
-  christmas: { radius: 10 },
-  easter: { radius: 14 },
-  neon: { radius: 12 },
-  halloween: { radius: 12 },
-  retro: { radius: 8 },
-  gold: { radius: 10 },
-  kids: { radius: 16 },
-  minimal: { radius: 0 },
-  casino: { radius: 12 }
-};
-
-/*
 // --- PDF style map ---
 const pdfStyleMap = {
   plain: {
@@ -525,7 +507,6 @@ const pdfStyleMap = {
     codeText:[212,175,55], numText:[255,255,204]
   }
 };
-*/
 
 // --- INITIAL LOAD ---
 window.addEventListener('DOMContentLoaded', () => {
@@ -806,72 +787,10 @@ td.style.fontSize = cellFontSize + 'px';
 
 }
 
-// -------------------
-// Convert CSS colour string (like "rgb(255, 0, 0)") to [r,g,b] array
-// -------------------
-function cssColorToRgbArray(cssColor){
-  const el = document.createElement('div');
-  el.style.color = cssColor;
-  document.body.appendChild(el);
-  const cs = window.getComputedStyle(el).color; // returns "rgb(r, g, b)"
-  document.body.removeChild(el);
-  const match = cs.match(/\d+/g);
-  return match ? match.slice(0,3).map(n => parseInt(n)) : [0,0,0];
-}
-
-// -------------------
-// Read all dynamic colours from a preview card style
-// Returns: bg, cardBorder, codeText, numText, grid
-// -------------------
-function getCardPdfStyles(styleName){
-  const div = document.createElement('div');
-  div.className = `cardPreview style-${styleName}`;
-  div.style.display = 'none'; // hide from screen
-  document.body.appendChild(div);
-
-  // Card background colour
-  const bgRgb = cssColorToRgbArray(window.getComputedStyle(div).backgroundColor);
-
-  // Card border colour
-  const borderRgb = cssColorToRgbArray(window.getComputedStyle(div).borderColor);
-
-  // Card ID (first child div)
-  const codeDiv = document.createElement('div');
-  div.appendChild(codeDiv);
-  const codeRgb = cssColorToRgbArray(window.getComputedStyle(codeDiv).color);
-
-  // Table cell (numbers)
-  const table = document.createElement('table');
-  const tr = document.createElement('tr');
-  const td = document.createElement('td');
-  tr.appendChild(td);
-  table.appendChild(tr);
-  div.appendChild(table);
-
-  // Number colour
-  const numRgb = cssColorToRgbArray(window.getComputedStyle(td).color);
-
-  // Grid / table border colour
-  const gridRgb = cssColorToRgbArray(window.getComputedStyle(td).borderColor);
-
-  document.body.removeChild(div);
-
-  return {
-    bg: bgRgb,
-    cardBorder: borderRgb,
-    codeText: codeRgb,
-    numText: numRgb,
-    grid: gridRgb
-  };
-}
-
 // --- PDF DOWNLOAD ---
 downloadBtn.addEventListener('click', () => {
-  // 1️⃣ Read all dynamic colours from the preview CSS
-  // This includes: card background, card border, card ID text, numbers, grid
-  const style = getCardPdfStyles(styleSelect.value);
-
   const { jsPDF } = window.jspdf;
+
   const pdfOrientation = (layoutSelect.value === '2x5') ? 'portrait' : 'landscape';
   const pdf = new jsPDF(pdfOrientation, 'mm', 'a4');
 
@@ -897,84 +816,79 @@ downloadBtn.addEventListener('click', () => {
   for (let p = startPage; p <= endPage; p++) {
     let x = padding, y = padding;
 
+    const pageDiv = document.createElement('div'); // optional, for preview use only
+    pageDiv.className = 'pageGrid';
+
     for (let i = 0; i < cardsPerPage; i++) {
       const card = finalCardOrder[cardsPrinted];
       if (!card) break;
 
-      // 2️⃣ Calculate card width and height dynamically
-      const cardWidth = (pageWidth - (cardCols + 1) * padding) / cardCols;
-      const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
+      const style = pdfStyleMap[styleSelect.value] || pdfStyleMap.plain;
 
-      // 3️⃣ Draw card background
       // Draw card background
       pdf.setFillColor(...style.bg);
       pdf.setDrawColor(...style.cardBorder);
+      pdf.rect(x, y, (pageWidth - (cardCols + 1) * padding) / cardCols, (pageHeight - (cardRows + 1) * padding) / cardRows, 'FD');
 
-      // Outer card border: thin but visible
-      pdf.setLineWidth(0.5);  // <-- outer rectangle thickness
+      // Draw card code
+    pdf.setFont(undefined, 'bold');
+    pdf.setFontSize(layoutSelect.value === '1x2' ? 18 :
+                    layoutSelect.value === '2x3' ? 14 :
+                    layoutSelect.value === '2x5' ? 14 :
+                    layoutSelect.value === '3x4' ? 12 : 10);
 
-      pdf.rect(x, y, cardWidth, cardHeight, 'FD');
+    pdf.setTextColor(style.codeText[0], style.codeText[1], style.codeText[2]);
 
-      // 4️⃣ Draw card ID (code) at top
-      pdf.setFont(undefined, 'bold');
-      pdf.setFontSize(layoutSelect.value === '1x2' ? 18 :
-                      layoutSelect.value === '2x3' ? 14 :
-                      layoutSelect.value === '2x5' ? 14 :
-                      layoutSelect.value === '3x4' ? 12 : 10);
-      pdf.setTextColor(...style.codeText); // dynamic code colour
-      pdf.text(card.code, x + cardWidth/2, y + 6, { align:'center' });
+pdf.text(card.code,
+  x + ((pageWidth - (cardCols + 1) * padding) / cardCols)/2,
+  y + 6,
+  { align:'center' }
+);
 
-      // 5️⃣ Draw table cells
+      // Draw table cells
       const rows = card.numbers.length;
       const colsInCard = card.numbers[0].length;
+      const cardWidth = (pageWidth - (cardCols + 1) * padding) / cardCols;
+      const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
       const tableTop = y + 10;
       const tableHeight = cardHeight - 12;
       const cellWidth = cardWidth / colsInCard;
       const cellHeight = tableHeight / rows;
 
-for (let r = 0; r < rows; r++) {
-  for (let c = 0; c < colsInCard; c++) {
-    const num = card.numbers[r][c];
-    const cellX = x + c * cellWidth;
-    const cellY = tableTop + r * cellHeight;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < colsInCard; c++) {
+          const num = card.numbers[r][c];
+          const cellX = x + c * cellWidth;
+          const cellY = tableTop + r * cellHeight;
 
-    // --- Step 2: thin table cell border ---
-    pdf.setDrawColor(...style.grid);
-    pdf.setLineWidth(0.3);  // thin, matches preview
-    pdf.rect(cellX, cellY, cellWidth, cellHeight);
+pdf.setDrawColor(...style.grid);
+pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
-    if(num !== null){
-      pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);
-      pdf.setFont(undefined, 'bold');
-      pdf.setFontSize(
-        layoutSelect.value==='1x2'?20:
-        layoutSelect.value==='2x3'?12:
-        layoutSelect.value==='2x5'?14:
-        layoutSelect.value==='3x4'?12:10
-      );
-      pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {
-        align:'center',
-        baseline:'middle'
-      });
-    }
-  }
-}
+      if(num !== null){
+        pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);  // must be reset after rect
+        pdf.setFont(undefined, 'bold');
+        pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
+                        layoutSelect.value === '2x3' ? 12 :
+                        layoutSelect.value === '2x5' ? 14 :
+                        layoutSelect.value === '3x4' ? 12 : 10);
 
-      // 8️⃣ Advance x/y for next card
-      x += cardWidth + padding;
-      if ((i+1) % cardCols === 0) { 
-        x = padding; 
-        y += cardHeight + padding; 
+        pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {
+          align:'center',
+          baseline:'middle'
+        });
+      }
+        }
       }
 
+      // Advance x/y for next card
+      x += cardWidth + padding;
+      if ((i+1) % cardCols === 0) { x = padding; y += cardHeight + padding; }
       cardsPrinted++;
     }
 
-    // 9️⃣ Add new page if needed
     if(p < endPage) pdf.addPage();
   }
 
-  // 10️⃣ Save PDF
   pdf.save('bingo_cards.pdf');
 });
 

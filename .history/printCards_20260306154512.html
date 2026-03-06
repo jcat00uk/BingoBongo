@@ -205,7 +205,7 @@ button {
 }
 
 .style-easter {
-  background: #fff6fb;   /* solid pink instead of gradient */
+  background: linear-gradient(135deg, #fff6fb, #f0fff4);
   border: 2px solid #d9a7c7;
   border-radius: 0px;
 }
@@ -906,14 +906,9 @@ downloadBtn.addEventListener('click', () => {
       const cardHeight = (pageHeight - (cardRows + 1) * padding) / cardRows;
 
       // 3️⃣ Draw card background
-      // Draw card background
-      pdf.setFillColor(...style.bg);
-      pdf.setDrawColor(...style.cardBorder);
-
-      // Outer card border: thin but visible
-      pdf.setLineWidth(0.5);  // <-- outer rectangle thickness
-
-      pdf.rect(x, y, cardWidth, cardHeight, 'FD');
+      pdf.setFillColor(...style.bg);         // dynamic card background
+      pdf.setDrawColor(...style.cardBorder); // dynamic card border
+      pdf.rect(x, y, cardWidth, cardHeight, 'FD'); // fill + border
 
       // 4️⃣ Draw card ID (code) at top
       pdf.setFont(undefined, 'bold');
@@ -932,33 +927,31 @@ downloadBtn.addEventListener('click', () => {
       const cellWidth = cardWidth / colsInCard;
       const cellHeight = tableHeight / rows;
 
-for (let r = 0; r < rows; r++) {
-  for (let c = 0; c < colsInCard; c++) {
-    const num = card.numbers[r][c];
-    const cellX = x + c * cellWidth;
-    const cellY = tableTop + r * cellHeight;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < colsInCard; c++) {
+          const num = card.numbers[r][c];
+          const cellX = x + c * cellWidth;
+          const cellY = tableTop + r * cellHeight;
 
-    // --- Step 2: thin table cell border ---
-    pdf.setDrawColor(...style.grid);
-    pdf.setLineWidth(0.3);  // thin, matches preview
-    pdf.rect(cellX, cellY, cellWidth, cellHeight);
+          // 6️⃣ Draw cell border (grid)
+          pdf.setDrawColor(...style.grid); // dynamic grid colour
+          pdf.rect(cellX, cellY, cellWidth, cellHeight);
 
-    if(num !== null){
-      pdf.setTextColor(style.numText[0], style.numText[1], style.numText[2]);
-      pdf.setFont(undefined, 'bold');
-      pdf.setFontSize(
-        layoutSelect.value==='1x2'?20:
-        layoutSelect.value==='2x3'?12:
-        layoutSelect.value==='2x5'?14:
-        layoutSelect.value==='3x4'?12:10
-      );
-      pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {
-        align:'center',
-        baseline:'middle'
-      });
-    }
-  }
-}
+          // 7️⃣ Draw number inside cell
+          if(num !== null){
+            pdf.setTextColor(...style.numText); // dynamic number colour
+            pdf.setFont(undefined, 'bold');
+            pdf.setFontSize(layoutSelect.value === '1x2' ? 20 :
+                            layoutSelect.value === '2x3' ? 12 :
+                            layoutSelect.value === '2x5' ? 14 :
+                            layoutSelect.value === '3x4' ? 12 : 10);
+            pdf.text(String(num), cellX + cellWidth/2, cellY + cellHeight/2, {
+              align:'center',
+              baseline:'middle'
+            });
+          }
+        }
+      }
 
       // 8️⃣ Advance x/y for next card
       x += cardWidth + padding;
