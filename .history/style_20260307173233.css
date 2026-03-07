@@ -1,0 +1,401 @@
+/* ==================================================
+   1. GENERAL SETTINGS
+   --------------------------------------------------
+   Fonts, body, universal user-select, tap highlight,
+   button active states.
+================================================== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+}
+
+h2 {
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+/* Prevent text selection and mobile tap highlight globally */
+body, button, input, select, textarea,
+#bingoGrid, #bingoGrid div, 
+.modal-card-item, .call-text-box, .title-text, .popover, ul, li,
+label, span, td, h4 {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Button press feedback (all buttons, icons, main buttons) */
+button:active:not(:disabled),
+.icon-btn:active:not(:disabled),
+.main-btn:active:not(:disabled) {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+  background-color: limegreen; /* optional visual feedback */
+}
+
+/* ==================================================
+   2. HEADER & TOP SECTION
+   --------------------------------------------------
+   Title, bingo UK call text, top row buttons,
+   big last number wrapper.
+================================================== */
+
+/* Header row aligned to bingo grid */
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.title-text {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0;
+  flex-shrink: 0;
+  text-shadow: 0 0 8px #ff6666, 0 0 16px #ff0000; /* glow */
+}
+
+#gameTitle {
+  margin: 0;
+  font-size: 2rem;
+  text-align: left;
+  color: red;
+}
+
+/* Bingo call text wrapper */
+#bingoCallText {
+  flex-grow: 1;
+  flex-shrink: 1;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  line-height: 1.1;
+  text-align: right;
+  word-break: break-word;
+  color: red;
+}
+
+.call-text-box {
+  font-size: 1.4rem; /* smaller for tight space */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) { .call-text-box { font-size: 1.2rem; } }
+@media (max-width: 400px) { .call-text-box { font-size: 1.1rem; } }
+
+/* Top section container */
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 540px;
+  margin: 0 auto 12px auto;
+  gap: 6px;
+}
+
+/* Buttons row */
+.buttons-row {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.buttons-row button {
+  flex: 1 1 auto;
+  min-width: 30px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  font-size: 14px;
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+/* Big last number wrapper (top-right) */
+.big-last-number-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-left: 6px;
+  width: 60px;
+  height: 60px;
+}
+
+/* ==================================================
+   3. LAST CALLED NUMBER
+================================================== */
+#bigLastNumber {
+  width: 60px;
+  height: 60px;
+  font-size: 36px;
+  font-weight: bold;
+  color: red;
+  background-color: yellow;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(255, 200, 0, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animation when new call comes in */
+#bigLastNumber.new-call { animation: popNumber 0.5s ease; }
+
+@keyframes popNumber {
+  0%   { transform: scale(1);   box-shadow: 0 0 8px rgba(255,200,0,0.6); }
+  50%  { transform: scale(1.4); box-shadow: 0 0 16px rgba(255,200,0,0.9); }
+  100% { transform: scale(1);   box-shadow: 0 0 8px rgba(255,200,0,0.6); }
+}
+
+/* ==================================================
+   4. BINGO GRID
+================================================== */
+#bingoGrid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  margin: 0 auto;
+  max-width: 540px;
+}
+
+.grid-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #eee;
+  border-radius: 50%;
+  transition: background 0.3s, transform 0.3s;
+}
+
+/* Called / LastCalled styling */
+.grid-cell.called { 
+  background-color: #ff6666; 
+  color: #fff; 
+} /* ⚠️ repeated later in Night Mode Section 10 */
+
+.grid-cell.lastCalled {
+  background-color: #3399ff !important;
+  color: #fff;
+  animation: pulse 0.6s ease-in-out;
+} /* ⚠️ repeated later in Night Mode Section 10 */
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+/* ==================================================
+   5. CALLED NUMBERS STRIP
+================================================== */
+#calledNumbersContainerWrapper {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto 6px auto;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 0;
+  background-color: #eee;
+  overflow-x: hidden;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#calledNumbersContainerWrapper:active { cursor: grabbing; }
+
+#calledNumbersContainer {
+  display: flex;
+  gap: 6px;
+  min-width: 100%;
+}
+
+#calledNumbersContainer span {
+  flex: 0 0 auto;
+  min-width: 36px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
+  background: #ddd;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Last number styling override */
+#calledNumbersContainer span#lastNumber {
+  font-weight: bold;
+  color: red;
+  background: #ffe6e6;
+  border: 1px solid red;
+}
+
+/* ==================================================
+   6. BOTTOM BUTTONS
+================================================== */
+.grid-bottom-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 540px;
+  margin: 10px auto;
+}
+
+.grid-bottom-buttons button {
+  height: 40px;
+  min-width: 30px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+/* Next button stretches */
+#nextNumberBtn { flex: 1 1 auto; text-align: center; min-width: 80px; }
+
+/* Check / other buttons stay small */
+#checkSelectedCardBtn { flex: 0 0 auto; }
+
+/* Glow animation for enabled buttons */
+@keyframes glowPulse { 0% { box-shadow:0 0 5px #ff0000; transform: scale(1); } 50% { box-shadow:0 0 15px #ff4444; transform: scale(1.05);} 100% { box-shadow:0 0 5px #ff0000; transform: scale(1);} }
+.main-btn.enabled-glow { animation: glowPulse 1s infinite ease-in-out; }
+#startGameBtn.enabled-glow, #nextNumberBtn.enabled-glow { background-color: red; animation: glowPulse 1s infinite ease-in-out; }
+
+/* Disabled button appearance */
+button:disabled { 
+  background-color:#888 !important; 
+  color:#555 !important; 
+  cursor:not-allowed; 
+  opacity:0.4; 
+} /* ⚠️ repeated for small-btn disabled in Section 8 */
+
+/* ==================================================
+   7. CHECK CARD DISPLAY
+================================================== */
+.card { border: 2px dashed #000; padding: 6px; margin: 10px auto; max-width: 320px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.card-header h4 { margin:0; }
+.card-header .card-result { font-weight:bold; font-size:16px; }
+.card table { width:100%; border-collapse: collapse; table-layout: fixed; }
+.card td { border:1px solid #000; height:28px; text-align:center; font-size:16px; }
+.card td.called { color:red; font-weight:bold; }
+.card td.lastCalled { color:blue; font-weight:bold; }
+
+/* ==================================================
+   8. SELECT CARDS MODAL & SLIDERS
+================================================== */
+.modal, #selectCardsModal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; justify-content:center; align-items:center; z-index:1000; background: rgba(0,0,0,0.6); padding:12px; box-sizing:border-box; }
+
+body.night-mode .modal { background: rgba(20,20,20,0.8); }
+
+.modal-content { max-width:360px; width:auto; min-width:220px; background-color:#fff; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box; }
+body.night-mode .modal-content { background-color:#222; color:#eee; }
+
+.modal-top-buttons { display:flex; justify-content:space-between; margin-bottom:8px; }
+.small-btn { padding:6px 10px; font-size:12px; border-radius:8px; background-color:#555; color:#fff; border:none; cursor:pointer; }
+.small-btn:disabled { background-color:#888; color:#555; cursor:not-allowed; opacity:0.4; }
+
+.modal-card-list { display:flex; flex-direction:column; gap:4px; padding:6px 12px; max-height:70vh; overflow-y:auto; width:auto; max-width:90%; user-select:none; }
+
+.modal-card-item { cursor:pointer; padding:8px 12px; margin:2px 0; text-align:center; transition: background-color 0.3s,color 0.3s; background-color:#969696; }
+.modal-card-item.selected { 
+  background-color:#4caf50 !important; 
+  color:#000 !important; 
+  font-weight:bold; 
+} /* ⚠️ selected/deselected rules repeated for animations (flashGreen) */
+
+.modal-card-item.deselected { 
+  background-color:#f44336 !important; 
+  color:#fff !important; 
+} /* ⚠️ same as above */
+
+.modal-card-item.flash-deselect { animation: flashRed 0.4s forwards; }
+@keyframes flashGreen { 0%{background-color:#b0ffb0;}50%{background-color:limegreen;}100%{background-color:#4caf50;} }
+@keyframes flashRed { 0%{background-color:#ffb0b0;}50%{background-color:red;}100%{background-color:#f44336;} }
+
+/* Slider (auto-check) */
+.auto-check-wrapper { display:flex; flex-direction:column; align-items:center; justify-content:center; width:70px; margin:0 6px; }
+.switch { position:relative; display:inline-block; width:42px; height:22px; }
+.switch input { display:none; }
+.slider { position:absolute; cursor:pointer; inset:0; background-color:#ccc; transition:0.3s; border-radius:22px; }
+.slider:before { position:absolute; content:""; height:18px; width:18px; left:2px; bottom:2px; background-color:white; transition:0.3s; border-radius:50%; }
+input:checked + .slider { background-color:#4caf50; }
+input:checked + .slider:before { transform: translateX(20px); }
+.switch input:disabled + .slider { opacity:0.4; cursor:not-allowed; }
+.auto-check-label { font-size:12px; margin-top:4px; text-align:center; opacity:0.9; user-select:none; }
+
+/* ==================================================
+   9. WIN ANIMATION
+================================================== */
+.win-animation { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); font-size:48px; font-weight:bold; color:yellow; text-shadow:0 0 12px #ff0000,0 0 24px #ff0000; pointer-events:none; opacity:0; z-index:2000; text-align:center; padding:12px 24px; border-radius:12px; background-color:rgba(0,0,0,0.7);}
+.win-animation.show { transform:translate(-50%,-50%) scale(1.2); opacity:1; animation:stayThenFade 5s ease forwards; }
+@keyframes stayThenFade { 0%{transform:translate(-50%,-50%) scale(0.8);opacity:0;}15%{transform:translate(-50%,-50%) scale(1.3);opacity:1;}30%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}70%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:0;} }
+@keyframes popWin {0%{transform:translate(-50%,-50%) scale(0.8);opacity:0;}50%{transform:translate(-50%,-50%) scale(1.2);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+
+/* ==================================================
+   10. NIGHT MODE
+================================================== */
+body.night-mode { background-color:#121212; color:#eee; }
+body.night-mode h2 { color:#eee; }
+body.night-mode .main-btn,
+body.night-mode .icon-btn,
+body.night-mode #nextNumberBtn,
+body.night-mode #undoNumberBtn,
+body.night-mode #checkSelectedCardBtn { background-color:#444;color:#eee;border:1px solid #555;}
+body.night-mode #calledNumbersContainerWrapper { background-color:#333; border-color:#555; }
+body.night-mode #calledNumbersContainer span { background-color:#444;color:#eee;border:1px solid #555; }
+body.night-mode .grid-cell { background-color:#222;border-color:#555;color:#eee;}
+body.night-mode .grid-cell.called { background-color:#ff6666;color:#fff;}
+body.night-mode .card td.called { color:#ff6666; }
+body.night-mode .card td.lastCalled { color:#66ccff; }
+body.night-mode select { background-color:#333;color:#eee;border:1px solid #555; }
+body.night-mode .title-text { color:#ff6666; }
+body.night-mode .modal-card-item { background-color:#333;}
+body.night-mode .modal-header { background-color:#222; border-color:#555; }
+body.night-mode #selectedCount { color:#ff9999; }
+
+/* ==================================================
+   11. POPUPS & INFO ICON
+================================================== */
+.info-container { position:relative; display:flex; align-items:center; }
+.info-icon { background-color:#444;color:#eee;border:1px solid #555;border-radius:50%;width:32px;height:32px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s; }
+.info-icon:hover { background-color:#555; }
+.popover { position:absolute; top:42px; left:50%; transform:translateX(0) translateY(-5px); background-color:#222;color:#eee;border:1px solid #555;border-radius:8px;padding:14px;width:260px; max-width:90vw; z-index:1000; box-shadow:0 4px 12px rgba(0,0,0,0.6); font-size:14px; opacity:0; visibility:hidden; transition:opacity 0.25s ease, transform 0.25s ease; }
+.popover.show { opacity:1; visibility:visible; transform:translateX(0) translateY(0); }
+.popover .arrow { position:absolute; top:-8px; left:0; transform:translateX(-50%); width:0;height:0; border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid #222; }
+.popover h4 { margin:0 0 8px 0; font-size:16px;color:#ff6666;text-align:left; }
+.popover ul { padding-left:18px;margin:0; list-style-type:disc; text-align:left; }
+.popover ul li { margin-bottom:6px; }
+
+/* ==================================================
+   12. MOBILE / RESPONSIVE TWEAKS
+================================================== */
+@media (max-width: 480px) {
+  #bingoGrid { max-width:320px; gap:4px; }
+  .grid-cell { font-size:14px; }
+  .modal-content { max-width:95%; padding:8px; }
+  #calledNumbersContainerWrapper, .top-section, .grid-bottom-buttons { max-width:320px; }
+}
+
+/* ==================================================
+   13. REPEATED / OVERRIDDEN RULES (COMMENTS)
+================================================== */
+/* 
+- body, button, input, select, textarea, etc. user-select & tap highlight defined multiple times (Section 1, repeated in Section 8 modal list) – safe, just override.
+- .grid-cell.called appears in Section 4 and repeated in Night Mode Section 10 – intentional override.
+- .grid-cell.lastCalled appears in Section 4 and Section 10 (night mode) – intentional override.
+- button:disabled repeated in Section 6 and Section 8 (small-btn) – intentional, different selectors.
+- modal-card-item.selected / deselected defined multiple times (animations Section 8) – intentional for animation flashes.
+*/

@@ -11,7 +11,6 @@ h2 {
   margin-bottom: 4px;
 }
 
-
 /* ===========================
    Header
 =========================== */
@@ -36,12 +35,7 @@ h2 {
 
 /* ===============================
    BINGO CALL TEXT (UK LINGO)
-   =============================== */
-
-
-
-
-/* Bingo call text scales with wrapper */
+=============================== */
 #bingoCallText {
   flex-grow: 1;           /* take available space */
   flex-shrink: 1;         /* shrink if needed */
@@ -50,50 +44,36 @@ h2 {
   flex-direction: column; /* allow 2 lines */
   justify-content: center; /* vertically center if less than max */
   overflow: hidden;
- 
   line-height: 1.1;       /* tight line spacing to fit 2 lines */
   text-align: right;
   word-break: break-word; /* wrap if needed */
   color: red;
 }
 
+.call-text-box {
+  font-size: 1.4rem;          /* even smaller on tiny screens */
+}
 
-
-
-  .call-text-box {
-    font-size: 1.4rem;          /* even smaller on tiny screens */
-  }
-
-
-
-/* Bingo call text wrapper */
-
-
-/* Responsive adjustment for small screens */
+/* ⚠️ repeated later in media queries for smaller screens */
 @media (max-width: 600px) {
   .call-text-box {
-    font-size: 1.2rem;          /* shrink font on small devices */
+    font-size: 1.2rem;          
   }
 }
 
 @media (max-width: 400px) {
   .call-text-box {
-    font-size: 1.1rem;          /* even smaller on tiny screens */
+    font-size: 1.1rem;          
   }
 }
 
+/* ⚠️ repeated later for title styling */
 #gameTitle {
   margin: 0;
   font-size: 2rem;
   text-align: left;
   color: red;
 }
-
-
-
-
-
-
 
 /* ===========================
    LAST CALLED NUMBER
@@ -124,8 +104,6 @@ h2 {
   100% { transform: scale(1);   box-shadow: 0 0 8px rgba(255, 200, 0, 0.6); }
 }
 
-
-
 .grid-bottom-text {
   display: flex;
   justify-content: space-between;  /* Adjust space between the two divs */
@@ -135,7 +113,6 @@ h2 {
 /* ===========================
    REMAINING NUMBERS
 =========================== */
-
 #remainingNumbers {
   text-align: right;
   font-weight: bold;
@@ -153,10 +130,7 @@ h2 {
   font-size: 18px;
   color: red;
   margin: 8px 0;
-  
 }
-
-
 
 /* ===========================
    CALLED NUMBERS STRIP
@@ -165,7 +139,7 @@ h2 {
   width: 100%;
   max-width: 540px;
   margin: 0 auto 6px auto;
-    border-top: 1px solid #ccc;
+  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 4px 0;
   background-color: #eee;
@@ -174,6 +148,7 @@ h2 {
   -webkit-user-select: none; /* prevent text selection while dragging */
   user-select: none;
 }
+
 #calledNumbersContainerWrapper:active {
   cursor: grabbing;
 }
@@ -204,6 +179,11 @@ h2 {
   border: 1px solid red;
 }
 
+/* ⚠️ repeated later with min-height to maintain container */
+#calledNumbersContainerWrapper {
+  min-height: 46px; /* match height with populated state */
+}
+
 /* ===========================
    BINGO GRID
 =========================== */
@@ -228,6 +208,14 @@ h2 {
   transition: background 0.3s, transform 0.3s;
 }
 
+.grid-cell.called { background-color: #ff6666; color: #fff; }
+.grid-cell.lastCalled {
+  background-color: #3399ff !important;
+  color: #fff;
+  animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
 /* Mobile tweaks */
 @media (max-width: 480px) {
@@ -252,20 +240,9 @@ h2 {
   }
 }
 
-
-.grid-cell.called { background-color: #ff6666; color: #fff; }
-.grid-cell.lastCalled {
-  background-color: #3399ff !important;
-  color: #fff;
-  animation: pulse 0.6s ease-in-out;
-}
-
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
 /* ===========================
    GRID BOTTOM BUTTONS
 =========================== */
-
 .grid-bottom-buttons button {
   padding: 12px 20px;
   font-size: 16px;
@@ -273,17 +250,15 @@ h2 {
   border-radius: 12px; /* more rounded */
 }
 
-
-
+/* ⚠️ repeated later for Next button stretch */
 #nextNumberBtn {
   flex: 1;
 }
 
-
+/* check-card-inline repeated later for layout */
 .check-card-inline { display: flex; gap: 6px; }
 
-
-/* DIM WHEN DISABLED */
+/* DIM WHEN DISABLED ⚠️ repeated for all buttons later */
 button:disabled {
   background-color: #888 !important;
   color: #555 !important;
@@ -291,19 +266,19 @@ button:disabled {
   opacity: 0.4;
 }
 
-/* GLOWING PULSE ANIMATION */
+/* GLOWING PULSE ANIMATION ⚠️ repeated for start/next buttons later */
 @keyframes glowPulse {
   0% { box-shadow: 0 0 5px #ff0000; transform: scale(1); }
   50% { box-shadow: 0 0 15px #ff4444; transform: scale(1.05); }
   100% { box-shadow: 0 0 5px #ff0000; transform: scale(1); }
 }
 
+/* Main button glow ⚠️ repeated in night mode section */
 .main-btn.enabled-glow {
   animation: glowPulse 1s infinite ease-in-out;
 }
 
-
-/* Start/Next button styling */
+/* Start/Next button styling ⚠️ repeated later */
 #startGameBtn,
 #nextNumberBtn {
   color: #fff;
@@ -311,13 +286,14 @@ button:disabled {
   transition: background-color 0.3s;
 }
 
-/* RED + GLOW ONLY WHEN ENABLED */
+/* RED + GLOW ONLY WHEN ENABLED ⚠️ repeated */
 #startGameBtn.enabled-glow,
 #nextNumberBtn.enabled-glow {
   background-color: red;
   animation: glowPulse 1s infinite ease-in-out;
 }
 
+/* button:disabled fallback ⚠️ repeated */
 button:disabled#startGameBtn,
 button:disabled#nextNumberBtn {
   background-color: #888; /* fallback for disabled */
@@ -333,6 +309,7 @@ button:disabled#nextNumberBtn {
   max-width: 320px;
 }
 
+/* ⚠️ repeated later in modal */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -356,6 +333,7 @@ body.night-mode {
   color: #eee;
 }
 body.night-mode h2 { color: #eee; }
+/* ⚠️ repeated button styles for night mode */
 body.night-mode .main-btn,
 body.night-mode .icon-btn,
 body.night-mode #nextNumberBtn,
@@ -374,15 +352,13 @@ body.night-mode .card td.lastCalled { color: #66ccff; }
 body.night-mode select { background-color: #333; color: #eee; border: 1px solid #555; }
 body.night-mode .title-text { color: #ff6666; }
 
-
-
+/* ⚠️ button press scale repeated several times below */
 .buttons-row { display: flex; gap: 6px; align-items: center; }
 .main-btn { padding: 10px 16px; font-size: 14px; border-radius: 8px; background-color: #555; color: #fff; border: none; }
 .icon-btn { padding: 8px 10px; font-size: 16px; border-radius: 8px; background-color: #555; color: #fff; border: none; min-width: 40px; text-align: center; user-select: none; }
 
-/* Big last called number wrapper */
+/* Big last called number wrapper ⚠️ repeated */
 .big-last-number-wrapper { display: flex; justify-content: flex-end; flex-grow: 1; }
-
 
 /* ===========================
    SELECT CARDS MODAL
@@ -397,6 +373,7 @@ body.night-mode .title-text { color: #ff6666; }
   z-index: 1000;
 }
 
+/* ⚠️ repeated later in night mode */
 body.night-mode .modal {
   background: rgba(20,20,20,0.8);
 }
@@ -413,6 +390,7 @@ body.night-mode .modal {
   box-sizing: border-box;
 }
 
+/* ⚠️ repeated in night mode */
 body.night-mode .modal-content {
   background-color: #222;
   color: #eee;
@@ -450,6 +428,7 @@ body.night-mode .modal-content {
   box-sizing: border-box;
 }
 
+/* ⚠️ repeated in night mode */
 body.night-mode #cardSearchBox {
   background-color: #333;
   color: #eee;
@@ -473,7 +452,7 @@ body.night-mode #cardSearchBox {
   margin: 2px 0;
   text-align: center;
   transition: background-color 0.3s, color 0.3s;
-   background-color: #969696;
+  background-color: #969696;
 }
 
 /* Permanent selected state */
@@ -494,6 +473,7 @@ body.night-mode #cardSearchBox {
   animation: flashRed 0.4s forwards;   /* ends on red */
 }
 
+/* ⚠️ repeated accidentally earlier */
 .modal-card-item.flash-deselect {
   animation: flashRed 0.4s;
 }
@@ -514,13 +494,11 @@ body.night-mode #cardSearchBox {
   background-color: #9e9999;
 }
 
-
-
 .flash-deselect {
   animation: flashRed 0.4s ease;
 }
 
-
+/* ⚠️ repeated modal-card-item night mode styling */
 body.night-mode .modal-card-item {
   background-color: #333;
 }
@@ -530,13 +508,13 @@ body.night-mode .modal-card-item {
   border-bottom: 1px solid #aaa;
 }
 
-/* Select = green glow */
+/* Select = green glow ⚠️ repeated for animations */
 .glow-select {
   box-shadow: 0 0 12px 4px limegreen;
   transition: box-shadow 0.4s ease-in-out;
 }
 
-/* Deselect = red glow */
+/* Deselect = red glow ⚠️ repeated for animations */
 .glow-deselect {
   box-shadow: 0 0 12px 4px red;
   transition: box-shadow 0.4s ease-in-out;
@@ -555,7 +533,6 @@ body.night-mode .modal-card-item {
 }
 
 /* AutoCheck Slider */
-
 .auto-check-wrapper {
   display: flex;
   flex-direction: column;      /* STACK slider + text */
@@ -613,15 +590,13 @@ input:checked + .slider:before {
   user-select: none;
 }
 
-/* Disabled look */
+/* Disabled look ⚠️ repeated */
 .switch input:disabled + .slider {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-
-
-/* Win Animation Center */
+/* Win Animation Center ⚠️ repeated win-animation later */
 .win-animation {
   position: fixed;
   top: 50%;
@@ -647,7 +622,7 @@ input:checked + .slider:before {
   animation: stayThenFade 5s ease forwards; /* Increased duration */
 }
 
-/* New keyframes */
+/* New keyframes ⚠️ repeated */
 @keyframes stayThenFade {
   0% {
     transform: translate(-50%, -50%) scale(0.8);
@@ -671,509 +646,4 @@ input:checked + .slider:before {
   }
 }
 
-/* AutoCheck container next to check button */
-.autocheck-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 8px;
-  font-size: 12px;
-}
-
-.autocheck-container input[type="checkbox"] {
-  width: 36px;
-  height: 24px;
-  accent-color: red; /* slider color */
-  cursor: pointer;
-}
-
-/* Disable slider visually */
-.autocheck-container input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Win animation text */
-.win-animation {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 48px;
-  font-weight: bold;
-  color: yellow;
-  text-shadow: 0 0 12px #ff0000, 0 0 24px #ff0000;
-  display: none;
-  z-index: 2000;
-  text-align: center;
-  padding: 12px 24px;
-  border-radius: 12px;
-  background-color: rgba(0,0,0,0.7);
-  pointer-events: none;
-  animation: popWin 0.5s ease;
-}
-
-@keyframes popWin {
-  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-/* Button press feedback */
-.main-btn:active,
-.icon-btn:active {
-  transform: scale(0.95);   /* Slightly shrink */
-  transition: transform 0.1s; /* Quick transition */
-}
-
-button {
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
-/* ===========================
-   SELECT CARDS MODAL - STICKY HEADER
-=========================== */
-
-
-.modal-header {
-  text-align: center;      /* Center everything inside */
-  margin-bottom: 10px;     /* spacing below header */
-}
-
-.modal-title {
-  font-size: 1.6rem;        /* slightly bigger title */
-  font-weight: bold;
-  margin: 0;               /* remove default h3 margin */
-}
-
-.selected-count {
-  font-size: 1.2rem;        /* smaller than title */
-  color: #666;             /* lighter color */
-  margin-top: 4px;         /* spacing under title */
-}
-
-body.night-mode .modal-header {
-  background-color: #222;
-  border-color: #555;
-}
-
-.modal-card-list {
-  overflow-y: auto;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px 12px;
-  user-select: none;
-}
-
-
-
-
-
-/* ===========================
-   WRAPPER TO ALIGN EVERYTHING
-=========================== */
-#gameContainer {
-  max-width: 540px;      /* match your bingoGrid max-width */
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 0 6px;        /* small horizontal padding for mobile */
-}
-
-/* Make top-section, bingoGrid, called numbers strip, and buttons follow container width */
-.top-section,
-#bingoGrid,
-#calledNumbersContainerWrapper,
-.grid-bottom-buttons,
-.check-card-inline,
-.big-last-number-wrapper {
-  max-width: 100%;
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-
-/* ===========================
-   TOP BUTTONS UNIFORM HEIGHT
-=========================== */
-.buttons-row button {
-  height: 40px;       /* set a fixed height */
-  padding: 0 12px;    /* adjust horizontal padding */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Optional: ensure icon buttons look centered */
-.icon-btn {
-  padding: 0 10px;    /* keep horizontal padding */
-  min-width: 40px;
-  font-size: 16px;
-}
-
-
-/* ===========================
-   KEEP BUTTONS IN ONE ROW
-=========================== */
-
-
-/* ===========================
-   TOP ROW WITH BIG LAST NUMBER
-=========================== */
-.top-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 540px; /* match bingoGrid */
-  margin: 0 auto 12px auto;
-  gap: 6px;
-}
-
-.buttons-row {
-  display: flex;
-  flex: 1 1 auto;        /* allow shrinking */
-  gap: 6px;
-  flex-wrap: nowrap;      /* prevent wrapping */
-  align-items: center;
-}
-
-.buttons-row button {
-  flex: 1 1 auto;         /* shrink evenly if needed */
-  min-width: 30px;        /* prevent too small */
-  height: 40px;           /* uniform height */
-  box-sizing: border-box;
-   padding: 6px 10px;     /* reduced padding */
-  font-size: 14px;       /* slightly smaller text */
-  flex-shrink: 0;
-  border-radius: 10px;
-}
-
-/* Big last number as part of the top row */
-.big-last-number-wrapper {
-  flex-shrink: 0;         /* don't shrink too much */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-}
-
-
-/* BIG LAST NUMBER stays right-aligned */
-.big-last-number-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-left: 6px;
-  flex-shrink: 0;       /* prevent shrinking too much */
-}
-
-
-
-/* ===========================
-   BOTTOM ROW BUTTONS
-=========================== */
-.grid-bottom-buttons {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  max-width: 540px; /* same as bingoGrid */
-  margin: 10px auto;
-}
-
-.grid-bottom-buttons button {
-  height: 40px;       /* uniform height */
-  min-width: 30px;
-  flex: 0 0 auto;     /* default size */
-  box-sizing: border-box;
-   padding: 6px 10px;     /* reduced padding */
-  font-size: 14px;       /* slightly smaller text */
-  flex-shrink: 0;
-  border-radius: 10px;
-}
-
-
-
-/* Make the Next button stretch to fill remaining space */
-#nextNumberBtn {
-  flex: 1 1 auto;      /* expand to take leftover space */
-  text-align: center;
-  min-width: 80px;     /* prevents it being too small */
-}
-
-/* Keep Check button and others normal size */
-#checkSelectedCardBtn {
-  flex: 0 0 auto;      /* stays small */
-}
-
-/* SELECT CARDS MODAL */
-#selectCardsModal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 12px;      /* ensures some space on small screens */
-  box-sizing: border-box;
-}
-
-/* ===========================
-   TWO-LINE SELECT CARDS BUTTON
-=========================== */
-.two-line-btn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  line-height: 1.05;
-  padding: 4px 6px;          /* tighter padding */
-}
-
-.two-line-btn span {
-  font-size: 12px;           /* smaller text */
-  white-space: nowrap;
-}
-
-/* ===========================
-   Disable Card state
-=========================== */
-.check-card-inline {
-  display: flex;
-  gap: 4px;          /* reduce gap */
-  align-items: center;
-}
-
-#cardSelect {
-  margin-right: 4px; /* tighten around select */
-}
-
-#calledNumbersContainerWrapper {
-  min-height: 46px; /* match height with populated state */
-}
-
-/* Bingo call text animation */
-
-
-
-/* Animation trigger */
-#bingoCallText.animate {
-  animation: bingoCallFade 400ms ease-out;
-}
-
-@keyframes bingoCallFade {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Add glowing effect to the title */
-.title-text {
-  text-shadow: 0 0 8px #ff6666, 0 0 16px #ff0000;
-}
-
-/* ======================== */
-/* Info Icon + Popover */
-/* ======================== */
-
-.info-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* Info icon button */
-.info-icon {
-  background-color: #444;
-  color: #eee;
-  border: 1px solid #555;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  
-}
-
-.info-icon:hover {
-  background-color: #555;
-}
-
-
-/* Popover (hidden by default using opacity/visibility for animation) */
-/* Popover */
-.popover {
-  position: absolute;
-  top: 42px;              /* below icon */
-  left: 50%;              /* anchor at center of icon */
-  transform: translateX(0) translateY(-5px);
-  background-color: #222;
-  color: #eee;
-  border: 1px solid #555;
-  border-radius: 8px;
-  padding: 14px;
-  width: 260px;
-  max-width: 90vw;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  font-size: 14px;
-
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* Visible */
-.popover.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0) translateY(0);
-}
-
-/* Arrow centered under icon */
-.popover .arrow {
-  position: absolute;
-  top: -8px;
-  left: 0;                     /* attach arrow to left edge of box */
-  transform: translateX(-50%); /* shift it back to center of icon */
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 8px solid #222;
-}
-
-/* Left aligned content */
-.popover h4 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #ff6666;
-  text-align: left;
-}
-
-.popover ul {
-  padding-left: 18px;
-  margin: 0;
-  list-style-type: disc;
-  text-align: left;  /* LEFT ALIGN */
-}
-
-.popover ul li {
-  margin-bottom: 6px;
-}
-
-/* Adjust clear search button */
-#clearCardSearch {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 16px;
-  color: #888;
-  user-select: none;
-  transition: color 0.2s, transform 0.1s;
-  touch-action: manipulation; /* helps mobile taps */
-}
-
-#clearCardSearch:hover {
-  color: red;
-  transform: translateY(-50%) scale(1.2);
-}
-
-#clearCardSearch:active {
-  color: red; /* ensure tap shows red */
-  transform: translateY(-50%) scale(1.2); /* keep scale while pressing */
-}
-
-/* ===========================
-   SELECTED COUNT IN MODAL HEADER
-=========================== */
-#selectedCount {
-  font-weight: bold;
-  color: #ff6666;
-}
-
-body.night-mode #selectedCount {
-  color: #ff9999;
-}
-
-/* Prevent text selection everywhere */
-body, button, input, select, textarea,
-#bingoGrid, #bingoGrid div, 
-.modal-card-item, .call-text-box, .title-text, .popover, ul, li {
-  -webkit-user-select: none; /* Safari/Chrome */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE10+ */
-  user-select: none;
-}
-
-/* Prevent mobile tap highlight (grey overlay) */
-button, .icon-btn, .main-btn, #bingoGrid div, .modal-card-item {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;  /* helps buttons activate instantly on mobile */
-}
-
-button:active, .icon-btn:active, .main-btn:active {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
-}
-
-/* Ensure touch events propagate */
-button, .main-btn, .icon-btn {
-  -webkit-touch-callout: none; /* disables callout menu on long press iOS */
-  touch-action: manipulation;
-}
-
-/* Prevent text selection and fix mobile tap behavior */
-body, button, input, label, span, td, h4, li {
-  user-select: none;             /* standard */
-  -webkit-user-select: none;     /* Chrome/Safari */
-  -moz-user-select: none;        /* Firefox */
-  -ms-user-select: none;         /* IE/Edge */
-  -webkit-tap-highlight-color: transparent; /* remove mobile tap highlight */
-  touch-action: manipulation;    /* quick tap without delay */
-}
-
-/* Prevent text selection for the card selection list */
-#cardList, 
-#cardList label, 
-#cardList label span, 
-#cardList .card-row, 
-#cardList .preview-btn {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-
-button:active:not(:disabled), .icon-btn:active:not(:disabled), .main-btn:active:not(:disabled) {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-  background-color: limegreen; /* optional visual feedback */
-}
+/* ⚠️ win-animation repeated later with popWin keyframes */
