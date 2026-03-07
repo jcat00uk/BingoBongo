@@ -277,7 +277,18 @@ input, textarea {
   100% { transform: scale(1); }
 }
 
+/* Flash green briefly when a number is clicked */
+.card td.flash {
+  background-color: limegreen;
+  color: black;
+  animation: flashAnim 0.3s;
+}
 
+@keyframes flashAnim {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); background-color: #222; color: #eee; }
+}
 /* ============================= */
 /* CARD PREVIEW MINI TABLE */
 /* ============================= */
@@ -552,20 +563,4 @@ button.info-icon {
   color: limegreen;                     /* fixed color */
   text-shadow: 0 0 10px limegreen, 0 0 20px limegreen;
   text-align: center;
-}
-
-/* ========================= */
-/* Button Tap/Click Flash - Limegreen for all buttons */
-/* ========================= */
-
-/* Applies to all interactive buttons */
-button:active,
-.quick-pick-btn:active,
-.preview-btn:active,
-#confirmSelectionBtn:active,
-button.info-icon:active {
-  transform: scale(0.95);               /* slight shrink for tap effect */
-  background-color: limegreen !important; /* brief green flash */
-  color: #fff !important;               /* ensures text is readable */
-  transition: transform 0.1s, background-color 0.2s;
 }

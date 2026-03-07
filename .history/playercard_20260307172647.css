@@ -555,17 +555,21 @@ button.info-icon {
 }
 
 /* ========================= */
-/* Button Tap/Click Flash - Limegreen for all buttons */
+/* Button Tap/Click Flash - Limegreen */
 /* ========================= */
 
-/* Applies to all interactive buttons */
-button:active,
+/* Applies to main buttons, quick pick, preview, confirm, and info icon */
+#confirmSelectionBtn:active,
 .quick-pick-btn:active,
 .preview-btn:active,
-#confirmSelectionBtn:active,
 button.info-icon:active {
-  transform: scale(0.95);               /* slight shrink for tap effect */
-  background-color: limegreen !important; /* brief green flash */
-  color: #fff !important;               /* ensures text is readable */
+  transform: scale(0.95);            /* slight shrink for tap effect */
+  background-color: limegreen !important; /* flash green */
+  color: #fff !important;             /* ensures text is readable */
   transition: transform 0.1s, background-color 0.2s;
+}
+
+/* Optional: remove hover/active interference on preview button */
+.preview-btn:active {
+  transform: scale(0.95);
 }
